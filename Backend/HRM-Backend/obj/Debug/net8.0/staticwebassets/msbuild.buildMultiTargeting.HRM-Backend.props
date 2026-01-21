@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\HRM-Backend.props" />
+</Project>
