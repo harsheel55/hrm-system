@@ -1,151 +1,103 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, Chrome } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { JSX, SVGProps } from "react";
+import { Link } from "react-router-dom";
 
-const LoginPage = () => {
-    const [showPassword, setShowPassword] = useState(false);
+const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
+  <svg
+    fill="currentColor"
+    height="48"
+    viewBox="0 0 40 48"
+    width="40"
+    {...props}
+  >
+    <clipPath id="a">
+      <path d="m0 0h40v48h-40z" />
+    </clipPath>
+    <g clipPath="url(#a)">
+      <path d="m25.0887 5.05386-3.933-1.05386-3.3145 12.3696-2.9923-11.16736-3.9331 1.05386 3.233 12.0655-8.05262-8.0526-2.87919 2.8792 8.83271 8.8328-10.99975-2.9474-1.05385625 3.933 12.01860625 3.2204c-.1376-.5935-.2104-1.2119-.2104-1.8473 0-4.4976 3.646-8.1436 8.1437-8.1436 4.4976 0 8.1436 3.646 8.1436 8.1436 0 .6313-.0719 1.2459-.2078 1.8359l10.9227 2.9267 1.0538-3.933-12.0664-3.2332 11.0005-2.9476-1.0539-3.933-12.0659 3.233 8.0526-8.0526-2.8792-2.87916-8.7102 8.71026z" />
+      <path d="m27.8723 26.2214c-.3372 1.4256-1.0491 2.7063-2.0259 3.7324l7.913 7.9131 2.8792-2.8792z" />
+      <path d="m25.7665 30.0366c-.9886 1.0097-2.2379 1.7632-3.6389 2.1515l2.8794 10.746 3.933-1.0539z" />
+      <path d="m21.9807 32.2274c-.65.1671-1.3313.2559-2.0334.2559-.7522 0-1.4806-.102-2.1721-.2929l-2.882 10.7558 3.933 1.0538z" />
+      <path d="m17.6361 32.1507c-1.3796-.4076-2.6067-1.1707-3.5751-2.1833l-7.9325 7.9325 2.87919 2.8792z" />
+      <path d="m13.9956 29.8973c-.9518-1.019-1.6451-2.2826-1.9751-3.6862l-10.95836 2.9363 1.05385 3.933z" />
+    </g>
+  </svg>
+);
 
-    return (
-        <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-            {/* Back to Home Link */}
-            <div className="absolute top-8 left-8">
-                <Link to="/" className="flex items-center text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to home
+export default function LoginPage() {
+  return (
+    <div className="flex items-center justify-center min-h-dvh">
+      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14">
+        <CardContent className="">
+          <div className="flex flex-col items-center space-y-8">
+            <Logo />
+
+            <div className="space-y-2 text-center">
+              <h1 className="text-balance text-3xl font-semibold text-foreground">
+                Welcome back!
+              </h1>
+              <p className="text-pretty text-muted-foreground text-sm">
+                First time here?{" "}
+                <Link to="/register" className="text-foreground hover:underline">
+                  Sign up for free
                 </Link>
+              </p>
             </div>
 
-            <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                {/* Logo Placeholder */}
-                <div className="flex justify-center">
-                    <div className="bg-blue-600 p-3 rounded-2xl shadow-lg shadow-blue-200">
-                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </div>
-                </div>
-                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-                    Welcome back
-                </h2>
-                <p className="mt-2 text-center text-sm text-gray-600">
-                    Don't have an account?{' '}
-                    <Link to="/register" className="font-semibold text-blue-600 hover:text-blue-500">
-                        Start your 14-day free trial
-                    </Link>
-                </p>
+            <div className="w-full space-y-4">
+              <Input
+                type="text"
+                placeholder="Username"
+                className="w-full rounded-xl"
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                className="w-full rounded-xl"
+              />
+              
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="rounded" />
+                  <span className="text-muted-foreground">Remember me</span>
+                </label>
+                <a href="#" className="text-foreground hover:underline">
+                  Forgot password?
+                </a>
+              </div>
+
+              <Button className="w-full rounded-xl" size="lg">
+                Sign in
+              </Button>
+
+              <div className="flex items-center gap-4 py-2">
+                <Separator className="flex-1" />
+                <span className="text-sm text-muted-foreground">OR</span>
+                <Separator className="flex-1" />
+              </div>
+
+              <Button variant="outline" className="w-full rounded-xl" size="lg">
+                Single sign-on (SSO)
+              </Button>
             </div>
 
-            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-gray-100">
-                    <form className="space-y-5" action="#" method="POST">
-                        {/* Email Field */}
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                Email address
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <Mail size={18} />
-                                </div>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
-                                    className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all"
-                                    placeholder="name@company.com"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Password Field */}
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                Password
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <Lock size={18} />
-                                </div>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type={showPassword ? "text" : "password"}
-                                    autoComplete="current-password"
-                                    required
-                                    className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all"
-                                    placeholder="••••••••"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                                >
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <input
-                                    id="remember-me"
-                                    name="remember-me"
-                                    type="checkbox"
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md cursor-pointer"
-                                />
-                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 cursor-pointer">
-                                    Keep me signed in
-                                </label>
-                            </div>
-
-                            <div className="text-sm">
-                                <a href="#" className="font-semibold text-blue-600 hover:text-blue-500">
-                                    Forgot password?
-                                </a>
-                            </div>
-                        </div>
-
-                        <div>
-                            <button
-                                type="submit"
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all active:scale-[0.98]"
-                            >
-                                Sign in to Dashboard
-                            </button>
-                        </div>
-                    </form>
-
-                    {/* Divider */}
-                    <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500 uppercase tracking-wider text-xs font-semibold">
-                                    Or continue with
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Social Login Button */}
-                        <div className="mt-6">
-                            <button className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-xl bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">
-                                <Chrome className="w-5 h-5 mr-2 text-red-500" />
-                                <span>Sign in with Google</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <p className="mt-8 text-center text-xs text-gray-400 uppercase tracking-widest">
-                    Secure & Encrypted Connection
-                </p>
-            </div>
-        </div>
-    );
-};
-
-export default LoginPage;
+            <p className="text-pretty text-center text-xs w-11/12 text-muted-foreground">
+              You acknowledge that you read, and agree, to our{" "}
+              <a href="#" className="underline hover:text-foreground">
+                Terms of Service
+              </a>{" "}
+              and our{" "}
+              <a href="#" className="underline hover:text-foreground">
+                Privacy Policy
+              </a>
+              .
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

@@ -1,204 +1,104 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-    User,
-    Mail,
-    Lock,
-    Eye,
-    EyeOff,
-    CheckCircle2,
-    ArrowLeft,
-    ShieldCheck,
-    Zap,
-    Star
-} from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { JSX, SVGProps } from "react";
+import { Link } from "react-router-dom";
 
-const RegisterPage = () => {
-    const [showPassword, setShowPassword] = useState(false);
-
-    return (
-        <div className="min-h-screen bg-white flex">
-
-            {/* --- Left Side: Branding & Info (Hidden on Mobile) --- */}
-            <div className="hidden lg:flex lg:w-1/2 bg-blue-600 p-12 flex-col justify-between text-white relative overflow-hidden">
-                {/* Abstract background shapes */}
-                <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-96 h-96 bg-blue-500 rounded-full opacity-50 blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-96 h-96 bg-indigo-600 rounded-full opacity-50 blur-3xl"></div>
-
-                <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-12">
-                        <div className="bg-white p-1.5 rounded-lg">
-                            <ShieldCheck className="text-blue-600 w-6 h-6" />
-                        </div>
-                        <span className="text-2xl font-bold tracking-tight">HRM<span className="opacity-80">Flow</span></span>
-                    </div>
-
-                    <h2 className="text-4xl font-bold leading-tight mb-6">
-                        Join 500+ companies <br />
-                        optimizing their workforce.
-                    </h2>
-
-                    <div className="space-y-6">
-                        <BenefitItem
-                            icon={<Zap className="w-5 h-5" />}
-                            title="Quick Setup"
-                            desc="Get your dashboard ready in less than 2 minutes."
-                        />
-                        <BenefitItem
-                            icon={<CheckCircle2 className="w-5 h-5" />}
-                            title="Compliance Ready"
-                            desc="Built-in tax and labor law compliance features."
-                        />
-                        <BenefitItem
-                            icon={<Star className="w-5 h-5" />}
-                            title="Top Rated Support"
-                            desc="24/7 access to our dedicated HR specialists."
-                        />
-                    </div>
-                </div>
-
-                <div className="relative z-10 bg-blue-700/30 p-6 rounded-2xl border border-blue-400/30 backdrop-blur-sm">
-                    <p className="italic text-blue-100 mb-4">
-                        "Switching to HRMFlow saved our operations team 15 hours a week on payroll alone. It's a game changer."
-                    </p>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden border-2 border-blue-400">
-                            <img src="https://i.pravatar.cc/100?img=32" alt="Avatar" />
-                        </div>
-                        <div>
-                            <p className="font-bold text-sm">Sarah Jenkins</p>
-                            <p className="text-xs text-blue-200">HR Director, TechCorp</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* --- Right Side: Registration Form --- */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-12 lg:px-20 py-12 relative">
-                <div className="absolute top-8 right-8 lg:left-20">
-                    <Link to="/" className="flex items-center text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors">
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to home
-                    </Link>
-                </div>
-
-                <div className="max-w-md w-full mx-auto">
-                    <div className="mb-10 text-center lg:text-left">
-                        <h2 className="text-3xl font-extrabold text-gray-900">Create Account</h2>
-                        <p className="mt-2 text-gray-600">
-                            Already have an account?{' '}
-                            <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-500">
-                                Sign in here
-                            </Link>
-                        </p>
-                    </div>
-
-                    <form className="space-y-5">
-                        {/* Full Name */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <User size={18} />
-                                </div>
-                                <input
-                                    type="text"
-                                    required
-                                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all outline-none"
-                                    placeholder="John Doe"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Email */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Work Email</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <Mail size={18} />
-                                </div>
-                                <input
-                                    type="email"
-                                    required
-                                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all outline-none"
-                                    placeholder="john@company.com"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Password */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                    <Lock size={18} />
-                                </div>
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    required
-                                    className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all outline-none"
-                                    placeholder="••••••••"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                                >
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                </button>
-                            </div>
-                            <p className="mt-2 text-xs text-gray-500">
-                                Must be at least 8 characters with a number and a symbol.
-                            </p>
-                        </div>
-
-                        {/* Terms Checkbox */}
-                        <div className="flex items-start">
-                            <div className="flex items-center h-5">
-                                <input
-                                    id="terms"
-                                    type="checkbox"
-                                    required
-                                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                                />
-                            </div>
-                            <div className="ml-3 text-sm">
-                                <label htmlFor="terms" className="text-gray-600">
-                                    I agree to the{' '}
-                                    <a href="#" className="text-blue-600 font-medium hover:underline">Terms of Service</a> and{' '}
-                                    <a href="#" className="text-blue-600 font-medium hover:underline">Privacy Policy</a>.
-                                </label>
-                            </div>
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all active:scale-[0.98]"
-                        >
-                            Create My Account
-                        </button>
-                    </form>
-
-                    <p className="mt-8 text-center text-xs text-gray-400 uppercase tracking-widest">
-                        No credit card required for trial
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-/* Helper Component for Benefits */
-const BenefitItem = ({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) => (
-    <div className="flex gap-4">
-        <div className="flex-shrink-0 w-8 h-8 bg-blue-500/50 rounded-lg flex items-center justify-center">
-            {icon}
-        </div>
-        <div>
-            <h4 className="font-bold text-white">{title}</h4>
-            <p className="text-blue-100 text-sm">{desc}</p>
-        </div>
-    </div>
+const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
+  <svg
+    fill="currentColor"
+    height="48"
+    viewBox="0 0 40 48"
+    width="40"
+    {...props}
+  >
+    <clipPath id="a">
+      <path d="m0 0h40v48h-40z" />
+    </clipPath>
+    <g clipPath="url(#a)">
+      <path d="m25.0887 5.05386-3.933-1.05386-3.3145 12.3696-2.9923-11.16736-3.9331 1.05386 3.233 12.0655-8.05262-8.0526-2.87919 2.8792 8.83271 8.8328-10.99975-2.9474-1.05385625 3.933 12.01860625 3.2204c-.1376-.5935-.2104-1.2119-.2104-1.8473 0-4.4976 3.646-8.1436 8.1437-8.1436 4.4976 0 8.1436 3.646 8.1436 8.1436 0 .6313-.0719 1.2459-.2078 1.8359l10.9227 2.9267 1.0538-3.933-12.0664-3.2332 11.0005-2.9476-1.0539-3.933-12.0659 3.233 8.0526-8.0526-2.8792-2.87916-8.7102 8.71026z" />
+      <path d="m27.8723 26.2214c-.3372 1.4256-1.0491 2.7063-2.0259 3.7324l7.913 7.9131 2.8792-2.8792z" />
+      <path d="m25.7665 30.0366c-.9886 1.0097-2.2379 1.7632-3.6389 2.1515l2.8794 10.746 3.933-1.0539z" />
+      <path d="m21.9807 32.2274c-.65.1671-1.3313.2559-2.0334.2559-.7522 0-1.4806-.102-2.1721-.2929l-2.882 10.7558 3.933 1.0538z" />
+      <path d="m17.6361 32.1507c-1.3796-.4076-2.6067-1.1707-3.5751-2.1833l-7.9325 7.9325 2.87919 2.8792z" />
+      <path d="m13.9956 29.8973c-.9518-1.019-1.6451-2.2826-1.9751-3.6862l-10.95836 2.9363 1.05385 3.933z" />
+    </g>
+  </svg>
 );
 
-export default RegisterPage;
+export default function RegisterPage() {
+  return (
+    <div className="flex items-center justify-center min-h-dvh">
+      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14">
+        <CardContent className="">
+          <div className="flex flex-col items-center space-y-8">
+            <Logo />
+
+            <div className="space-y-2 text-center">
+              <h1 className="text-balance text-3xl font-semibold text-foreground">
+                Create Account
+              </h1>
+              <p className="text-pretty text-muted-foreground text-sm">
+                Already have an account?{" "}
+                <Link to="/login" className="text-foreground hover:underline">
+                  Sign in here
+                </Link>
+              </p>
+            </div>
+
+            <div className="w-full space-y-4">
+              <Input
+                type="text"
+                placeholder="Full Name"
+                className="w-full rounded-xl"
+              />
+              <Input
+                type="email"
+                placeholder="Work Email"
+                className="w-full rounded-xl"
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                className="w-full rounded-xl"
+              />
+              
+              <div className="flex items-start gap-2 text-sm">
+                <input type="checkbox" className="rounded mt-0.5" required />
+                <span className="text-muted-foreground">
+                  I agree to the{" "}
+                  <a href="#" className="text-foreground hover:underline">
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a href="#" className="text-foreground hover:underline">
+                    Privacy Policy
+                  </a>
+                </span>
+              </div>
+
+              <Button className="w-full rounded-xl" size="lg">
+                Create My Account
+              </Button>
+
+              <div className="flex items-center gap-4 py-2">
+                <Separator className="flex-1" />
+                <span className="text-sm text-muted-foreground">OR</span>
+                <Separator className="flex-1" />
+              </div>
+
+              <Button variant="outline" className="w-full rounded-xl" size="lg">
+                Single sign-on (SSO)
+              </Button>
+            </div>
+
+            <p className="text-pretty text-center text-xs w-11/12 text-muted-foreground">
+              No credit card required for trial. Get started in less than 2 minutes.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

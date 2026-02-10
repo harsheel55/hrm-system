@@ -14,32 +14,37 @@ import Documents from './pages/dashboard/Documents';
 import Leave from './pages/dashboard/Leave';
 import Timesheet from './pages/dashboard/Timesheet';
 import Analytics from './pages/dashboard/Analytics';
+import OrganizationTree from './pages/dashboard/OrganizationTree';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<LandingPage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<RegisterPage />} />
-        </Route>
+    <TooltipProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<LandingPage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+          </Route>
 
-        {/* Dashboard Routes */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<DashboardHome />} />
-          <Route path="employees" element={<Employees />} />
-          <Route path="attendance" element={<Attendance />} />
-          <Route path="payroll" element={<Payroll />} />
-          <Route path="recruitment" element={<Recruitment />} />
-          <Route path="shift" element={<Shift />} />
-          <Route path="documents" element={<Documents />} />
-          <Route path="leave" element={<Leave />} />
-          <Route path="timesheet" element={<Timesheet />} />
-          <Route path="analytics" element={<Analytics />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+          {/* Dashboard Routes */}
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<DashboardHome />} />
+            <Route path="employees" element={<Employees />} />
+            <Route path="attendance" element={<Attendance />} />
+            <Route path="payroll" element={<Payroll />} />
+            <Route path="recruitment" element={<Recruitment />} />
+            <Route path="shift" element={<Shift />} />
+            <Route path="documents" element={<Documents />} />
+            <Route path="leave" element={<Leave />} />
+            <Route path="timesheet" element={<Timesheet />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="organization" element={<OrganizationTree />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
   );
 }
 
