@@ -46,19 +46,19 @@ const Leave = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#f8fafc] pb-12">
+        <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 pb-12 transition-colors">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-                
+
                 {/* --- Header --- */}
                 <div className="flex flex-col sm:flex-row justify-between items-end sm:items-center mb-10 gap-4">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Time Off</span>
                         </div>
-                        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Leave Management</h1>
-                        <p className="text-sm font-medium text-slate-500">Track, plan, and apply for your time off.</p>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Leave Management</h1>
+                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Track, plan, and apply for your time off.</p>
                     </div>
-                    <button 
+                    <button
                         onClick={() => setShowLeaveModal(true)}
                         className="group flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 font-bold text-sm active:scale-95"
                     >
@@ -71,29 +71,29 @@ const Leave = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     {leaveBalance.map((leave, i) => {
                         const percentUsed = (Number(leave.used) / Number(leave.total)) * 100;
-                        const colorMap: {[key: string]: string} = {
+                        const colorMap: { [key: string]: string } = {
                             indigo: 'bg-indigo-600 text-indigo-600 border-indigo-100',
                             emerald: 'bg-emerald-600 text-emerald-600 border-emerald-100',
                             purple: 'bg-purple-600 text-purple-600 border-purple-100',
                             amber: 'bg-amber-500 text-amber-500 border-amber-100',
                         };
                         return (
-                            <div key={i} className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group">
+                            <div key={i} className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 transition-all group">
                                 <div className="flex justify-between items-start mb-8">
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 group-hover:scale-110 transition-transform`}>
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 dark:bg-slate-700/50 group-hover:scale-110 transition-transform`}>
                                         <PieChart size={22} className="text-slate-400 group-hover:text-blue-600" />
                                     </div>
                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Quotas</span>
                                 </div>
-                                
-                                <h4 className="font-bold text-slate-900 mb-1">{leave.type}</h4>
+
+                                <h4 className="font-bold text-slate-900 dark:text-white mb-1">{leave.type}</h4>
                                 <div className="flex items-baseline gap-1 mb-6">
-                                    <span className="text-3xl font-black text-slate-900">{leave.remaining}</span>
+                                    <span className="text-3xl font-black text-slate-900 dark:text-white">{leave.remaining}</span>
                                     <span className="text-xs font-bold text-slate-400">/ {leave.total} Days Left</span>
                                 </div>
 
-                                <div className="relative w-full h-2.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-                                    <div 
+                                <div className="relative w-full h-2.5 bg-slate-50 dark:bg-slate-700 rounded-full overflow-hidden border border-slate-100 dark:border-slate-700">
+                                    <div
                                         className={`absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ${colorMap[leave.theme as keyof typeof colorMap].split(' ')[0]}`}
                                         style={{ width: `${100 - percentUsed}%` }}
                                     ></div>
@@ -104,12 +104,12 @@ const Leave = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
+
                     {/* --- Leave History --- */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 p-8">
+                        <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 p-8">
                             <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-3">
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
                                     <div className="p-2 bg-slate-900 text-white rounded-xl"><History size={20} /></div>
                                     Recent Requests
                                 </h3>
@@ -118,28 +118,26 @@ const Leave = () => {
 
                             <div className="space-y-4">
                                 {leaveRequests.map((request, i) => (
-                                    <div key={i} className="group flex flex-col sm:flex-row sm:items-center justify-between p-6 rounded-3xl border border-slate-50 hover:border-blue-100 hover:bg-blue-50/20 transition-all">
+                                    <div key={i} className="group flex flex-col sm:flex-row sm:items-center justify-between p-6 rounded-3xl border border-slate-50 dark:border-slate-700 hover:border-blue-100 dark:hover:border-blue-900 hover:bg-blue-50/20 dark:hover:bg-blue-900/10 transition-all">
                                         <div className="flex items-center gap-5">
-                                            <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center font-bold ${
-                                                request.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
-                                            }`}>
+                                            <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center font-bold ${request.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
+                                                }`}>
                                                 <span className="text-[10px] uppercase">{request.startDate.split(' ')[0]}</span>
                                                 <span className="text-lg">{request.startDate.split(' ')[1]}</span>
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <h4 className="font-bold text-slate-900">{request.type} Leave</h4>
-                                                    <span className="text-[10px] bg-white border border-slate-100 text-slate-500 px-2 py-0.5 rounded-lg font-black uppercase">{request.days} Days</span>
+                                                    <h4 className="font-bold text-slate-900 dark:text-white">{request.type} Leave</h4>
+                                                    <span className="text-[10px] bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-500 dark:text-slate-300 px-2 py-0.5 rounded-lg font-black uppercase">{request.days} Days</span>
                                                 </div>
                                                 <p className="text-xs font-medium text-slate-400 mt-1">{request.reason}</p>
                                             </div>
                                         </div>
 
-                                        <div className={`mt-4 sm:mt-0 flex items-center gap-2 px-4 py-2 rounded-2xl font-bold text-xs border ${
-                                            request.status === 'pending' 
-                                            ? 'bg-amber-50 text-amber-700 border-amber-100' 
-                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                                        }`}>
+                                        <div className={`mt-4 sm:mt-0 flex items-center gap-2 px-4 py-2 rounded-2xl font-bold text-xs border ${request.status === 'pending'
+                                                ? 'bg-amber-50 text-amber-700 border-amber-100'
+                                                : 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                                            }`}>
                                             {request.status === 'pending' ? <Clock size={14} /> : <CheckCircle size={14} />}
                                             {request.status.toUpperCase()}
                                         </div>
@@ -165,8 +163,8 @@ const Leave = () => {
                             <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
                         </div>
 
-                        <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 p-8">
-                            <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 p-8">
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                                 <Calendar size={18} className="text-orange-500" />
                                 Public Holidays
                             </h3>
@@ -178,7 +176,7 @@ const Leave = () => {
                                 ].map((h, i) => (
                                     <div key={i} className="flex justify-between items-center group cursor-default">
                                         <div>
-                                            <p className="text-xs font-bold text-slate-700 group-hover:text-blue-600 transition-colors">{h.name}</p>
+                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{h.name}</p>
                                             <p className="text-[10px] font-bold text-slate-400">{h.date}</p>
                                         </div>
                                         <ArrowUpRight size={14} className="text-slate-200 group-hover:text-blue-600 transition-all" />
@@ -193,16 +191,16 @@ const Leave = () => {
             {/* --- Application Modal --- */}
             {showLeaveModal && (
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[3rem] w-full max-w-2xl max-h-[95vh] overflow-y-auto shadow-2xl border border-white/20">
+                    <div className="bg-white dark:bg-slate-800 rounded-[3rem] w-full max-w-2xl max-h-[95vh] overflow-y-auto shadow-2xl border border-white/20 dark:border-slate-700">
                         <div className="p-10">
                             <div className="flex items-center justify-between mb-10">
                                 <div>
-                                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">Time Off Request</h3>
-                                    <p className="text-sm font-medium text-slate-500 mt-1">Fill in the details for your supervisor to review.</p>
+                                    <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Time Off Request</h3>
+                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Fill in the details for your supervisor to review.</p>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => setShowLeaveModal(false)}
-                                    className="p-3 hover:bg-slate-100 rounded-2xl transition-all text-slate-400 hover:text-slate-900"
+                                    className="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-2xl transition-all text-slate-400 hover:text-slate-900 dark:hover:text-white"
                                 >
                                     <X size={24} />
                                 </button>
@@ -219,12 +217,11 @@ const Leave = () => {
                                             <button
                                                 key={type}
                                                 type="button"
-                                                onClick={() => setFormData({...formData, leaveType: type})}
-                                                className={`py-3 px-2 rounded-2xl text-[11px] font-bold transition-all border ${
-                                                    formData.leaveType === type 
-                                                    ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100' 
-                                                    : 'bg-white text-slate-500 border-slate-100 hover:border-blue-200'
-                                                }`}
+                                                onClick={() => setFormData({ ...formData, leaveType: type })}
+                                                className={`py-3 px-2 rounded-2xl text-[11px] font-bold transition-all border ${formData.leaveType === type
+                                                        ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100 dark:shadow-blue-900/20'
+                                                        : 'bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-300 border-slate-100 dark:border-slate-600 hover:border-blue-200 dark:hover:border-blue-500'
+                                                    }`}
                                             >
                                                 {type}
                                             </button>
@@ -237,11 +234,11 @@ const Leave = () => {
                                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block">Start Date</label>
                                         <div className="relative">
                                             <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                            <input 
+                                            <input
                                                 type="date"
                                                 value={formData.startDate}
-                                                onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-700 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-white"
                                             />
                                         </div>
                                     </div>
@@ -250,11 +247,11 @@ const Leave = () => {
                                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block">End Date</label>
                                         <div className="relative">
                                             <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                            <input 
+                                            <input
                                                 type="date"
                                                 value={formData.endDate}
-                                                onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-700 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-white"
                                             />
                                         </div>
                                     </div>
@@ -262,12 +259,12 @@ const Leave = () => {
 
                                 {/* Dynamic Day Display */}
                                 {calculatedDays > 0 && (
-                                    <div className="flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-100 animate-in slide-in-from-top-2">
+                                    <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800 animate-in slide-in-from-top-2">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
                                                 <span className="font-black text-lg">{calculatedDays}</span>
                                             </div>
-                                            <p className="text-sm font-bold text-blue-900">Total days being requested</p>
+                                            <p className="text-sm font-bold text-blue-900 dark:text-blue-200">Total days being requested</p>
                                         </div>
                                         <span className="text-[10px] font-black uppercase text-blue-400 tracking-widest">Estimated</span>
                                     </div>
@@ -275,30 +272,30 @@ const Leave = () => {
 
                                 <div>
                                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block">Reason / Description</label>
-                                    <textarea 
+                                    <textarea
                                         value={formData.reason}
-                                        onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                                         placeholder="Tell us a little about your time off plans..."
                                         rows={3}
-                                        className="w-full p-5 bg-slate-50 border-none rounded-3xl focus:ring-2 focus:ring-blue-500 font-medium text-slate-700 resize-none"
+                                        className="w-full p-5 bg-slate-50 dark:bg-slate-700 border-none rounded-3xl focus:ring-2 focus:ring-blue-500 font-medium text-slate-700 dark:text-white resize-none"
                                     />
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => setShowLeaveModal(false)}
-                                        className="flex-1 px-8 py-4 text-slate-500 rounded-2xl hover:bg-slate-50 font-bold transition-all order-2 sm:order-1"
+                                        className="flex-1 px-8 py-4 text-slate-500 dark:text-slate-400 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 font-bold transition-all order-2 sm:order-1"
                                     >
                                         Dismiss
                                     </button>
-                                    <button 
+                                    <button
                                         type="submit"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             setShowLeaveModal(false);
                                         }}
-                                        className="flex-[2] px-8 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 font-bold transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-3 order-1 sm:order-2"
+                                        className="flex-[2] px-8 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 font-bold transition-all shadow-xl shadow-blue-100 dark:shadow-blue-900/20 flex items-center justify-center gap-3 order-1 sm:order-2"
                                     >
                                         Confirm & Submit
                                         <Send size={18} />

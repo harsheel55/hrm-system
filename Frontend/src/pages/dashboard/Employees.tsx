@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { 
-    Search, 
-    Plus, 
-    Filter, 
-    MoreVertical, 
-    X, 
+import {
+    Search,
+    Plus,
+    Filter,
+    MoreVertical,
+    X,
     Save,
     Camera,
     User,
@@ -34,65 +34,65 @@ const Employees = () => {
     });
 
     const employees = [
-        { 
-            id: 1, 
-            firstName: 'Jane', 
-            lastName: 'Cooper', 
-            email: 'jane.cooper@example.com', 
+        {
+            id: 1,
+            firstName: 'Jane',
+            lastName: 'Cooper',
+            email: 'jane.cooper@example.com',
             phone: '+1 (555) 123-4567',
-            role: 'Regional Manager', 
-            department: 'Sales & Marketing', 
-            status: 'Active', 
+            role: 'Regional Manager',
+            department: 'Sales & Marketing',
+            status: 'Active',
             location: 'New York, USA',
             startDate: '2020-03-15',
             salary: '$85,000',
             manager: 'John Smith',
-            image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60' 
+            image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60'
         },
-        { 
-            id: 2, 
-            firstName: 'Cody', 
-            lastName: 'Fisher', 
-            email: 'cody.fisher@example.com', 
+        {
+            id: 2,
+            firstName: 'Cody',
+            lastName: 'Fisher',
+            email: 'cody.fisher@example.com',
             phone: '+1 (555) 234-5678',
-            role: 'Product Directives Officer', 
-            department: 'Engineering', 
-            status: 'Active', 
+            role: 'Product Directives Officer',
+            department: 'Engineering',
+            status: 'Active',
             location: 'San Francisco, CA',
             startDate: '2021-07-20',
             salary: '$92,000',
             manager: 'Sarah Johnson',
-            image: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60' 
+            image: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60'
         },
-        { 
-            id: 3, 
-            firstName: 'Esther', 
-            lastName: 'Howard', 
-            email: 'esther.howard@example.com', 
+        {
+            id: 3,
+            firstName: 'Esther',
+            lastName: 'Howard',
+            email: 'esther.howard@example.com',
             phone: '+1 (555) 345-6789',
-            role: 'Forward Response Developer', 
-            department: 'Engineering', 
-            status: 'On Leave', 
+            role: 'Forward Response Developer',
+            department: 'Engineering',
+            status: 'On Leave',
             location: 'Austin, TX',
             startDate: '2019-11-10',
             salary: '$78,000',
             manager: 'Sarah Johnson',
-            image: 'https://images.unsplash.com/photo-1520813792240-56fc4a37b1a9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60' 
+            image: 'https://images.unsplash.com/photo-1520813792240-56fc4a37b1a9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60'
         },
-        { 
-            id: 4, 
-            firstName: 'Robert', 
-            lastName: 'Fox', 
-            email: 'robert.fox@example.com', 
+        {
+            id: 4,
+            firstName: 'Robert',
+            lastName: 'Fox',
+            email: 'robert.fox@example.com',
             phone: '+1 (555) 456-7890',
-            role: 'HR Specialist', 
-            department: 'Human Resources', 
-            status: 'Active', 
+            role: 'HR Specialist',
+            department: 'Human Resources',
+            status: 'Active',
             location: 'Boston, MA',
             startDate: '2022-01-05',
             salary: '$65,000',
             manager: 'Lisa Chen',
-            image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60' 
+            image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60'
         },
     ];
 
@@ -101,7 +101,7 @@ const Employees = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <h2 className="text-xl font-bold text-gray-900">Employees</h2>
-                <button 
+                <button
                     onClick={() => {
                         setEditingEmployee(null);
                         setFormData({
@@ -123,33 +123,33 @@ const Employees = () => {
                         });
                         setShowEmployeeModal(true);
                     }}
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                    className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:shadow-xl hover:scale-105 transition-all shadow-sm group"
                 >
-                    <Plus size={18} className="mr-2" />
+                    <Plus size={18} className="mr-2 group-hover:rotate-90 transition-transform" />
                     Add Employee
                 </button>
             </div>
 
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <div className="relative flex-1 group">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={20} />
                     <input
                         type="text"
                         placeholder="Search employees..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
                 </div>
-                <button className="flex items-center px-4 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-gray-700">
+                <button className="flex items-center px-4 py-2 border border-gray-200 rounded-lg bg-white hover:bg-blue-50 hover:border-blue-300 text-gray-700 hover:text-blue-600 transition-all">
                     <Filter size={18} className="mr-2" />
                     Filter
                 </button>
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="card-premium rounded-xl shadow-sm border border-gray-200 overflow-hidden hover-lift">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
@@ -161,11 +161,11 @@ const Employees = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {employees.map((person) => (
-                            <tr key={person.id} className="hover:bg-gray-50 transition-colors">
+                            <tr key={person.id} className="hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-purple-50/40 transition-all group">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
-                                        <div className="flex-shrink-0 h-10 w-10">
-                                            <img className="h-10 w-10 rounded-full" src={person.image} alt="" />
+                                        <div className="flex-shrink-0 h-10 w-10 group-hover:scale-110 transition-transform">
+                                            <img className="h-10 w-10 rounded-full ring-2 ring-white group-hover:ring-blue-300 transition-all" src={person.image} alt="" />
                                         </div>
                                         <div className="ml-4">
                                             <div className="text-sm font-medium text-gray-900">{person.firstName} {person.lastName}</div>
@@ -196,8 +196,8 @@ const Employees = () => {
 
             {/* Employee Management Modal */}
             {showEmployeeModal && (
-                <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl">
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
+                    <div className="card-premium rounded-[2.5rem] w-full max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl animate-scale-in custom-scrollbar">
                         <div className="p-8">
                             <div className="flex items-center justify-between mb-8">
                                 <div>
@@ -208,7 +208,7 @@ const Employees = () => {
                                         {editingEmployee ? 'Update employee information' : 'Create a new employee record'}
                                     </p>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => setShowEmployeeModal(false)}
                                     className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
                                 >
@@ -229,7 +229,7 @@ const Employees = () => {
                                                 </div>
                                             )}
                                         </div>
-                                        <button 
+                                        <button
                                             type="button"
                                             className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all"
                                         >
@@ -245,14 +245,14 @@ const Employees = () => {
                                 {/* Personal Information */}
                                 <div className="space-y-6">
                                     <h4 className="text-lg font-bold text-gray-900">Personal Information</h4>
-                                    
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={formData.firstName}
-                                                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 required
                                             />
@@ -260,10 +260,10 @@ const Employees = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={formData.lastName}
-                                                onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 required
                                             />
@@ -271,10 +271,10 @@ const Employees = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                                            <input 
+                                            <input
                                                 type="email"
                                                 value={formData.email}
-                                                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 required
                                             />
@@ -282,30 +282,30 @@ const Employees = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                            <input 
+                                            <input
                                                 type="tel"
                                                 value={formData.phone}
-                                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={formData.address}
-                                                onChange={(e) => setFormData({...formData, address: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Contact</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={formData.emergencyContact}
-                                                onChange={(e) => setFormData({...formData, emergencyContact: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
@@ -315,14 +315,14 @@ const Employees = () => {
                                 {/* Job Information */}
                                 <div className="space-y-6">
                                     <h4 className="text-lg font-bold text-gray-900">Job Information</h4>
-                                    
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Role/Position</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={formData.role}
-                                                onChange={(e) => setFormData({...formData, role: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 required
                                             />
@@ -330,9 +330,9 @@ const Employees = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                                            <select 
+                                            <select
                                                 value={formData.department}
-                                                onChange={(e) => setFormData({...formData, department: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 required
                                             >
@@ -347,30 +347,30 @@ const Employees = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={formData.location}
-                                                onChange={(e) => setFormData({...formData, location: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                                            <input 
+                                            <input
                                                 type="date"
                                                 value={formData.startDate}
-                                                onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Salary</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={formData.salary}
-                                                onChange={(e) => setFormData({...formData, salary: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
                                                 placeholder="e.g. $60,000"
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
@@ -378,9 +378,9 @@ const Employees = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Work Schedule</label>
-                                            <select 
+                                            <select
                                                 value={formData.workSchedule}
-                                                onChange={(e) => setFormData({...formData, workSchedule: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, workSchedule: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             >
                                                 <option value="Full-time">Full-time</option>
@@ -392,19 +392,19 @@ const Employees = () => {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Manager</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={formData.manager}
-                                                onChange={(e) => setFormData({...formData, manager: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                            <select 
+                                            <select
                                                 value={formData.status}
-                                                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                                                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             >
                                                 <option value="Active">Active</option>
@@ -434,14 +434,14 @@ const Employees = () => {
 
                                 {/* Action Buttons */}
                                 <div className="flex gap-4 pt-4">
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => setShowEmployeeModal(false)}
                                         className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-all"
                                     >
                                         Cancel
                                     </button>
-                                    <button 
+                                    <button
                                         type="submit"
                                         onClick={(e) => {
                                             e.preventDefault();
@@ -449,7 +449,7 @@ const Employees = () => {
                                             console.log('Employee data:', formData);
                                             setShowEmployeeModal(false);
                                         }}
-                                        className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-all flex items-center justify-center gap-2"
+                                        className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:shadow-xl hover:scale-105 font-medium transition-all flex items-center justify-center gap-2"
                                     >
                                         <Save size={18} />
                                         {editingEmployee ? 'Update Employee' : 'Add Employee'}

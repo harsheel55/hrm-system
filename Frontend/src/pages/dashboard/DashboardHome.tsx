@@ -28,7 +28,8 @@ import {
     MessageSquare,
     ThumbsUp,
     DollarSign,
-    Target
+    Target,
+    PieChart
 } from 'lucide-react';
 
 const DashboardHome = () => {
@@ -87,7 +88,7 @@ const DashboardHome = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50/50 pb-12">
+        <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 pb-12 overflow-x-hidden">
             {/* --- Banner Section --- */}
             <div className="h-60 w-full bg-[#0f172a] relative overflow-hidden">
                 {/* Modern Mesh Gradient Effect */}
@@ -99,14 +100,14 @@ const DashboardHome = () => {
                 }}></div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
+            <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* --- Left Column (Profile & Org) --- */}
                     <div className="w-full lg:w-80 flex flex-col gap-6">
 
                         {/* Profile Card */}
-                        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
+                        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/60 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
                             <div className="p-6 flex flex-col items-center text-center">
                                 <div className="relative mb-4 group cursor-pointer">
                                     <div className="w-28 h-28 rounded-full p-1.5 bg-gradient-to-tr from-blue-500 to-indigo-500 shadow-lg">
@@ -119,7 +120,7 @@ const DashboardHome = () => {
                                     <div className="absolute bottom-1 right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-white"></div>
                                 </div>
 
-                                <h2 className="text-xl font-bold text-slate-900 tracking-tight">Jane Cooper</h2>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Jane Cooper</h2>
                                 <p className="text-sm font-medium text-slate-500 mb-4 flex items-center gap-1">
                                     <MapPin size={14} className="text-slate-400" /> Regional Manager
                                 </p>
@@ -148,7 +149,7 @@ const DashboardHome = () => {
                         </div>
 
                         {/* Organization Section */}
-                        <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-6">
+                        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
                             <div className="space-y-6">
                                 <div>
                                     <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-4 flex items-center gap-2">
@@ -161,7 +162,7 @@ const DashboardHome = () => {
                                             className="w-10 h-10 rounded-full object-cover shadow-sm"
                                         />
                                         <div>
-                                            <p className="text-sm font-bold text-slate-900">Tom Cook</p>
+                                            <p className="text-sm font-bold text-slate-900 dark:text-white">Tom Cook</p>
                                             <p className="text-[11px] text-red-500 font-semibold italic">Yet to check-in</p>
                                         </div>
                                     </div>
@@ -187,7 +188,7 @@ const DashboardHome = () => {
                                                     className="w-9 h-9 rounded-full object-cover mr-3 grayscale-[0.3] group-hover:grayscale-0 transition-all"
                                                 />
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-bold text-slate-700 group-hover:text-blue-600 transition-colors">{person.name}</p>
+                                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 transition-colors">{person.name}</p>
                                                     <p className={`text-[10px] font-bold ${person.color === 'green' ? 'text-green-600' : person.color === 'blue' ? 'text-blue-600' : 'text-slate-400'}`}>
                                                         {person.status}
                                                     </p>
@@ -196,7 +197,7 @@ const DashboardHome = () => {
                                             </div>
                                         ))}
                                     </div>
-                                    <button className="w-full mt-5 py-2 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors border-t border-slate-50">
+                                    <button className="w-full mt-5 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors border-t border-slate-50 dark:border-slate-700">
                                         View Full Hierarchy
                                     </button>
                                 </div>
@@ -208,7 +209,7 @@ const DashboardHome = () => {
                     <div className="flex-1 flex flex-col gap-6">
 
                         {/* Tabs Navigation */}
-                        <div className="bg-white sticky top-4 z-20 rounded-2xl shadow-sm border border-slate-200/60 px-4 py-3 flex items-center gap-1 overflow-x-auto no-scrollbar">
+                        <div className="bg-white dark:bg-slate-800 sticky top-4 z-20 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 px-4 py-3 flex flex-wrap items-center gap-1 overflow-x-auto no-scrollbar">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab}
@@ -226,15 +227,15 @@ const DashboardHome = () => {
                         </div>
 
                         {/* Notifications */}
-                        <div className="bg-white rounded-3xl p-6 border border-slate-200/60 shadow-sm">
+                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200/60 dark:border-slate-700 shadow-sm">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center">
                                         <span className="text-white font-extrabold text-xs tracking-wide">YLKER</span>
                                     </div>
                                     <div>
-                                        <h4 className="text-lg font-extrabold text-slate-900">Good Evening&nbsp;&nbsp;Christine Spalding</h4>
-                                        <p className="text-sm text-slate-600">Have a productive day!</p>
+                                        <h4 className="text-lg font-extrabold text-slate-900 dark:text-white">Good Evening&nbsp;&nbsp;Christine Spalding</h4>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400">Have a productive day!</p>
                                     </div>
                                 </div>
                                 <Moon size={28} className="text-slate-400" />
@@ -250,14 +251,14 @@ const DashboardHome = () => {
                         {activeTab === 'Activities' && (
                             <>
                                 {/* Work Schedule */}
-                                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                                     <div className="flex items-center justify-between mb-8">
                                         <div className="flex items-center gap-4">
                                             <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
                                                 <Calendar size={22} />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-bold text-slate-900">Weekly Schedule</h3>
+                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Weekly Schedule</h3>
                                                 <p className="text-xs font-medium text-slate-400">May 26 - June 01, 2024</p>
                                             </div>
                                         </div>
@@ -282,18 +283,18 @@ const DashboardHome = () => {
                                                     <div className={`w-3.5 h-3.5 rounded-full border-[3px] z-10 transition-all duration-300 ${i === 1
                                                         ? 'bg-blue-600 border-blue-100 scale-125'
                                                         : i === 0 || i === 6
-                                                            ? 'bg-slate-200 border-white'
-                                                            : 'bg-white border-slate-200 group-hover:border-blue-400'
+                                                            ? 'bg-slate-200 dark:bg-slate-700 border-white dark:border-slate-800'
+                                                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 group-hover:border-blue-400'
                                                         }`}></div>
 
                                                     {/* Time Capsule */}
                                                     <div className="mt-4 text-center">
-                                                        <p className="text-xs font-bold text-slate-800">{date.split(' ')[1]}</p>
+                                                        <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{date.split(' ')[1]}</p>
                                                         <div className={`mt-2 px-2 py-1 rounded-lg text-[9px] font-bold transition-all ${i === 1
                                                             ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
                                                             : i === 0 || i === 6
-                                                                ? 'bg-slate-50 text-slate-400'
-                                                                : 'bg-slate-100 text-slate-600'
+                                                                ? 'bg-slate-50 dark:bg-slate-900 text-slate-400'
+                                                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                                                             }`}>
                                                             {i === 0 || i === 6 ? 'OFF' : '09:00 - 18:00'}
                                                         </div>
@@ -305,12 +306,12 @@ const DashboardHome = () => {
                                 </div>
 
                                 {/* Upcoming Holidays */}
-                                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                                     <div className="flex items-center gap-4 mb-8">
                                         <div className="p-3 bg-orange-50 text-orange-600 rounded-2xl">
                                             <Sun size={22} />
                                         </div>
-                                        <h3 className="text-lg font-bold text-slate-900">Upcoming Holidays</h3>
+                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Upcoming Holidays</h3>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -318,13 +319,13 @@ const DashboardHome = () => {
                                             { title: 'Native American Day', date: '2 Jun, Sunday', color: 'blue' },
                                             { title: 'Bakrid / Eid al-Adha', date: '17 Jun, Monday', color: 'amber' },
                                         ].map((holiday, i) => (
-                                            <div key={i} className="p-5 border border-slate-100 bg-slate-50/30 rounded-2xl hover:border-blue-200 transition-all cursor-default group">
+                                            <div key={i} className="p-5 border border-slate-100 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-800/30 rounded-2xl hover:border-blue-200 transition-all cursor-default group">
                                                 <div className={`w-8 h-1 rounded-full mb-3 ${holiday.color === 'blue' ? 'bg-blue-400' : 'bg-amber-400'}`}></div>
-                                                <p className="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{holiday.title}</p>
+                                                <p className="text-[13px] font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">{holiday.title}</p>
                                                 <p className="text-[11px] font-medium text-slate-500 mt-1">{holiday.date}</p>
                                             </div>
                                         ))}
-                                        <div className="flex items-center justify-center p-5 border-2 border-dashed border-slate-100 rounded-2xl text-xs font-bold text-blue-600 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all">
+                                        <div className="flex items-center justify-center p-5 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold text-blue-600 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-200 transition-all">
                                             View Holiday Calendar
                                         </div>
                                     </div>
@@ -367,10 +368,10 @@ const DashboardHome = () => {
             <div className="space-y-6">
                 <div className="space-y-4">
                     {activityFeed.map((item, i) => (
-                        <div key={i} className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
+                        <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700 shadow-sm p-5">
                             <div className="flex items-center gap-4">
                                 {item.type === 'timesheet' ? (
-                                    <div className="w-11 h-11 rounded-full overflow-hidden bg-slate-200">
+                                    <div className="w-11 h-11 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
                                         <img src={item.avatar} alt={item.title} className="w-full h-full object-cover" />
                                     </div>
                                 ) : (
@@ -380,8 +381,8 @@ const DashboardHome = () => {
                                 )}
 
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-slate-900 truncate">{item.title}</p>
-                                    <p className="text-sm text-slate-600">
+                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{item.title}</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">
                                         {item.type === 'timesheet' ? (
                                             <>
                                                 has made a request for <span className="font-semibold">Timesheet</span>
@@ -394,7 +395,7 @@ const DashboardHome = () => {
 
                                 <div className="text-right">
                                     <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{item.metaLabel}</p>
-                                    <p className="text-sm font-semibold text-slate-700">{item.metaValue}</p>
+                                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{item.metaValue}</p>
                                 </div>
                             </div>
                         </div>
@@ -460,9 +461,9 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Company Feeds</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Company Feeds</h3>
                         <div className="flex items-center gap-3">
                             <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Post Update</button>
                             <button
@@ -475,14 +476,14 @@ const DashboardHome = () => {
                     </div>
                     <div className="space-y-6">
                         {feeds.map((feed, i) => (
-                            <div key={i} className="border-b border-slate-100 last:border-0 pb-6 last:pb-0">
+                            <div key={i} className="border-b border-slate-100 dark:border-slate-700 last:border-0 pb-6 last:pb-0">
                                 <div className="flex items-start gap-4">
                                     <div className={`p-2 rounded-xl ${feed.type === 'announcement' ? 'bg-blue-50 text-blue-600' : feed.type === 'achievement' ? 'bg-green-50 text-green-600' : feed.type === 'reminder' ? 'bg-amber-50 text-amber-600' : feed.type === 'celebration' ? 'bg-purple-50 text-purple-600' : 'bg-indigo-50 text-indigo-600'}`}>
                                         <MessageSquare size={18} />
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-semibold text-slate-900">{feed.title}</h4>
-                                        <p className="text-sm text-slate-600 mt-1">{feed.desc}</p>
+                                        <h4 className="font-semibold text-slate-900 dark:text-white">{feed.title}</h4>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{feed.desc}</p>
                                         <div className="flex items-center gap-4 mt-3">
                                             <span className="text-xs text-slate-400">{feed.author} • {feed.time}</span>
                                             <button className="flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600">
@@ -506,17 +507,17 @@ const DashboardHome = () => {
                 </div>
 
                 {/* Connected Activity Summary */}
-                <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-3xl p-6 border border-slate-200">
-                    <h4 className="font-bold text-slate-900 mb-4">Related to Your Activities</h4>
+                <div className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/50 rounded-3xl p-6 border border-slate-200 dark:border-slate-700">
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-4">Related to Your Activities</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-white rounded-xl p-4 border border-slate-200">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 rounded-lg bg-green-50 text-green-600">
+                                <div className="p-2 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
                                     <CheckCircle size={16} />
                                 </div>
-                                <span className="text-sm font-semibold text-slate-900">Recent Check-ins</span>
+                                <span className="text-sm font-semibold text-slate-900 dark:text-white">Recent Check-ins</span>
                             </div>
-                            <p className="text-xs text-slate-600">5 consecutive days</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400">5 consecutive days</p>
                             <button
                                 className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium"
                                 onClick={() => setActiveTab('Attendance')}
@@ -524,14 +525,14 @@ const DashboardHome = () => {
                                 View Details →
                             </button>
                         </div>
-                        <div className="bg-white rounded-xl p-4 border border-slate-200">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 rounded-lg bg-purple-50 text-purple-600">
+                                <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
                                     <Calendar size={16} />
                                 </div>
-                                <span className="text-sm font-semibold text-slate-900">Leave Status</span>
+                                <span className="text-sm font-semibold text-slate-900 dark:text-white">Leave Status</span>
                             </div>
-                            <p className="text-xs text-slate-600">1 request pending</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400">1 request pending</p>
                             <button
                                 className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium"
                                 onClick={() => setActiveTab('Leave')}
@@ -539,14 +540,14 @@ const DashboardHome = () => {
                                 Check Status →
                             </button>
                         </div>
-                        <div className="bg-white rounded-xl p-4 border border-slate-200">
+                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 rounded-lg bg-amber-50 text-amber-600">
+                                <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400">
                                     <Award size={16} />
                                 </div>
-                                <span className="text-sm font-semibold text-slate-900">Achievements</span>
+                                <span className="text-sm font-semibold text-slate-900 dark:text-white">Achievements</span>
                             </div>
-                            <p className="text-xs text-slate-600">2 new this month</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400">2 new this month</p>
                             <button
                                 className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium"
                                 onClick={() => setActiveTab('Career History')}
@@ -570,26 +571,26 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Career Progression</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Career Progression</h3>
                         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Download Resume</button>
                     </div>
                     <div className="space-y-6">
                         {careerHistory.map((role, i) => (
-                            <div key={i} className="relative pl-8 pb-6 border-l-2 border-slate-200 last:border-0">
-                                <div className="absolute left-0 top-0 w-4 h-4 bg-blue-600 rounded-full border-4 border-white -translate-x-1/2"></div>
-                                <div className="bg-slate-50 rounded-xl p-6">
+                            <div key={i} className="relative pl-8 pb-6 border-l-2 border-slate-200 dark:border-slate-700 last:border-0">
+                                <div className="absolute left-0 top-0 w-4 h-4 bg-blue-600 rounded-full border-4 border-white dark:border-slate-800 -translate-x-1/2"></div>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-6">
                                     <div className="flex items-start justify-between mb-3">
                                         <div>
-                                            <h4 className="font-bold text-slate-900">{role.title}</h4>
-                                            <p className="text-sm text-slate-600">{role.department} • {role.location}</p>
+                                            <h4 className="font-bold text-slate-900 dark:text-white">{role.title}</h4>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400">{role.department} • {role.location}</p>
                                         </div>
-                                        <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{role.period}</span>
+                                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full">{role.period}</span>
                                     </div>
                                     <div className="space-y-2">
                                         {role.achievements.map((achievement, j) => (
-                                            <div key={j} className="flex items-center gap-2 text-sm text-slate-600">
+                                            <div key={j} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                                                 <Award size={14} className="text-amber-500" />
                                                 {achievement}
                                             </div>
@@ -620,7 +621,7 @@ const DashboardHome = () => {
                     {profileStats.map((stat, i) => (
                         <div
                             key={i}
-                            className="bg-white rounded-2xl p-6 border border-slate-200/60 hover:shadow-md transition-all cursor-pointer group"
+                            className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700 hover:shadow-md transition-all cursor-pointer group"
                             onClick={() => setActiveTab(stat.relatedTab)}
                         >
                             <div className="flex items-center justify-between mb-4">
@@ -629,16 +630,16 @@ const DashboardHome = () => {
                                 </div>
                                 <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900">{stat.value}</h3>
-                            <p className="text-sm text-slate-500">{stat.label}</p>
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
                             <p className="text-xs text-blue-600 mt-2 font-medium">View Details →</p>
                         </div>
                     ))}
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Personal Information</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Personal Information</h3>
                         <div className="flex items-center gap-3">
                             <button
                                 onClick={() => setShowProfileModal(true)}
@@ -659,19 +660,19 @@ const DashboardHome = () => {
                         <div className="space-y-6">
                             <div>
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Full Name</label>
-                                <p className="mt-1 font-semibold text-slate-900">Jane Cooper</p>
+                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">Jane Cooper</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Employee ID</label>
-                                <p className="mt-1 font-semibold text-slate-900">EMP-2024-0156</p>
+                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">EMP-2024-0156</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Department</label>
-                                <p className="mt-1 font-semibold text-slate-900">Sales & Marketing</p>
+                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">Sales & Marketing</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Designation</label>
-                                <p className="mt-1 font-semibold text-slate-900">Regional Manager</p>
+                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">Regional Manager</p>
                             </div>
                         </div>
                         <div className="space-y-6">
@@ -679,33 +680,33 @@ const DashboardHome = () => {
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                                     <Mail size={14} /> Email
                                 </label>
-                                <p className="mt-1 font-semibold text-slate-900">jane.cooper@company.com</p>
+                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">jane.cooper@company.com</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                                     <Phone size={14} /> Phone
                                 </label>
-                                <p className="mt-1 font-semibold text-slate-900">+1 (555) 123-4567</p>
+                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">+1 (555) 123-4567</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                                     <MapPin size={14} /> Location
                                 </label>
-                                <p className="mt-1 font-semibold text-slate-900">New York, USA</p>
+                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">New York, USA</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
                                     <Building size={14} /> Office
                                 </label>
-                                <p className="mt-1 font-semibold text-slate-900">Headquarters - Floor 12</p>
+                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">Headquarters - Floor 12</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Related Actions */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-6 border border-blue-100">
-                    <h4 className="font-bold text-slate-900 mb-4">Quick Actions</h4>
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/40 dark:to-purple-900/40 rounded-3xl p-6 border border-blue-100 dark:border-blue-900">
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-4">Quick Actions</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <button
                             className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
@@ -847,9 +848,9 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Pending Approvals</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Pending Approvals</h3>
                         <div className="flex items-center gap-2">
                             <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">4 Pending</span>
                             <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
@@ -857,16 +858,16 @@ const DashboardHome = () => {
                     </div>
                     <div className="space-y-4">
                         {approvals.map((approval, i) => (
-                            <div key={i} className="border border-slate-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                            <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:shadow-md transition-shadow">
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-start gap-4">
                                         <div className={`p-2 rounded-xl ${approval.type === 'leave' ? 'bg-blue-50 text-blue-600' : approval.type === 'expense' ? 'bg-green-50 text-green-600' : 'bg-purple-50 text-purple-600'}`}>
                                             {approval.type === 'leave' ? <Calendar size={18} /> : approval.type === 'expense' ? <DollarSign size={18} /> : <Clock size={18} />}
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-slate-900">{approval.title}</h4>
-                                            <p className="text-sm text-slate-600 mt-1">{approval.employee}</p>
-                                            <p className="text-xs text-slate-500 mt-1">{approval.date}</p>
+                                            <h4 className="font-semibold text-slate-900 dark:text-white">{approval.title}</h4>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{approval.employee}</p>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{approval.date}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -914,7 +915,7 @@ const DashboardHome = () => {
                     {attendanceStats.map((stat, i) => (
                         <div
                             key={i}
-                            className="bg-white rounded-2xl p-6 border border-slate-200/60 hover:shadow-md transition-all cursor-pointer group"
+                            className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700 hover:shadow-md transition-all cursor-pointer group"
                             onClick={() => setActiveTab(stat.relatedTab)}
                         >
                             <div className="flex items-center justify-between mb-4">
@@ -923,16 +924,16 @@ const DashboardHome = () => {
                                 </div>
                                 <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900">{stat.value}</h3>
-                            <p className="text-sm text-slate-500">{stat.label}</p>
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
                             <p className="text-xs text-blue-600 mt-2 font-medium">View Details →</p>
                         </div>
                     ))}
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Attendance Records</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Attendance Records</h3>
                         <div className="flex items-center gap-3">
                             <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Export Report</button>
                             <button
@@ -946,7 +947,7 @@ const DashboardHome = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-slate-200">
+                                <tr className="border-b border-slate-200 dark:border-slate-700">
                                     <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
                                     <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Check In</th>
                                     <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Check Out</th>
@@ -957,11 +958,11 @@ const DashboardHome = () => {
                             </thead>
                             <tbody>
                                 {attendanceData.map((record, i) => (
-                                    <tr key={i} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
-                                        <td className="py-3 px-4 text-sm font-medium text-slate-900">{record.date}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-600">{record.checkIn}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-600">{record.checkOut}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-600">{record.hours}</td>
+                                    <tr key={i} className="border-b border-slate-100 dark:border-slate-700 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                        <td className="py-3 px-4 text-sm font-medium text-slate-900 dark:text-white">{record.date}</td>
+                                        <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{record.checkIn}</td>
+                                        <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{record.checkOut}</td>
+                                        <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{record.hours}</td>
                                         <td className="py-3 px-4">
                                             <span className={`px-2 py-1 rounded-full text-xs font-bold ${record.status === 'present' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                                 {record.status === 'present' ? 'Present' : 'Absent'}
@@ -985,29 +986,29 @@ const DashboardHome = () => {
                 </div>
 
                 {/* Related Actions */}
-                <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-3xl p-6 border border-blue-100">
-                    <h4 className="font-bold text-slate-900 mb-4">Quick Actions</h4>
+                <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/40 dark:to-green-900/40 rounded-3xl p-6 border border-blue-100 dark:border-blue-900">
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-4">Quick Actions</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <button
-                            className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
+                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200 dark:border-slate-700"
                             onClick={() => setActiveTab('Leave')}
                         >
                             Request Leave
                         </button>
                         <button
-                            className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
+                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200 dark:border-slate-700"
                             onClick={() => setActiveTab('Activities')}
                         >
                             View Activities
                         </button>
                         <button
-                            className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
+                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200 dark:border-slate-700"
                             onClick={() => setActiveTab('Profile')}
                         >
                             Update Profile
                         </button>
                         <button
-                            className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
+                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200 dark:border-slate-700"
                             onClick={() => setActiveTab('Approvals')}
                         >
                             Check Approvals
@@ -1016,22 +1017,22 @@ const DashboardHome = () => {
                 </div>
 
                 {/* Attendance Summary */}
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Monthly Summary</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Monthly Summary</h3>
                         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View Details</button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="text-center p-6 bg-green-50 rounded-xl border border-green-100">
-                            <div className="text-3xl font-bold text-green-600 mb-2">22</div>
+                        <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-900/30">
+                            <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">22</div>
                             <p className="text-sm font-medium text-green-700">Days Present</p>
                         </div>
-                        <div className="text-center p-6 bg-amber-50 rounded-xl border border-amber-100">
-                            <div className="text-3xl font-bold text-amber-600 mb-2">2</div>
+                        <div className="text-center p-6 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-900/30">
+                            <div className="text-3xl font-bold text-amber-600 dark:text-amber-400 mb-2">2</div>
                             <p className="text-sm font-medium text-amber-700">Days Absent</p>
                         </div>
-                        <div className="text-center p-6 bg-blue-50 rounded-xl border border-blue-100">
-                            <div className="text-3xl font-bold text-blue-600 mb-2">176.5</div>
+                        <div className="text-center p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">176.5</div>
                             <p className="text-sm font-medium text-blue-700">Total Hours</p>
                         </div>
                     </div>
@@ -1056,16 +1057,16 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Leave Balance</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Leave Balance</h3>
                         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Request Leave</button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {leaveBalance.map((leave, i) => (
-                            <div key={i} className="border border-slate-200 rounded-xl p-4">
+                            <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-xl p-4">
                                 <div className="flex items-center justify-between mb-3">
-                                    <h4 className="font-semibold text-slate-900">{leave.type}</h4>
+                                    <h4 className="font-semibold text-slate-900 dark:text-white">{leave.type}</h4>
                                     <div className={`w-2 h-2 rounded-full ${leave.color === 'blue' ? 'bg-blue-600' : leave.color === 'green' ? 'bg-green-600' : leave.color === 'purple' ? 'bg-purple-600' : 'bg-amber-600'}`}></div>
                                 </div>
                                 <div className="space-y-2">
@@ -1081,7 +1082,7 @@ const DashboardHome = () => {
                                         <span className="text-slate-700">Remaining:</span>
                                         <span className="text-green-600">{leave.remaining} days</span>
                                     </div>
-                                    <div className="w-full bg-slate-200 rounded-full h-2 mt-3">
+                                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
                                         <div
                                             className={`h-2 rounded-full ${leave.color === 'blue' ? 'bg-blue-600' : leave.color === 'green' ? 'bg-green-600' : leave.color === 'purple' ? 'bg-purple-600' : 'bg-amber-600'}`}
                                             style={{ width: `${(leave.remaining / leave.total) * 100}%` }}
@@ -1093,23 +1094,23 @@ const DashboardHome = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Leave History</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Leave History</h3>
                         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
                     </div>
                     <div className="space-y-4">
                         {leaveRequests.map((request, i) => (
-                            <div key={i} className="border border-slate-200 rounded-xl p-6">
+                            <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-xl p-6">
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-start gap-4">
                                         <div className={`p-2 rounded-xl ${request.type === 'Annual' ? 'bg-blue-50 text-blue-600' : request.type === 'Sick' ? 'bg-green-50 text-green-600' : 'bg-purple-50 text-purple-600'}`}>
                                             <Calendar size={18} />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-slate-900">{request.type} Leave</h4>
-                                            <p className="text-sm text-slate-600 mt-1">{request.reason}</p>
-                                            <p className="text-xs text-slate-500 mt-1">{request.startDate} - {request.endDate} ({request.days} days)</p>
+                                            <h4 className="font-semibold text-slate-900 dark:text-white">{request.type} Leave</h4>
+                                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{request.reason}</p>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{request.startDate} - {request.endDate} ({request.days} days)</p>
                                         </div>
                                     </div>
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${request.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>
@@ -1133,8 +1134,8 @@ const DashboardHome = () => {
                         <div className="flex items-center gap-2 mb-1">
                             <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Personal Space</span>
                         </div>
-                        <h1 className="text-3xl font-black text-slate-900 tracking-tight">My Dashboard</h1>
-                        <p className="text-slate-500 text-sm font-medium mt-1">Welcome back, Jane! Here's your personalized workspace.</p>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">My Dashboard</h1>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">Welcome back, Jane! Here's your personalized workspace.</p>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -1143,11 +1144,11 @@ const DashboardHome = () => {
                             <input
                                 type="text"
                                 placeholder="Search anything..."
-                                className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/20 outline-none w-64 transition-all"
+                                className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/20 outline-none w-64 transition-all text-slate-900 dark:text-white placeholder-slate-400"
                             />
                         </div>
-                        <button className="p-2.5 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all">
-                            <Bell size={18} className="text-slate-600" />
+                        <button className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                            <Bell size={18} className="text-slate-600 dark:text-slate-300" />
                         </button>
                     </div>
                 </div>
@@ -1160,7 +1161,7 @@ const DashboardHome = () => {
                             onClick={() => setActiveTab(tab)}
                             className={`px-6 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === tab
                                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
-                                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'
                                 }`}
                         >
                             {tab}
@@ -1175,12 +1176,12 @@ const DashboardHome = () => {
             {/* Profile Editing Modal */}
             {showProfileModal && (
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[3rem] w-full max-w-5xl max-h-[95vh] overflow-y-auto shadow-2xl border border-white/20">
+                    <div className="bg-white dark:bg-slate-800 rounded-[3rem] w-full max-w-5xl max-h-[95vh] overflow-y-auto shadow-2xl border border-white/20 dark:border-slate-700">
                         <div className="p-10">
                             <div className="flex items-center justify-between mb-10">
                                 <div>
-                                    <h3 className="text-3xl font-black text-slate-900 tracking-tight">Edit Profile</h3>
-                                    <p className="text-sm font-medium text-slate-500 mt-1">Update your personal information and preferences.</p>
+                                    <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Edit Profile</h3>
+                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Update your personal information and preferences.</p>
                                 </div>
                                 <button
                                     onClick={() => setShowProfileModal(false)}
@@ -1210,8 +1211,8 @@ const DashboardHome = () => {
                                     {/* Profile Photo */}
                                     <div className="absolute -bottom-16 left-10">
                                         <div className="relative">
-                                            <div className="w-32 h-32 bg-white rounded-2xl p-1 shadow-xl">
-                                                <div className="w-full h-full bg-slate-200 rounded-xl overflow-hidden">
+                                            <div className="w-32 h-32 bg-white dark:bg-slate-800 rounded-2xl p-1 shadow-xl">
+                                                <div className="w-full h-full bg-slate-200 dark:bg-slate-700 rounded-xl overflow-hidden">
                                                     {profileData.profileImage ? (
                                                         <img src={profileData.profileImage} alt="Profile" className="w-full h-full object-cover" />
                                                     ) : (
@@ -1232,13 +1233,13 @@ const DashboardHome = () => {
                                 </div>
 
                                 <div className="ml-44 space-y-2">
-                                    <h4 className="text-xl font-bold text-slate-900">{profileData.fullName}</h4>
-                                    <p className="text-slate-500">{profileData.designation} • {profileData.department}</p>
+                                    <h4 className="text-xl font-bold text-slate-900 dark:text-white">{profileData.fullName}</h4>
+                                    <p className="text-slate-500 dark:text-slate-400">{profileData.designation} • {profileData.department}</p>
                                 </div>
 
                                 {/* Personal Information */}
                                 <div className="space-y-8">
-                                    <h4 className="text-lg font-bold text-slate-900">Personal Information</h4>
+                                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Personal Information</h4>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
@@ -1247,7 +1248,7 @@ const DashboardHome = () => {
                                                 type="text"
                                                 value={profileData.fullName}
                                                 onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             />
                                         </div>
 
@@ -1257,7 +1258,7 @@ const DashboardHome = () => {
                                                 type="date"
                                                 value={profileData.dateOfBirth}
                                                 onChange={(e) => setProfileData({ ...profileData, dateOfBirth: e.target.value })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             />
                                         </div>
 
@@ -1267,7 +1268,7 @@ const DashboardHome = () => {
                                                 type="email"
                                                 value={profileData.email}
                                                 onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             />
                                         </div>
 
@@ -1277,7 +1278,7 @@ const DashboardHome = () => {
                                                 type="tel"
                                                 value={profileData.phone}
                                                 onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             />
                                         </div>
 
@@ -1287,7 +1288,7 @@ const DashboardHome = () => {
                                                 type="text"
                                                 value={profileData.location}
                                                 onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             />
                                         </div>
 
@@ -1297,7 +1298,7 @@ const DashboardHome = () => {
                                                 type="text"
                                                 value={profileData.office}
                                                 onChange={(e) => setProfileData({ ...profileData, office: e.target.value })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             />
                                         </div>
                                     </div>
@@ -1309,14 +1310,14 @@ const DashboardHome = () => {
                                             onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                                             placeholder="Tell us about yourself..."
                                             rows={3}
-                                            className="w-full p-5 bg-slate-50 border-none rounded-3xl focus:ring-2 focus:ring-blue-500 font-medium text-slate-700 resize-none"
+                                            className="w-full p-5 bg-slate-50 dark:bg-slate-900 border-none rounded-3xl focus:ring-2 focus:ring-blue-500 font-medium text-slate-700 dark:text-slate-200 resize-none"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Preferences */}
                                 <div className="space-y-8">
-                                    <h4 className="text-lg font-bold text-slate-900">Preferences</h4>
+                                    <h4 className="text-lg font-bold text-slate-900 dark:text-white">Preferences</h4>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
@@ -1324,7 +1325,7 @@ const DashboardHome = () => {
                                             <select
                                                 value={profileData.preferences.theme}
                                                 onChange={(e) => setProfileData({ ...profileData, preferences: { ...profileData.preferences, theme: e.target.value } })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             >
                                                 <option value="light">Light</option>
                                                 <option value="dark">Dark</option>
@@ -1337,7 +1338,7 @@ const DashboardHome = () => {
                                             <select
                                                 value={profileData.preferences.language}
                                                 onChange={(e) => setProfileData({ ...profileData, preferences: { ...profileData.preferences, language: e.target.value } })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             >
                                                 <option value="English">English</option>
                                                 <option value="Spanish">Spanish</option>
@@ -1351,7 +1352,7 @@ const DashboardHome = () => {
                                             <select
                                                 value={profileData.preferences.timezone}
                                                 onChange={(e) => setProfileData({ ...profileData, preferences: { ...profileData.preferences, timezone: e.target.value } })}
-                                                className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700"
+                                                className="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-slate-200"
                                             >
                                                 <option value="EST">Eastern Time (EST)</option>
                                                 <option value="PST">Pacific Time (PST)</option>
@@ -1368,19 +1369,19 @@ const DashboardHome = () => {
                                                     onChange={(e) => setProfileData({ ...profileData, preferences: { ...profileData.preferences, notifications: e.target.checked } })}
                                                     className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                                                 />
-                                                <span className="text-sm font-bold text-slate-700">Email Notifications</span>
+                                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Email Notifications</span>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Important Information */}
-                                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+                                <div className="bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 rounded-2xl p-6">
                                     <div className="flex items-start gap-4">
                                         <AlertCircle size={20} className="text-blue-600 mt-0.5" />
-                                        <div>
-                                            <p className="text-sm font-bold text-blue-900 mb-2">Profile Guidelines</p>
-                                            <ul className="text-xs text-blue-700 space-y-1">
+                                        <div className="text-blue-900 dark:text-blue-100">
+                                            <p className="text-sm font-bold mb-2">Profile Guidelines</p>
+                                            <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
                                                 <li>• Keep your profile information up-to-date for better collaboration</li>
                                                 <li>• Professional photos help colleagues recognize you</li>
                                                 <li>• Bio should be concise and professional</li>
@@ -1395,7 +1396,7 @@ const DashboardHome = () => {
                                     <button
                                         type="button"
                                         onClick={() => setShowProfileModal(false)}
-                                        className="flex-1 px-8 py-4 text-slate-500 rounded-2xl hover:bg-slate-50 font-bold transition-all order-2 sm:order-1"
+                                        className="flex-1 px-8 py-4 text-slate-500 dark:text-slate-400 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 font-bold transition-all order-2 sm:order-1"
                                     >
                                         Cancel
                                     </button>
@@ -1431,15 +1432,15 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Time Logs</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Time Logs</h3>
                         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Export Logs</button>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-slate-200">
+                                <tr className="border-b border-slate-200 dark:border-slate-700">
                                     <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
                                     <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Check In</th>
                                     <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Check Out</th>
@@ -1450,12 +1451,12 @@ const DashboardHome = () => {
                             </thead>
                             <tbody>
                                 {timeLogs.map((log, i) => (
-                                    <tr key={i} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                                        <td className="py-4 px-4 text-sm font-semibold text-slate-900">{log.date}</td>
-                                        <td className="py-4 px-4 text-sm text-slate-600">{log.checkIn}</td>
-                                        <td className="py-4 px-4 text-sm text-slate-600">{log.checkOut}</td>
-                                        <td className="py-4 px-4 text-sm font-bold text-blue-600">{log.totalHours}</td>
-                                        <td className="py-4 px-4 text-sm text-slate-600">{log.project}</td>
+                                    <tr key={i} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                        <td className="py-4 px-4 text-sm font-semibold text-slate-900 dark:text-white">{log.date}</td>
+                                        <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">{log.checkIn}</td>
+                                        <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">{log.checkOut}</td>
+                                        <td className="py-4 px-4 text-sm font-bold text-blue-600 dark:text-blue-400">{log.totalHours}</td>
+                                        <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">{log.project}</td>
                                         <td className="py-4 px-4">
                                             <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full">
                                                 {log.status}
@@ -1480,22 +1481,22 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Feedback History</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Feedback History</h3>
                         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Request Feedback</button>
                     </div>
                     <div className="space-y-6">
                         {feedbackItems.map((feedback, i) => (
-                            <div key={i} className="border border-slate-200 rounded-2xl p-6 hover:border-blue-200 transition-all">
+                            <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:border-blue-200 transition-all">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold">
                                             {feedback.from.split(' ').map(n => n[0]).join('')}
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-slate-900">{feedback.from}</h4>
-                                            <p className="text-sm text-slate-500">{feedback.role}</p>
+                                            <h4 className="font-bold text-slate-900 dark:text-white">{feedback.from}</h4>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">{feedback.role}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
@@ -1507,8 +1508,8 @@ const DashboardHome = () => {
                                         <p className="text-xs text-slate-400">{feedback.date}</p>
                                     </div>
                                 </div>
-                                <div className="bg-slate-50 rounded-xl p-4 mb-3">
-                                    <p className="text-sm text-slate-700">{feedback.comment}</p>
+                                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 mb-3">
+                                    <p className="text-sm text-slate-700 dark:text-slate-300">{feedback.comment}</p>
                                 </div>
                                 <span className="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">
                                     {feedback.type}
@@ -1531,29 +1532,29 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">My Cases</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">My Cases</h3>
                         <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-colors">
                             Create New Case
                         </button>
                     </div>
                     <div className="space-y-4">
                         {cases.map((caseItem, i) => (
-                            <div key={i} className="border border-slate-200 rounded-2xl p-6 hover:border-blue-200 transition-all cursor-pointer group">
+                            <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:border-blue-200 transition-all cursor-pointer group">
                                 <div className="flex items-start justify-between mb-3">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <h4 className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{caseItem.title}</h4>
+                                            <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">{caseItem.title}</h4>
                                             <span className={`px-3 py-1 text-xs font-bold rounded-full ${caseItem.status === 'Approved' ? 'bg-green-50 text-green-700' :
-                                                    caseItem.status === 'In Progress' ? 'bg-blue-50 text-blue-700' :
-                                                        'bg-amber-50 text-amber-700'
+                                                caseItem.status === 'In Progress' ? 'bg-blue-50 text-blue-700' :
+                                                    'bg-amber-50 text-amber-700'
                                                 }`}>
                                                 {caseItem.status}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-slate-500 mb-3">Case ID: {caseItem.id}</p>
-                                        <div className="flex items-center gap-6 text-xs text-slate-600">
+                                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Case ID: {caseItem.id}</p>
+                                        <div className="flex items-center gap-6 text-xs text-slate-600 dark:text-slate-400">
                                             <span className="flex items-center gap-1">
                                                 <Calendar size={14} />
                                                 {caseItem.date}
@@ -1563,8 +1564,8 @@ const DashboardHome = () => {
                                                 {caseItem.assignedTo}
                                             </span>
                                             <span className={`px-2 py-1 rounded font-bold ${caseItem.priority === 'High' ? 'bg-red-50 text-red-700' :
-                                                    caseItem.priority === 'Medium' ? 'bg-amber-50 text-amber-700' :
-                                                        'bg-slate-50 text-slate-700'
+                                                caseItem.priority === 'Medium' ? 'bg-amber-50 text-amber-700' :
+                                                    'bg-slate-50 text-slate-700'
                                                 }`}>
                                                 {caseItem.priority} Priority
                                             </span>
@@ -1583,88 +1584,88 @@ const DashboardHome = () => {
     function RelatedDataContent() {
         return (
             <div className="space-y-6">
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Related Data & Documents</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Related Data & Documents</h3>
                         <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Performance Metrics */}
-                        <div className="border border-slate-200 rounded-2xl p-6 hover:border-blue-200 transition-all">
+                        <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:border-blue-200 transition-all">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
                                     <PieChart size={24} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-900">Performance Metrics</h4>
-                                    <p className="text-sm text-slate-500">Q2 2024 Summary</p>
+                                    <h4 className="font-bold text-slate-900 dark:text-white">Performance Metrics</h4>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Q2 2024 Summary</p>
                                 </div>
                             </div>
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-600">Sales Target Achievement</span>
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">Sales Target Achievement</span>
                                     <span className="text-sm font-bold text-green-600">115%</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-600">Customer Satisfaction</span>
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">Customer Satisfaction</span>
                                     <span className="text-sm font-bold text-green-600">4.8/5.0</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-600">Team Collaboration</span>
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">Team Collaboration</span>
                                     <span className="text-sm font-bold text-blue-600">Excellent</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Training Records */}
-                        <div className="border border-slate-200 rounded-2xl p-6 hover:border-blue-200 transition-all">
+                        <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:border-blue-200 transition-all">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
                                     <Award size={24} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-900">Training & Certifications</h4>
-                                    <p className="text-sm text-slate-500">Completed Courses</p>
+                                    <h4 className="font-bold text-slate-900 dark:text-white">Training & Certifications</h4>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Completed Courses</p>
                                 </div>
                             </div>
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm text-slate-600">Leadership Excellence</span>
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">Leadership Excellence</span>
                                     <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full font-bold">Certified</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm text-slate-600">Sales Mastery</span>
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">Sales Mastery</span>
                                     <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full font-bold">Certified</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm text-slate-600">Advanced Analytics</span>
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">Advanced Analytics</span>
                                     <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-bold">In Progress</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Documents */}
-                        <div className="border border-slate-200 rounded-2xl p-6 hover:border-blue-200 transition-all">
+                        <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:border-blue-200 transition-all">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
                                     <FileText size={24} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-900">Important Documents</h4>
-                                    <p className="text-sm text-slate-500">Recent uploads</p>
+                                    <h4 className="font-bold text-slate-900 dark:text-white">Important Documents</h4>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Recent uploads</p>
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <div className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 cursor-pointer">
+                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 cursor-pointer">
                                     <FileText size={16} />
                                     <span>Employment Contract.pdf</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 cursor-pointer">
+                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 cursor-pointer">
                                     <FileText size={16} />
                                     <span>Tax Documents 2024.pdf</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 cursor-pointer">
+                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 cursor-pointer">
                                     <FileText size={16} />
                                     <span>Benefits Enrollment.pdf</span>
                                 </div>
@@ -1672,27 +1673,27 @@ const DashboardHome = () => {
                         </div>
 
                         {/* Payroll Summary */}
-                        <div className="border border-slate-200 rounded-2xl p-6 hover:border-blue-200 transition-all">
+                        <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:border-blue-200 transition-all">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="p-3 bg-green-50 text-green-600 rounded-xl">
                                     <DollarSign size={24} />
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-900">Payroll Summary</h4>
-                                    <p className="text-sm text-slate-500">May 2024</p>
+                                    <h4 className="font-bold text-slate-900 dark:text-white">Payroll Summary</h4>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">May 2024</p>
                                 </div>
                             </div>
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-600">Gross Salary</span>
-                                    <span className="text-sm font-bold text-slate-900">$8,500</span>
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">Gross Salary</span>
+                                    <span className="text-sm font-bold text-slate-900 dark:text-white">$8,500</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-slate-600">Deductions</span>
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">Deductions</span>
                                     <span className="text-sm font-bold text-red-600">-$1,200</span>
                                 </div>
-                                <div className="flex justify-between items-center pt-2 border-t border-slate-200">
-                                    <span className="text-sm font-bold text-slate-900">Net Pay</span>
+                                <div className="flex justify-between items-center pt-2 border-t border-slate-200 dark:border-slate-700">
+                                    <span className="text-sm font-bold text-slate-900 dark:text-white">Net Pay</span>
                                     <span className="text-lg font-bold text-green-600">$7,300</span>
                                 </div>
                             </div>

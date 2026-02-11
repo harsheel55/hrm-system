@@ -23,6 +23,10 @@ import {
   Umbrella,
   Calendar
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const HRMDashboard = () => {
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(() => {
@@ -129,25 +133,24 @@ const HRMDashboard = () => {
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-[#f5f6f8]">
+    <div className="h-screen flex flex-col bg-[#f5f6f8] dark:bg-slate-950 transition-colors">
       {/* Top Navigation Bar */}
-      <header className="bg-[#2c3e50] h-[60px] flex items-center justify-between px-6 text-white">
+      <header className="bg-[#2c3e50] dark:bg-slate-900 h-[60px] flex items-center justify-between px-6 text-white transition-colors">
         <div className="flex items-center gap-8">
           {/* Company Logo */}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-500 rounded"></div>
             <span className="font-bold text-lg">YLKER</span>
           </div>
-          
+
           {/* Navigation Tabs */}
           <nav className="flex gap-6">
             {['My Space', 'Team', 'Organization'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveNav(tab)}
-                className={`px-3 py-2 text-sm font-medium transition-colors ${
-                  activeNav === tab ? 'text-blue-400 border-b-2 border-blue-400' : 'hover:text-gray-300'
-                }`}
+                className={`px-3 py-2 text-sm font-medium transition-colors ${activeNav === tab ? 'text-blue-400 border-b-2 border-blue-400' : 'hover:text-gray-300 dark:hover:text-slate-200'
+                  }`}
               >
                 {tab}
               </button>
@@ -169,13 +172,12 @@ const HRMDashboard = () => {
       </header>
 
       {/* Secondary Navigation Bar */}
-      <div className="bg-white h-[45px] border-b border-gray-200 flex items-center px-6">
+      <div className="bg-white dark:bg-slate-800 h-[45px] border-b border-gray-200 dark:border-slate-700 flex items-center px-6 transition-colors">
         {['Overview', 'Dashboard', 'Calendar'].map((tab) => (
           <button
             key={tab}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              tab === 'Dashboard' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'
-            }`}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${tab === 'Dashboard' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white'
+              }`}
           >
             {tab}
           </button>
@@ -184,17 +186,16 @@ const HRMDashboard = () => {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
-        <aside className="w-[50px] bg-[#1e3a5f] flex flex-col items-center py-4">
+        <aside className="w-[50px] bg-[#1e3a5f] dark:bg-slate-900 flex flex-col items-center py-4 transition-colors">
           {/* Main Navigation */}
           <div className="flex-1 flex flex-col gap-4">
             {sidebarItems.map((item, index) => (
               <button
                 key={index}
-                className={`p-2 rounded-lg transition-all ${
-                  item.active 
-                    ? 'bg-blue-600 text-white' 
+                className={`p-2 rounded-lg transition-all ${item.active
+                    ? 'bg-blue-600 text-white'
                     : 'text-slate-200/80 hover:text-white hover:bg-white/10'
-                }`}
+                  }`}
                 title={item.label}
               >
                 <item.icon className="w-5 h-5" />
@@ -217,7 +218,7 @@ const HRMDashboard = () => {
         </aside>
 
         {/* Employee Profile Card */}
-        <div className="w-72 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+        <div className="w-72 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 p-4 overflow-y-auto transition-colors">
           <div
             className="rounded-t-2xl h-32 relative overflow-hidden"
             style={{
@@ -231,10 +232,10 @@ const HRMDashboard = () => {
           >
             <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
               <div className="w-24 h-24 bg-white rounded-full p-1 shadow-lg">
-                <div className="w-full h-full bg-gray-300 rounded-full overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60" 
-                    alt="Profile" 
+                <div className="w-full h-full bg-gray-300 dark:bg-slate-600 rounded-full overflow-hidden">
+                  <img
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
+                    alt="Profile"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -243,54 +244,49 @@ const HRMDashboard = () => {
           </div>
 
           <div className="mt-16 text-center">
-            <p className="text-xs text-gray-500 font-medium">ID: ZY198</p>
-            <h3 className="font-bold text-gray-900 text-lg">Christine Spalding</h3>
-            <p className="text-sm text-gray-600">HR Manager</p>
-            <div
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium mt-2 ${
-                isTracking ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-700'
-              }`}
+            <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">ID: ZY198</p>
+            <h3 className="font-bold text-gray-900 dark:text-white text-lg">Christine Spalding</h3>
+            <p className="text-sm text-gray-600 dark:text-slate-300">HR Manager</p>
+            <Badge
+              className={`mt-2 ${isTracking ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                }`}
             >
               {isTracking ? (
-                <CheckCircle className="w-3 h-3 mr-1" />
+                <><CheckCircle className="w-3 h-3 mr-1" />Remote In</>
               ) : (
-                <AlertCircle className="w-3 h-3 mr-1" />
+                <><AlertCircle className="w-3 h-3 mr-1" />Checked Out</>
               )}
-              {isTracking ? 'Remote In' : 'Checked Out'}
-            </div>
+            </Badge>
           </div>
 
           {/* Time Tracker */}
-          <div className="mt-6 bg-gray-50 rounded-xl p-4">
+          <div className="mt-6 bg-gray-50 dark:bg-slate-700/50 rounded-xl p-4 transition-colors">
             <div className="text-center">
-              <div className="text-2xl font-mono text-gray-900 mb-2">{formatElapsed(elapsedSeconds)}</div>
-              <button
+              <div className="text-2xl font-mono text-gray-900 dark:text-white mb-2">{formatElapsed(elapsedSeconds)}</div>
+              <Button
                 onClick={() => setIsTracking((prev) => !prev)}
-                className={`px-4 py-2 border rounded-lg transition-colors text-sm font-medium ${
-                  isTracking
-                    ? 'border-[#ef4444] text-[#ef4444] hover:bg-red-50'
-                    : 'border-[#14b8a6] text-[#14b8a6] hover:bg-teal-50'
-                }`}
+                variant={isTracking ? "destructive" : "default"}
+                className={isTracking ? 'border-red-600' : 'border-teal-600'}
               >
                 {isTracking ? 'Check-out' : 'Check-in'}
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Reporting Structure */}
           <div className="mt-6">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Reporting To</h4>
-            <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">Reporting To</h4>
+            <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3 flex items-center gap-3 transition-colors">
               <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60" 
-                  alt="Manager" 
+                <img
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
+                  alt="Manager"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="flex-1">
-                <p className="text-xs text-gray-500">ID: ZY190</p>
-                <p className="text-sm font-medium text-gray-900">Jones Terri</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400">ID: ZY190</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Jones Terri</p>
                 <p className="text-xs text-red-600 flex items-center gap-1">
                   <AlertCircle className="w-3 h-3" />
                   Yet to check-in
@@ -302,7 +298,7 @@ const HRMDashboard = () => {
           {/* Reportees */}
           <div className="mt-6">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-gray-700">Reportees</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300">Reportees</h4>
             </div>
             <div className="space-y-2">
               {[
@@ -312,18 +308,17 @@ const HRMDashboard = () => {
               ].map((reportee, index) => (
                 <div key={index} className="flex items-center justify-between text-sm">
                   <div>
-                    <span className="text-gray-500">{reportee.id} -</span>
-                    <span className="text-gray-900 ml-1">{reportee.name}</span>
+                    <span className="text-gray-500 dark:text-slate-400">{reportee.id} -</span>
+                    <span className="text-gray-900 dark:text-white ml-1">{reportee.name}</span>
                   </div>
-                  <span className={`text-xs ${
-                    reportee.statusColor === 'green' ? 'text-green-600' :
-                    reportee.statusColor === 'gray' ? 'text-gray-600' : 'text-red-600'
-                  }`}>
+                  <span className={`text-xs ${reportee.statusColor === 'green' ? 'text-green-600 dark:text-green-400' :
+                      reportee.statusColor === 'gray' ? 'text-gray-600 dark:text-slate-400' : 'text-red-600 dark:text-red-400'
+                    }`}>
                     {reportee.status}
                   </span>
                 </div>
               ))}
-              <button className="text-teal-600 text-sm font-medium hover:text-teal-700">
+              <button className="text-teal-600 dark:text-teal-400 text-sm font-medium hover:text-teal-700 dark:hover:text-teal-300">
                 +5 More
               </button>
             </div>
@@ -331,109 +326,102 @@ const HRMDashboard = () => {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-1 bg-[#f5f6f8] overflow-y-auto">
+        <main className="flex-1 bg-[#f5f6f8] dark:bg-slate-950 overflow-y-auto transition-colors">
           {/* Tab Navigation */}
-          <div className="bg-white border-b border-gray-200 px-6 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex gap-6 overflow-x-auto">
+          <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 transition-colors">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="w-full justify-start border-0 bg-white dark:bg-slate-800 rounded-none h-12">
                 {tabs.map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
-                      activeTab === tab 
-                        ? 'text-blue-600 border-b-2 border-blue-600' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
+                  <TabsTrigger key={tab} value={tab} className="text-sm data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 dark:data-[state=active]:border-blue-400 text-slate-600 dark:text-slate-400">
                     {tab}
-                  </button>
+                  </TabsTrigger>
                 ))}
-              </div>
+              </TabsList>
+            </Tabs>
+            <div className="flex justify-end -mt-10 pb-4">
               <Filter className="w-5 h-5 text-gray-400 cursor-pointer hover:text-gray-600" />
             </div>
           </div>
 
           <div className="p-6 space-y-6">
             {/* Welcome Banner */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <Card className="p-6 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold">YLKER</span>
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">Good Evening Christine Spalding</h2>
-                    <p className="text-gray-600">Have a productive day!</p>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Good Evening Christine Spalding</h2>
+                    <p className="text-gray-600 dark:text-slate-400">Have a productive day!</p>
                   </div>
                 </div>
-                <Moon className="w-8 h-8 text-gray-400" />
+                <Moon className="w-8 h-8 text-gray-400 dark:text-slate-500" />
               </div>
-              <blockquote className="mt-4 pl-4 border-l-4 border-gray-300 italic text-gray-600">
+              <blockquote className="mt-4 pl-4 border-l-4 border-gray-300 dark:border-slate-600 italic text-gray-600 dark:text-slate-400">
                 "Don't let what you cannot do interfere with what you can do." - Margaret Thatcher
               </blockquote>
-            </div>
+            </Card>
 
             {/* Activity Feed Cards */}
             <div className="space-y-4">
               {activities.map((activity) => (
-                <div key={activity.id} className="bg-white rounded-xl p-4 shadow-sm">
+                <Card key={activity.id} className="p-4 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
                   <div className="flex items-center gap-4">
                     {activity.avatar ? (
-                      <div className="w-12 h-12 bg-gray-300 rounded-full overflow-hidden">
+                      <div className="w-12 h-12 bg-gray-300 dark:bg-slate-700 rounded-full overflow-hidden">
                         <img src={activity.avatar} alt={activity.title} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
                         <Clock className="w-6 h-6 text-red-500" />
                       </div>
                     )}
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{activity.title}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-medium text-gray-900 dark:text-white">{activity.title}</p>
+                      <p className="text-sm text-gray-600 dark:text-slate-400">
                         {activity.description.includes('Timesheet') ? (
                           <>has made a request for <span className="font-semibold">Timesheet</span></>
                         ) : (
                           activity.description
                         )}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">
                         {activity.type === 'timesheet' ? 'Raised on' : 'Total Hours'}
                       </p>
-                      <p className="text-sm font-medium text-gray-700">{activity.time}</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-slate-300">{activity.time}</p>
                     </div>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
 
             {/* Work Schedule Card */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <Card className="p-6 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-teal-600" />
+                <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Work Schedule</h3>
-                  <p className="text-sm text-gray-600">26-May-2024 → 01-Jun-2024</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Work Schedule</h3>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">26-May-2024 → 01-Jun-2024</p>
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4 mb-4 border-l-4 border-teal-500">
-                <p className="font-medium text-gray-900">Full day shift</p>
-                <p className="text-sm text-gray-600">9:00 AM - 6:00 PM</p>
+              <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-4 mb-4 border-l-4 border-teal-500 transition-colors">
+                <p className="font-medium text-gray-900 dark:text-white">Full day shift</p>
+                <p className="text-sm text-gray-600 dark:text-slate-400">9:00 AM - 6:00 PM</p>
               </div>
 
               {/* Weekly Calendar View */}
               <div className="grid grid-cols-7 gap-2">
                 {weekDays.map((day, index) => (
                   <div key={index} className="text-center">
-                    <p className="text-xs text-gray-500 mb-1">{day.day}</p>
-                    <div className={`relative rounded-lg p-2 ${
-                      day.type === 'active' ? 'bg-blue-500 text-white' :
-                      day.type === 'weekend' ? 'bg-orange-100 text-orange-600' :
-                      'bg-gray-100 text-gray-700'
-                    }`}>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mb-1">{day.day}</p>
+                    <div className={`relative rounded-lg p-2 ${day.type === 'active' ? 'bg-blue-500 text-white' :
+                        day.type === 'weekend' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' :
+                          'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300'
+                      }`}>
                       <p className="text-sm font-medium">{day.date}</p>
                       {day.status && (
                         <p className="text-xs mt-1">{day.status}</p>
@@ -445,38 +433,37 @@ const HRMDashboard = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
 
             {/* Upcoming Holidays Card */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
+            <Card className="p-6 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                    <Umbrella className="w-5 h-5 text-teal-600" />
+                  <div className="w-10 h-10 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center">
+                    <Umbrella className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                   </div>
-                  <h3 className="font-semibold text-gray-900">Upcoming Holidays</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Upcoming Holidays</h3>
                 </div>
-                <button className="text-teal-600 text-sm font-medium hover:text-teal-700">
+                <Button variant="ghost" size="sm" className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300">
                   View all
-                </button>
+                </Button>
               </div>
 
               <div className="flex gap-4 overflow-x-auto">
                 {holidays.map((holiday, index) => (
-                  <div key={index} className={`flex-shrink-0 rounded-lg p-4 border ${
-                    holiday.type === 'restricted' 
-                      ? 'bg-amber-50 border-amber-200' 
-                      : 'bg-white border-gray-200'
-                  }`}>
-                    <h4 className="font-medium text-gray-900 text-sm">{holiday.name}</h4>
-                    <p className="text-xs text-gray-600 mt-1">{holiday.date}</p>
+                  <div key={index} className={`flex-shrink-0 rounded-lg p-4 border ${holiday.type === 'restricted'
+                      ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                      : 'bg-white dark:bg-slate-700/50 border-gray-200 dark:border-slate-600'
+                    }`}>
+                    <h4 className="font-medium text-gray-900 dark:text-white text-sm">{holiday.name}</h4>
+                    <p className="text-xs text-gray-600 dark:text-slate-400 mt-1">{holiday.date}</p>
                     {holiday.type === 'restricted' && (
                       <p className="text-xs text-amber-600 mt-1">Restricted holiday</p>
                     )}
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
           </div>
         </main>
 
@@ -492,14 +479,14 @@ const HRMDashboard = () => {
       </div>
 
       {/* Bottom Bar */}
-      <footer className="bg-white border-t border-gray-200 h-12 flex items-center justify-between px-6">
+      <footer className="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 h-12 flex items-center justify-between px-6 transition-colors">
         <div className="flex items-center gap-4">
           <div className="flex gap-2">
             <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
             <div className="w-6 h-6 bg-green-500 rounded-full"></div>
             <div className="w-6 h-6 bg-purple-500 rounded-full"></div>
           </div>
-          <span className="text-sm text-gray-600">Here is your Smart Chat (Ctrl+Space)</span>
+          <span className="text-sm text-gray-600 dark:text-slate-400">Here is your Smart Chat (Ctrl+Space)</span>
         </div>
         <div className="flex items-center gap-4">
           {/* Metric indicators */}
