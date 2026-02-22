@@ -1,0 +1,78 @@
+# .NET / C# / Visual Studio
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.userprefs
+*.suo
+*.sln.docstates
+.DS_Store
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+.nuget/packages/
+.nuget/NuGet.Config
+.nuget/NuGet.exe
+.nuget/NuGet.targets
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+.ideaSettings.json
+
+# Local environment files
+.env
+.env.local
+appsettings.Development.json
+appsettings.Local.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific
+wwwroot/uploads/
+*.sqlite
+*.db
+*.mdf
+*.ldf
+
+# Dependencies
+node_modules/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.log
+*.tmp
+dist/
+build/
