@@ -1,19 +1,39 @@
 import { useState, useMemo } from 'react';
 import {
-    Calendar,
+    Calendar as CalendarIcon,
     CheckCircle,
     Clock,
     Plus,
     History,
     PieChart,
     ArrowUpRight,
-    X,
     Send,
     HeartPulse
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
 
 const Leave = () => {
     const [showLeaveModal, setShowLeaveModal] = useState(false);
+    const [startDate, setStartDate] = useState<Date>();
+    const [endDate, setEndDate] = useState<Date>();
     const [formData, setFormData] = useState({
         leaveType: 'Annual Leave',
         startDate: '',
@@ -58,13 +78,13 @@ const Leave = () => {
                         <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Leave Management</h1>
                         <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Track, plan, and apply for your time off.</p>
                     </div>
-                    <button
+                    <Button
                         onClick={() => setShowLeaveModal(true)}
-                        className="group flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 font-bold text-sm active:scale-95"
+                        className="bg-slate-900 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 transition-all shadow-xl font-bold text-sm rounded-2xl px-8 py-6"
                     >
-                        <Plus size={18} className="group-hover:rotate-90 transition-transform" />
+                        <Plus size={18} className="mr-2" />
                         Apply for Leave
-                    </button>
+                    </Button>
                 </div>
 
                 {/* --- Balance Grid --- */}
@@ -113,7 +133,7 @@ const Leave = () => {
                                     <div className="p-2 bg-slate-900 text-white rounded-xl"><History size={20} /></div>
                                     Recent Requests
                                 </h3>
-                                <button className="text-sm font-bold text-blue-600 hover:underline">Full History</button>
+                                <Button variant="link" className="text-sm font-bold text-blue-600 hover:underline h-fit p-0">Full History</Button>
                             </div>
 
                             <div className="space-y-4">
@@ -135,8 +155,8 @@ const Leave = () => {
                                         </div>
 
                                         <div className={`mt-4 sm:mt-0 flex items-center gap-2 px-4 py-2 rounded-2xl font-bold text-xs border ${request.status === 'pending'
-                                                ? 'bg-amber-50 text-amber-700 border-amber-100'
-                                                : 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                                            ? 'bg-amber-50 text-amber-700 border-amber-100'
+                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100'
                                             }`}>
                                             {request.status === 'pending' ? <Clock size={14} /> : <CheckCircle size={14} />}
                                             {request.status.toUpperCase()}
@@ -156,9 +176,9 @@ const Leave = () => {
                                 <p className="text-indigo-100 text-xs leading-relaxed mb-6">
                                     You've used 12% of your annual quota. We recommend planning your Q3 break soon to avoid burn-out!
                                 </p>
-                                <button className="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-bold transition-all border border-white/10">
+                                <Button className="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-2xl border border-white/10">
                                     Planning Tool
-                                </button>
+                                </Button>
                             </div>
                             <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
                         </div>
@@ -188,124 +208,150 @@ const Leave = () => {
                 </div>
             </div>
 
-            {/* --- Application Modal --- */}
-            {showLeaveModal && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
-                    <div className="bg-white dark:bg-slate-800 rounded-[3rem] w-full max-w-2xl max-h-[95vh] overflow-y-auto shadow-2xl border border-white/20 dark:border-slate-700">
-                        <div className="p-10">
-                            <div className="flex items-center justify-between mb-10">
-                                <div>
-                                    <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Time Off Request</h3>
-                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Fill in the details for your supervisor to review.</p>
-                                </div>
-                                <button
-                                    onClick={() => setShowLeaveModal(false)}
-                                    className="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-2xl transition-all text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                                >
-                                    <X size={24} />
-                                </button>
+            {/* --- Application Dialog --- */}
+            <Dialog open={showLeaveModal} onOpenChange={setShowLeaveModal}>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold">Time Off Request</DialogTitle>
+                        <DialogDescription>
+                            Fill in the details for your supervisor to review.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form className="space-y-6">
+                        {/* Type Selector */}
+                        <div className="space-y-3">
+                            <Label className="text-xs font-bold uppercase tracking-wider">
+                                Leave Category
+                            </Label>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                {['Annual Leave', 'Sick Leave', 'Personal', 'Paternity'].map((type) => (
+                                    <Button
+                                        key={type}
+                                        type="button"
+                                        variant={formData.leaveType === type ? "default" : "outline"}
+                                        onClick={() => setFormData({ ...formData, leaveType: type })}
+                                        className={`text-xs ${formData.leaveType === type ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                                    >
+                                        {type}
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Start Date</Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full justify-start text-left font-normal"
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={startDate}
+                                            onSelect={(date) => {
+                                                setStartDate(date);
+                                                if (date) {
+                                                    setFormData({ ...formData, startDate: format(date, 'yyyy-MM-dd') });
+                                                }
+                                            }}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
                             </div>
 
-                            <form className="space-y-8">
-                                {/* Type Selector Chips */}
-                                <div>
-                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
-                                        Leave Category
-                                    </label>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                        {['Annual Leave', 'Sick Leave', 'Personal', 'Paternity'].map((type) => (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, leaveType: type })}
-                                                className={`py-3 px-2 rounded-2xl text-[11px] font-bold transition-all border ${formData.leaveType === type
-                                                        ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100 dark:shadow-blue-900/20'
-                                                        : 'bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-300 border-slate-100 dark:border-slate-600 hover:border-blue-200 dark:hover:border-blue-500'
-                                                    }`}
-                                            >
-                                                {type}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="relative">
-                                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block">Start Date</label>
-                                        <div className="relative">
-                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                            <input
-                                                type="date"
-                                                value={formData.startDate}
-                                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-700 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-white"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="relative">
-                                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block">End Date</label>
-                                        <div className="relative">
-                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                            <input
-                                                type="date"
-                                                value={formData.endDate}
-                                                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                                                className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-700 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 dark:text-white"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Dynamic Day Display */}
-                                {calculatedDays > 0 && (
-                                    <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800 animate-in slide-in-from-top-2">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
-                                                <span className="font-black text-lg">{calculatedDays}</span>
-                                            </div>
-                                            <p className="text-sm font-bold text-blue-900 dark:text-blue-200">Total days being requested</p>
-                                        </div>
-                                        <span className="text-[10px] font-black uppercase text-blue-400 tracking-widest">Estimated</span>
-                                    </div>
-                                )}
-
-                                <div>
-                                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block">Reason / Description</label>
-                                    <textarea
-                                        value={formData.reason}
-                                        onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                                        placeholder="Tell us a little about your time off plans..."
-                                        rows={3}
-                                        className="w-full p-5 bg-slate-50 dark:bg-slate-700 border-none rounded-3xl focus:ring-2 focus:ring-blue-500 font-medium text-slate-700 dark:text-white resize-none"
-                                    />
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowLeaveModal(false)}
-                                        className="flex-1 px-8 py-4 text-slate-500 dark:text-slate-400 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 font-bold transition-all order-2 sm:order-1"
-                                    >
-                                        Dismiss
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setShowLeaveModal(false);
-                                        }}
-                                        className="flex-[2] px-8 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 font-bold transition-all shadow-xl shadow-blue-100 dark:shadow-blue-900/20 flex items-center justify-center gap-3 order-1 sm:order-2"
-                                    >
-                                        Confirm & Submit
-                                        <Send size={18} />
-                                    </button>
-                                </div>
-                            </form>
+                            <div className="space-y-2">
+                                <Label>End Date</Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full justify-start text-left font-normal"
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={endDate}
+                                            onSelect={(date) => {
+                                                setEndDate(date);
+                                                if (date) {
+                                                    setFormData({ ...formData, endDate: format(date, 'yyyy-MM-dd') });
+                                                }
+                                            }}
+                                            disabled={(date) => startDate ? date < startDate : false}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            )}
+
+                        {/* Dynamic Day Display */}
+                        {calculatedDays > 0 && (
+                            <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                                <AlertDescription className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                                            <span className="font-bold text-lg">{calculatedDays}</span>
+                                        </div>
+                                        <p className="text-sm font-semibold text-blue-900 dark:text-blue-200">
+                                            Total days being requested
+                                        </p>
+                                    </div>
+                                    <Badge variant="outline" className="text-xs">Estimated</Badge>
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
+                        <div className="space-y-2">
+                            <Label htmlFor="reason">Reason / Description</Label>
+                            <Textarea
+                                id="reason"
+                                value={formData.reason}
+                                onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                                placeholder="Tell us a little about your time off plans..."
+                                rows={4}
+                            />
+                        </div>
+                    </form>
+
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowLeaveModal(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                console.log('Leave request:', formData);
+                                setShowLeaveModal(false);
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700"
+                        >
+                            Confirm & Submit
+                            <Send size={16} className="ml-2" />
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

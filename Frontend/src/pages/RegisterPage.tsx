@@ -29,8 +29,8 @@ const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
 
 export default function RegisterPage() {
   return (
-    <div className="flex items-center justify-center min-h-dvh">
-      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14">
+    <div className="flex items-center justify-center min-h-dvh bg-background text-foreground transition-colors duration-300">
+      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14 bg-card text-card-foreground border-border shadow-sm transition-colors duration-300">
         <CardContent className="">
           <div className="flex flex-col items-center space-y-8">
             <Logo />
@@ -51,21 +51,21 @@ export default function RegisterPage() {
               <Input
                 type="text"
                 placeholder="Full Name"
-                className="w-full rounded-xl"
+                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
               />
               <Input
                 type="email"
                 placeholder="Work Email"
-                className="w-full rounded-xl"
+                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
               />
               <Input
                 type="password"
                 placeholder="Password"
-                className="w-full rounded-xl"
+                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
               />
               
               <div className="flex items-start gap-2 text-sm">
-                <input type="checkbox" className="rounded mt-0.5" required />
+                <input type="checkbox" className="rounded mt-0.5 border-border bg-background" required />
                 <span className="text-muted-foreground">
                   I agree to the{" "}
                   <a href="#" className="text-foreground hover:underline">

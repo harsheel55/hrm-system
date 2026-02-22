@@ -1,7 +1,7 @@
 import {
     Clock,
     CheckCircle,
-    Calendar,
+    Calendar as CalendarIcon,
     AlertCircle,
     ArrowUpRight,
     ArrowDownLeft,
@@ -12,6 +12,12 @@ import {
     MapPin,
     Coffee
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Calendar } from '@/components/ui/calendar';
 
 const Attendance = () => {
     const attendanceData = [
@@ -41,161 +47,178 @@ const Attendance = () => {
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="relative hidden sm:block">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                            <input
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
+                            <Input
                                 type="text"
                                 placeholder="Search logs..."
-                                className="pl-10 pr-4 py-2 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-700 dark:text-slate-200 backdrop-blur-sm"
+                                className="pl-10 w-64"
                             />
                         </div>
-                        <button className="flex items-center px-4 py-2 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-white/10 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold shadow-sm transition-all backdrop-blur-sm">
+                        <Button variant="outline" className="rounded-xl">
                             <Filter size={16} className="mr-2" />
                             Filters
-                        </button>
-                        <button className="flex items-center px-4 py-2 bg-slate-900 dark:bg-blue-600 text-white rounded-xl hover:bg-slate-800 dark:hover:bg-blue-700 transition-all shadow-lg shadow-slate-200 dark:shadow-blue-900/20 text-sm font-bold">
+                        </Button>
+                        <Button className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 rounded-xl shadow-lg">
                             <Download size={16} className="mr-2" />
                             Export
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
                 {/* --- Stats Grid --- */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {attendanceStats.map((stat, i) => (
-                        <div key={i} className="bg-white dark:bg-slate-900/60 rounded-3xl p-6 border border-slate-100 dark:border-white/10 shadow-sm hover:shadow-md transition-all cursor-pointer group backdrop-blur-sm">
+                        <Card key={i} className="p-6 hover:shadow-md transition-all cursor-pointer group">
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color}`}>
                                     <stat.icon size={22} />
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase bg-slate-50 px-2 py-1 rounded-md">Real-time</span>
+                                <Badge className="text-[10px] h-fit bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Real-time</Badge>
                             </div>
                             <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-1">{stat.value}</h3>
                             <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-3">{stat.label}</p>
-                            <div className="pt-3 border-t border-slate-50 dark:border-white/5">
+                            <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
                                 <p className="text-[11px] font-medium text-slate-400 flex items-center gap-1">
-                                    <span className="text-blue-600 font-bold">{stat.trend}</span>
+                                    <span className="text-blue-600 dark:text-blue-400 font-bold">{stat.trend}</span>
                                 </p>
                             </div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                     {/* --- Attendance Table (Main Column) --- */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-white dark:bg-slate-900/60 rounded-[2rem] shadow-sm border border-slate-200/60 dark:border-white/10 overflow-hidden backdrop-blur-sm">
-                            <div className="p-6 border-b border-slate-50 dark:border-white/5 flex items-center justify-between">
-                                <h3 className="font-bold text-slate-900 dark:text-white">Recent Activities</h3>
-                                <div className="flex gap-2">
-                                    <button className="p-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-slate-400"><MoreVertical size={20} /></button>
-                                </div>
-                            </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-50 dark:border-white/5">
-                                            <th className="px-6 py-4 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Date & Type</th>
-                                            <th className="px-6 py-4 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-center">Check-In</th>
-                                            <th className="px-6 py-4 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-center">Check-Out</th>
-                                            <th className="px-6 py-4 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Duration</th>
-                                            <th className="px-6 py-4 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-50 dark:divide-white/5">
-                                        {attendanceData.map((record, i) => (
-                                            <tr key={i} className="hover:bg-slate-50/80 dark:hover:bg-blue-900/20 transition-colors group">
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${record.type === 'Office' ? 'bg-indigo-50 text-indigo-600' : 'bg-orange-50 text-orange-600'}`}>
-                                                            {record.type === 'Office' ? <MapPin size={18} /> : <Coffee size={18} />}
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-bold text-slate-900 dark:text-white">{record.date}</p>
-                                                            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{record.type}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-col items-center">
-                                                        <div className="flex items-center text-sm font-bold text-slate-700">
-                                                            <ArrowDownLeft size={14} className="mr-1 text-green-500" />
-                                                            {record.checkIn}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-col items-center">
-                                                        <div className="flex items-center text-sm font-bold text-slate-700">
-                                                            <ArrowUpRight size={14} className="mr-1 text-blue-500" />
-                                                            {record.checkOut}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className="text-sm font-mono font-bold text-slate-600 dark:text-slate-400">{record.hours}</span>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold ${record.status === 'Present'
-                                                        ? 'bg-green-50 text-green-700 ring-1 ring-green-100'
-                                                        : 'bg-amber-50 text-amber-700 ring-1 ring-amber-100'
-                                                        }`}>
-                                                        <span className={`w-1.5 h-1.5 rounded-full mr-2 ${record.status === 'Present' ? 'bg-green-500' : 'bg-amber-500'}`}></span>
-                                                        {record.status}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="p-4 bg-slate-50/50 dark:bg-slate-900/50 text-center border-t border-slate-50 dark:border-white/5">
-                                <button className="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">Load More History</button>
-                            </div>
+                    <Card className="lg:col-span-2 overflow-hidden">
+                        <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <h3 className="font-bold text-slate-900 dark:text-white">Recent Activities</h3>
+                            <Button variant="ghost" size="sm">
+                                <MoreVertical size={20} />
+                            </Button>
                         </div>
-                    </div>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase">Date & Type</TableHead>
+                                    <TableHead className="text-center text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase">Check-In</TableHead>
+                                    <TableHead className="text-center text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase">Check-Out</TableHead>
+                                    <TableHead className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase">Duration</TableHead>
+                                    <TableHead className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase">Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {attendanceData.map((record, i) => (
+                                    <TableRow key={i} className="group">
+                                        <TableCell>
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${record.type === 'Office' ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'}`}>
+                                                    {record.type === 'Office' ? <MapPin size={18} /> : <Coffee size={18} />}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-slate-900 dark:text-white">{record.date}</p>
+                                                    <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{record.type}</p>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                            <div className="flex items-center justify-center text-sm font-bold text-slate-700 dark:text-slate-300">
+                                                <ArrowDownLeft size={14} className="mr-1 text-green-500 dark:text-green-400" />
+                                                {record.checkIn}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                            <div className="flex items-center justify-center text-sm font-bold text-slate-700 dark:text-slate-300">
+                                                <ArrowUpRight size={14} className="mr-1 text-blue-500 dark:text-blue-400" />
+                                                {record.checkOut}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span className="text-sm font-mono font-bold text-slate-600 dark:text-slate-400">{record.hours}</span>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant={record.status === 'Present' ? 'secondary' : 'outline'} className={`text-[11px] font-bold h-fit ${record.status === 'Present' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300'}`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${record.status === 'Present' ? 'bg-green-500' : 'bg-amber-500'}`}></span>
+                                                {record.status}
+                                            </Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        <div className="p-4 bg-slate-50 dark:bg-slate-900/40 text-center border-t border-slate-200 dark:border-slate-700">
+                            <Button variant="ghost" className="text-xs font-bold text-blue-600 dark:text-blue-400 h-fit">Load More History</Button>
+                        </div>
+                    </Card>
 
                     {/* --- Sidebar Widgets --- */}
                     <div className="space-y-6">
+                        {/* Calendar Widget */}
+                        <Card className="p-6">
+                            <h4 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <CalendarIcon size={18} className="text-blue-600" />
+                                Attendance Calendar
+                            </h4>
+                            <Calendar
+                                mode="single"
+                                className="rounded-md border"
+                            />
+                            <div className="mt-4 space-y-2">
+                                <div className="flex items-center justify-between text-xs">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                        <span className="text-slate-600 dark:text-slate-400">Present</span>
+                                    </div>
+                                    <span className="text-slate-500 dark:text-slate-400">22 days</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                                        <span className="text-slate-600 dark:text-slate-400">Leave</span>
+                                    </div>
+                                    <span className="text-slate-500 dark:text-slate-400">2 days</span>
+                                </div>
+                            </div>
+                        </Card>
+
                         {/* Quick Action Wheel */}
-                        <div className="bg-slate-900 dark:bg-slate-900/40 rounded-[2rem] p-8 text-white relative overflow-hidden group backdrop-blur-md border border-transparent dark:border-white/10">
+                        <Card className="bg-slate-900 dark:bg-slate-900/40 text-white p-8 relative overflow-hidden border-0">
                             <div className="relative z-10">
                                 <h4 className="text-lg font-bold mb-2">Need a Break?</h4>
                                 <p className="text-slate-400 text-xs mb-6 leading-relaxed">Submit your leave requests or out-of-office logs quickly.</p>
-                                <button className="w-full py-3 bg-white text-slate-900 rounded-2xl font-bold text-sm hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
-                                    <Calendar size={18} />
+                                <Button className="w-full bg-white text-slate-900 hover:bg-blue-50 rounded-2xl font-bold text-sm">
+                                    <CalendarIcon size={18} className="mr-2" />
                                     Request Time Off
-                                </button>
-                                <button className="w-full mt-3 py-3 bg-slate-800 dark:bg-slate-800/50 text-white rounded-2xl font-bold text-sm hover:bg-slate-700 dark:hover:bg-slate-700/50 transition-all border border-slate-700 dark:border-white/10">
+                                </Button>
+                                <Button variant="outline" className="w-full mt-3 bg-slate-800 dark:bg-slate-800/50 text-white hover:bg-slate-700 dark:hover:bg-slate-700/50 border-slate-700 dark:border-white/10 rounded-2xl font-bold text-sm">
                                     Regularize Logs
-                                </button>
+                                </Button>
                             </div>
                             {/* Decorative background circle */}
-                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl group-hover:bg-blue-600/40 transition-all"></div>
-                        </div>
+                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl hover:bg-blue-600/40 transition-all"></div>
+                        </Card>
 
                         {/* Summary Scoreboard */}
-                        <div className="bg-white dark:bg-slate-900/60 rounded-[2rem] shadow-sm border border-slate-200/60 dark:border-white/10 p-6 backdrop-blur-sm">
+                        <Card className="p-6">
                             <h4 className="font-bold text-slate-900 dark:text-white mb-6 flex items-center justify-between">
                                 Monthly Summary
-                                <span className="text-[10px] text-slate-400 bg-slate-50 dark:bg-slate-800/40 px-2 py-1 rounded-md italic">Updated 1h ago</span>
+                                <Badge className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 italic h-fit">Updated 1h ago</Badge>
                             </h4>
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-transparent dark:border-white/5">
+                                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-2 h-8 bg-green-500 rounded-full"></div>
+                                        <div className="w-2 h-8 bg-green-500 dark:bg-green-400 rounded-full"></div>
                                         <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Days Present</p>
                                     </div>
-                                    <span className="text-lg font-mono font-bold dark:text-white">22</span>
+                                    <span className="text-lg font-mono font-bold text-slate-900 dark:text-white">22</span>
                                 </div>
-                                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-transparent dark:border-white/5">
+                                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700">
                                     <div className="flex items-center gap-3">
                                         <div className="w-2 h-8 bg-amber-400 rounded-full"></div>
                                         <p className="text-sm font-bold text-slate-700 dark:text-slate-200">Leave / Sick</p>
                                     </div>
-                                    <span className="text-lg font-mono font-bold dark:text-white">02</span>
+                                    <span className="text-lg font-mono font-bold text-slate-900 dark:text-white">02</span>
                                 </div>
-                                <div className="flex items-center justify-between p-4 bg-blue-600 rounded-2xl text-white">
+                                <div className="flex items-center justify-between p-4 bg-blue-600 dark:bg-blue-600/80 rounded-2xl text-white">
                                     <div className="flex items-center gap-3">
                                         <div className="w-2 h-8 bg-white/30 rounded-full"></div>
                                         <p className="text-sm font-bold">Total Work Hours</p>
@@ -203,8 +226,8 @@ const Attendance = () => {
                                     <span className="text-lg font-mono font-bold">176.5</span>
                                 </div>
                             </div>
-                            <p className="text-[10px] text-center text-slate-400 mt-6 font-medium">You have met 98% of your monthly hour quota.</p>
-                        </div>
+                            <p className="text-[10px] text-center text-slate-400 dark:text-slate-500 mt-6 font-medium">You have met 98% of your monthly hour quota.</p>
+                        </Card>
                     </div>
                 </div>
             </div>

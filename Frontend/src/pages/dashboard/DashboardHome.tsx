@@ -31,6 +31,12 @@ import {
     Target,
     PieChart
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const DashboardHome = () => {
     const [activeTab, setActiveTab] = useState('Activities');
@@ -88,7 +94,7 @@ const DashboardHome = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 pb-12 overflow-x-hidden">
+        <div className="min-h-screen bg-background text-foreground pb-12 overflow-x-hidden transition-colors">
             {/* --- Banner Section --- */}
             <div className="h-60 w-full bg-[#0f172a] relative overflow-hidden">
                 {/* Modern Mesh Gradient Effect */}
@@ -107,62 +113,62 @@ const DashboardHome = () => {
                     <div className="w-full lg:w-80 flex flex-col gap-6">
 
                         {/* Profile Card */}
-                        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/60 dark:shadow-none border border-slate-100 dark:border-slate-700 overflow-hidden">
+                        <Card className="rounded-3xl overflow-hidden bg-card text-card-foreground border-border">
                             <div className="p-6 flex flex-col items-center text-center">
                                 <div className="relative mb-4 group cursor-pointer">
                                     <div className="w-28 h-28 rounded-full p-1.5 bg-gradient-to-tr from-blue-500 to-indigo-500 shadow-lg">
                                         <img
                                             src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                                             alt="Profile"
-                                            className="w-full h-full rounded-full object-cover border-4 border-white"
+                                            className="w-full h-full rounded-full object-cover border-4 border-white dark:border-slate-800"
                                         />
                                     </div>
-                                    <div className="absolute bottom-1 right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-white"></div>
+                                    <div className="absolute bottom-1 right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-white dark:border-slate-800"></div>
                                 </div>
 
-                                <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Jane Cooper</h2>
-                                <p className="text-sm font-medium text-slate-500 mb-4 flex items-center gap-1">
-                                    <MapPin size={14} className="text-slate-400" /> Regional Manager
+                                <h2 className="text-xl font-bold text-foreground tracking-tight">Jane Cooper</h2>
+                                <p className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-1">
+                                    <MapPin size={14} className="text-muted-foreground" /> Regional Manager
                                 </p>
 
-                                <div className="flex items-center gap-2 bg-green-50 text-green-700 py-1 px-3 rounded-full text-[11px] font-bold uppercase tracking-wider mb-6 ring-1 ring-green-100">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse"></span>
+                                <Badge className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 mb-6 h-fit">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse mr-2 inline-block"></span>
                                     Remote In
-                                </div>
+                                </Badge>
 
-                                <div className="grid grid-cols-2 w-full gap-4 mb-6 pt-6 border-t border-slate-50">
+                                <div className="grid grid-cols-2 w-full gap-4 mb-6 pt-6 border-t border-border">
                                     <div className="text-left">
-                                        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Hrs Worked</p>
-                                        <p className="text-lg font-mono font-bold text-slate-800">06:46:13</p>
+                                        <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Hrs Worked</p>
+                                        <p className="text-lg font-mono font-bold text-foreground">06:46:13</p>
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Break Time</p>
-                                        <p className="text-lg font-mono font-bold text-slate-800">00:45:00</p>
+                                        <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Break Time</p>
+                                        <p className="text-lg font-mono font-bold text-foreground">00:45:00</p>
                                     </div>
                                 </div>
 
-                                <button className="w-full py-3 px-4 bg-slate-900 text-white font-semibold rounded-2xl hover:bg-slate-800 active:scale-[0.98] transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-2">
-                                    <LogOut size={18} />
+                                <Button className="w-full bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 rounded-2xl shadow-lg">
+                                    <LogOut size={18} className="mr-2" />
                                     Check-out
-                                </button>
+                                </Button>
                             </div>
-                        </div>
+                        </Card>
 
                         {/* Organization Section */}
-                        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
+                        <div className="bg-card text-card-foreground rounded-3xl shadow-sm border border-border p-6">
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-4 flex items-center gap-2">
+                                        <h4 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.1em] mb-4 flex items-center gap-2">
                                         <UserCheck size={14} /> Reporting To
                                     </h4>
-                                    <div className="flex items-center gap-3 p-2 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer border border-transparent hover:border-slate-100">
+                                        <div className="flex items-center gap-3 p-2 rounded-2xl hover:bg-muted transition-colors cursor-pointer border border-transparent hover:border-border">
                                         <img
                                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=100&h=100&q=80"
                                             alt="Manager"
                                             className="w-10 h-10 rounded-full object-cover shadow-sm"
                                         />
                                         <div>
-                                            <p className="text-sm font-bold text-slate-900 dark:text-white">Tom Cook</p>
+                                            <p className="text-sm font-bold text-foreground">Tom Cook</p>
                                             <p className="text-[11px] text-red-500 font-semibold italic">Yet to check-in</p>
                                         </div>
                                     </div>
@@ -170,7 +176,7 @@ const DashboardHome = () => {
 
                                 <div>
                                     <div className="flex justify-between items-center mb-4">
-                                        <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] flex items-center gap-2">
+                                        <h4 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.1em] flex items-center gap-2">
                                             <Users size={14} /> Reportees
                                         </h4>
                                         <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-bold">04</span>
@@ -188,7 +194,7 @@ const DashboardHome = () => {
                                                     className="w-9 h-9 rounded-full object-cover mr-3 grayscale-[0.3] group-hover:grayscale-0 transition-all"
                                                 />
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 transition-colors">{person.name}</p>
+                                                    <p className="text-sm font-bold text-foreground group-hover:text-blue-600 transition-colors">{person.name}</p>
                                                     <p className={`text-[10px] font-bold ${person.color === 'green' ? 'text-green-600' : person.color === 'blue' ? 'text-blue-600' : 'text-slate-400'}`}>
                                                         {person.status}
                                                     </p>
@@ -197,9 +203,9 @@ const DashboardHome = () => {
                                             </div>
                                         ))}
                                     </div>
-                                    <button className="w-full mt-5 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors border-t border-slate-50 dark:border-slate-700">
+                                    <Button variant="link" className="w-full mt-5 py-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 border-t border-slate-50 dark:border-slate-700 rounded-none h-fit p-0 pt-2">
                                         View Full Hierarchy
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -209,129 +215,131 @@ const DashboardHome = () => {
                     <div className="flex-1 flex flex-col gap-6">
 
                         {/* Tabs Navigation */}
-                        <div className="bg-white dark:bg-slate-800 sticky top-4 z-20 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 px-4 py-3 flex flex-wrap items-center gap-1 overflow-x-auto no-scrollbar">
+                        <div className="bg-card sticky top-4 z-20 rounded-2xl shadow-sm border border-border px-4 py-3 flex items-center gap-1 overflow-x-auto no-scrollbar">
                             {tabs.map((tab) => (
-                                <button
+                                <Button
                                     key={tab}
+                                    variant="ghost"
                                     onClick={() => setActiveTab(tab)}
-                                    className={`relative px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors ${activeTab === tab
+                                    className={`relative px-4 py-2 h-fit text-sm font-semibold whitespace-nowrap hover:bg-transparent ${
+                                        activeTab === tab
                                         ? 'text-blue-600'
-                                        : 'text-slate-600 hover:text-slate-900'}`}
+                                        : 'text-muted-foreground hover:text-foreground'}`}
                                 >
                                     {tab}
                                     {activeTab === tab && (
                                         <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-blue-600 rounded-t-full"></span>
                                     )}
-                                </button>
+                                </Button>
                             ))}
                         </div>
 
-                        {/* Notifications */}
-                        <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200/60 dark:border-slate-700 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center">
-                                        <span className="text-white font-extrabold text-xs tracking-wide">YLKER</span>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-extrabold text-slate-900 dark:text-white">Good Evening&nbsp;&nbsp;Christine Spalding</h4>
-                                        <p className="text-sm text-slate-600 dark:text-slate-400">Have a productive day!</p>
-                                    </div>
-                                </div>
-                                <Moon size={28} className="text-slate-400" />
-                            </div>
-                            <blockquote className="mt-4 pl-4 border-l-4 border-slate-200 italic text-slate-600 text-sm">
-                                “Don't let what you cannot do interfere with what you can do.” - Margaret Thatcher
-                            </blockquote>
-                        </div>
-
-                        {/* Tab Content */}
-                        {renderTabContent()}
-
-                        {activeTab === 'Activities' && (
-                            <>
-                                {/* Work Schedule */}
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
-                                    <div className="flex items-center justify-between mb-8">
-                                        <div className="flex items-center gap-4">
-                                            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
-                                                <Calendar size={22} />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Weekly Schedule</h3>
-                                                <p className="text-xs font-medium text-slate-400">May 26 - June 01, 2024</p>
-                                            </div>
+                        <div className="space-y-6">
+                            {/* Greeting */}
+                            <div className="bg-card text-card-foreground rounded-3xl p-6 border border-border shadow-sm">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center">
+                                            <span className="text-white font-extrabold text-xs tracking-wide">YLKER</span>
                                         </div>
-                                        <button className="p-2 text-slate-400 hover:bg-slate-50 rounded-full transition-colors">
-                                            <MoreHorizontal />
-                                        </button>
+                                        <div>
+                                            <h4 className="text-lg font-extrabold text-foreground">Good Evening&nbsp;&nbsp;Christine Spalding</h4>
+                                            <p className="text-sm text-muted-foreground">Have a productive day!</p>
+                                        </div>
                                     </div>
+                                    <Moon size={28} className="text-muted-foreground" />
+                                </div>
+                                <blockquote className="mt-4 pl-4 border-l-4 border-border italic text-muted-foreground text-sm">
+                                    “Don't let what you cannot do interfere with what you can do.” - Margaret Thatcher
+                                </blockquote>
+                            </div>
 
-                                    {/* Refined Timeline Visual */}
-                                    <div className="relative flex justify-between">
-                                        {['Sun 26', 'Mon 27', 'Tue 28', 'Wed 29', 'Thu 30', 'Fri 31', 'Sat 01'].map((date, i) => (
-                                            <div key={i} className="flex flex-col items-center flex-1 group">
-                                                <div className="mb-4 text-[10px] font-bold uppercase tracking-tighter text-slate-400 group-hover:text-slate-600 transition-colors">
-                                                    {date.split(' ')[0]}
+                            {/* Tab Content */}
+                            {renderTabContent()}
+
+                            {activeTab === 'Activities' && (
+                                <>
+                                    {/* Work Schedule */}
+                                    <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
+                                        <div className="flex items-center justify-between mb-8">
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-2xl">
+                                                    <Calendar size={22} />
                                                 </div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-foreground">Weekly Schedule</h3>
+                                                    <p className="text-xs font-medium text-muted-foreground">May 26 - June 01, 2024</p>
+                                                </div>
+                                            </div>
+                                            <Button variant="ghost" size="icon" className="p-2 text-muted-foreground hover:bg-muted rounded-full h-fit w-fit">
+                                                <MoreHorizontal />
+                                            </Button>
+                                        </div>
+                                        <div className="relative flex justify-between">
+                                            {['Sun 26', 'Mon 27', 'Tue 28', 'Wed 29', 'Thu 30', 'Fri 31', 'Sat 01'].map((date, i) => (
+                                                <div key={i} className="flex flex-col items-center flex-1 group">
+                                                    <div className="mb-4 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground group-hover:text-foreground transition-colors">
+                                                        {date.split(' ')[0]}
+                                                    </div>
 
-                                                <div className="relative flex flex-col items-center w-full">
-                                                    {/* Vertical Line Background */}
-                                                    <div className="absolute top-0 bottom-0 w-px bg-slate-100 left-1/2 -translate-x-1/2 z-0"></div>
+                                                    <div className="relative flex flex-col items-center w-full">
+                                                        {/* Vertical Line Background */}
+                                                        <div className="absolute top-0 bottom-0 w-px bg-border left-1/2 -translate-x-1/2 z-0"></div>
 
-                                                    {/* Node */}
-                                                    <div className={`w-3.5 h-3.5 rounded-full border-[3px] z-10 transition-all duration-300 ${i === 1
-                                                        ? 'bg-blue-600 border-blue-100 scale-125'
-                                                        : i === 0 || i === 6
-                                                            ? 'bg-slate-200 dark:bg-slate-700 border-white dark:border-slate-800'
-                                                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 group-hover:border-blue-400'
-                                                        }`}></div>
-
-                                                    {/* Time Capsule */}
-                                                    <div className="mt-4 text-center">
-                                                        <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{date.split(' ')[1]}</p>
-                                                        <div className={`mt-2 px-2 py-1 rounded-lg text-[9px] font-bold transition-all ${i === 1
-                                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
+                                                        {/* Node */}
+                                                        <div className={`w-3.5 h-3.5 rounded-full border-[3px] z-10 transition-all duration-300 ${i === 1
+                                                            ? 'bg-blue-600 border-blue-100 dark:border-blue-900 scale-125'
                                                             : i === 0 || i === 6
-                                                                ? 'bg-slate-50 dark:bg-slate-900 text-slate-400'
-                                                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                                                            }`}>
-                                                            {i === 0 || i === 6 ? 'OFF' : '09:00 - 18:00'}
+                                                                ? 'bg-muted border-background'
+                                                                : 'bg-card border-border group-hover:border-blue-400'
+                                                            }`}></div>
+
+                                                        {/* Time Capsule */}
+                                                        <div className="mt-4 text-center">
+                                                            <p className="text-xs font-bold text-foreground">{date.split(' ')[1]}</p>
+                                                            <div className={`mt-2 px-2 py-1 rounded-lg text-[9px] font-bold transition-all ${i === 1
+                                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-100 dark:shadow-blue-900/30'
+                                                                : i === 0 || i === 6
+                                                                    ? 'bg-muted text-muted-foreground'
+                                                                    : 'bg-muted text-muted-foreground'
+                                                                }`}>
+                                                                {i === 0 || i === 6 ? 'OFF' : '09:00 - 18:00'}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Upcoming Holidays */}
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
-                                    <div className="flex items-center gap-4 mb-8">
-                                        <div className="p-3 bg-orange-50 text-orange-600 rounded-2xl">
-                                            <Sun size={22} />
-                                        </div>
-                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Upcoming Holidays</h3>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                        {[
-                                            { title: 'Native American Day', date: '2 Jun, Sunday', color: 'blue' },
-                                            { title: 'Bakrid / Eid al-Adha', date: '17 Jun, Monday', color: 'amber' },
-                                        ].map((holiday, i) => (
-                                            <div key={i} className="p-5 border border-slate-100 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-800/30 rounded-2xl hover:border-blue-200 transition-all cursor-default group">
-                                                <div className={`w-8 h-1 rounded-full mb-3 ${holiday.color === 'blue' ? 'bg-blue-400' : 'bg-amber-400'}`}></div>
-                                                <p className="text-[13px] font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">{holiday.title}</p>
-                                                <p className="text-[11px] font-medium text-slate-500 mt-1">{holiday.date}</p>
-                                            </div>
-                                        ))}
-                                        <div className="flex items-center justify-center p-5 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-2xl text-xs font-bold text-blue-600 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-200 transition-all">
-                                            View Holiday Calendar
+                                            ))}
                                         </div>
                                     </div>
-                                </div>
-                            </>
-                        )}
+
+                                    {/* Upcoming Holidays */}
+                                    <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
+                                        <div className="flex items-center gap-4 mb-8">
+                                            <div className="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl">
+                                                <Sun size={22} />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-foreground">Upcoming Holidays</h3>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                            {[
+                                                { title: 'Native American Day', date: '2 Jun, Sunday', color: 'blue' },
+                                                { title: 'Bakrid / Eid al-Adha', date: '17 Jun, Monday', color: 'amber' },
+                                            ].map((holiday, i) => (
+                                                <div key={i} className="p-5 border border-border bg-muted/30 rounded-2xl hover:border-blue-200 dark:hover:border-blue-800 transition-all cursor-default group">
+                                                    <div className={`w-8 h-1 rounded-full mb-3 ${holiday.color === 'blue' ? 'bg-blue-400' : 'bg-amber-400'}`}></div>
+                                                    <p className="text-[13px] font-bold text-foreground group-hover:text-blue-600 transition-colors">{holiday.title}</p>
+                                                    <p className="text-[11px] font-medium text-muted-foreground mt-1">{holiday.date}</p>
+                                                </div>
+                                            ))}
+                                            <div className="flex items-center justify-center p-5 border-2 border-dashed border-border rounded-2xl text-xs font-bold text-blue-600 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-200 dark:hover:border-blue-800 transition-all">
+                                                View Holiday Calendar
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -368,21 +376,21 @@ const DashboardHome = () => {
             <div className="space-y-6">
                 <div className="space-y-4">
                     {activityFeed.map((item, i) => (
-                        <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700 shadow-sm p-5">
+                        <div key={i} className="bg-card rounded-2xl border border-border shadow-sm p-5">
                             <div className="flex items-center gap-4">
                                 {item.type === 'timesheet' ? (
-                                    <div className="w-11 h-11 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
+                                    <div className="w-11 h-11 rounded-full overflow-hidden bg-muted">
                                         <img src={item.avatar} alt={item.title} className="w-full h-full object-cover" />
                                     </div>
                                 ) : (
-                                    <div className="w-11 h-11 rounded-full bg-red-50 flex items-center justify-center">
+                                    <div className="w-11 h-11 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
                                         <Clock size={20} className="text-red-500" />
                                     </div>
                                 )}
 
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{item.title}</p>
-                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                    <p className="text-sm font-bold text-foreground truncate">{item.title}</p>
+                                    <p className="text-sm text-muted-foreground">
                                         {item.type === 'timesheet' ? (
                                             <>
                                                 has made a request for <span className="font-semibold">Timesheet</span>
@@ -394,8 +402,8 @@ const DashboardHome = () => {
                                 </div>
 
                                 <div className="text-right">
-                                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{item.metaLabel}</p>
-                                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{item.metaValue}</p>
+                                    <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{item.metaLabel}</p>
+                                    <p className="text-sm font-semibold text-foreground">{item.metaValue}</p>
                                 </div>
                             </div>
                         </div>
@@ -461,42 +469,44 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
+                <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Company Feeds</h3>
+                        <h3 className="text-lg font-bold text-foreground">Company Feeds</h3>
                         <div className="flex items-center gap-3">
-                            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Post Update</button>
-                            <button
-                                className="text-sm text-slate-600 hover:text-slate-700 font-medium"
+                            <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">Post Update</Button>
+                            <Button
+                                variant="link"
+                                className="text-sm text-muted-foreground hover:text-foreground font-medium h-fit p-0"
                                 onClick={() => setActiveTab('Activities')}
                             >
                                 View Activity Feed →
-                            </button>
+                            </Button>
                         </div>
                     </div>
                     <div className="space-y-6">
                         {feeds.map((feed, i) => (
-                            <div key={i} className="border-b border-slate-100 dark:border-slate-700 last:border-0 pb-6 last:pb-0">
+                            <div key={i} className="border-b border-border last:border-0 pb-6 last:pb-0">
                                 <div className="flex items-start gap-4">
-                                    <div className={`p-2 rounded-xl ${feed.type === 'announcement' ? 'bg-blue-50 text-blue-600' : feed.type === 'achievement' ? 'bg-green-50 text-green-600' : feed.type === 'reminder' ? 'bg-amber-50 text-amber-600' : feed.type === 'celebration' ? 'bg-purple-50 text-purple-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                                    <div className={`p-2 rounded-xl ${feed.type === 'announcement' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : feed.type === 'achievement' ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400' : feed.type === 'reminder' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' : feed.type === 'celebration' ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'}`}>
                                         <MessageSquare size={18} />
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-semibold text-slate-900 dark:text-white">{feed.title}</h4>
-                                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{feed.desc}</p>
+                                        <h4 className="font-semibold text-foreground">{feed.title}</h4>
+                                        <p className="text-sm text-muted-foreground mt-1">{feed.desc}</p>
                                         <div className="flex items-center gap-4 mt-3">
-                                            <span className="text-xs text-slate-400">{feed.author} • {feed.time}</span>
-                                            <button className="flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600">
+                                            <span className="text-xs text-muted-foreground">{feed.author} • {feed.time}</span>
+                                            <Button variant="ghost" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-blue-600 h-fit px-0 py-0">
                                                 <ThumbsUp size={12} />
                                                 {feed.likes}
-                                            </button>
+                                            </Button>
                                             {feed.relatedTab && (
-                                                <button
-                                                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                                                <Button
+                                                    variant="link"
+                                                    className="text-xs text-blue-600 hover:text-blue-700 font-medium h-fit p-0"
                                                     onClick={() => setActiveTab(feed.relatedTab)}
                                                 >
                                                     {feed.action} →
-                                                </button>
+                                                </Button>
                                             )}
                                         </div>
                                     </div>
@@ -507,53 +517,56 @@ const DashboardHome = () => {
                 </div>
 
                 {/* Connected Activity Summary */}
-                <div className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/50 rounded-3xl p-6 border border-slate-200 dark:border-slate-700">
-                    <h4 className="font-bold text-slate-900 dark:text-white mb-4">Related to Your Activities</h4>
+                <div className="bg-gradient-to-r from-muted to-blue-50 dark:from-muted dark:to-blue-900/30 rounded-3xl p-6 border border-border">
+                    <h4 className="font-bold text-foreground mb-4">Related to Your Activities</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                        <div className="bg-card rounded-xl p-4 border border-border">
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="p-2 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
                                     <CheckCircle size={16} />
                                 </div>
-                                <span className="text-sm font-semibold text-slate-900 dark:text-white">Recent Check-ins</span>
+                                <span className="text-sm font-semibold text-foreground">Recent Check-ins</span>
                             </div>
-                            <p className="text-xs text-slate-600 dark:text-slate-400">5 consecutive days</p>
-                            <button
-                                className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium"
+                            <p className="text-xs text-muted-foreground">5 consecutive days</p>
+                            <Button
+                                variant="link"
+                                className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium h-fit p-0"
                                 onClick={() => setActiveTab('Attendance')}
                             >
                                 View Details →
-                            </button>
+                            </Button>
                         </div>
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                        <div className="bg-card rounded-xl p-4 border border-border">
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
                                     <Calendar size={16} />
                                 </div>
-                                <span className="text-sm font-semibold text-slate-900 dark:text-white">Leave Status</span>
+                                <span className="text-sm font-semibold text-foreground">Leave Status</span>
                             </div>
-                            <p className="text-xs text-slate-600 dark:text-slate-400">1 request pending</p>
-                            <button
-                                className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium"
+                            <p className="text-xs text-muted-foreground">1 request pending</p>
+                            <Button
+                                variant="link"
+                                className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium h-fit p-0"
                                 onClick={() => setActiveTab('Leave')}
                             >
                                 Check Status →
-                            </button>
+                            </Button>
                         </div>
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                        <div className="bg-card rounded-xl p-4 border border-border">
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400">
                                     <Award size={16} />
                                 </div>
-                                <span className="text-sm font-semibold text-slate-900 dark:text-white">Achievements</span>
+                                <span className="text-sm font-semibold text-foreground">Achievements</span>
                             </div>
-                            <p className="text-xs text-slate-600 dark:text-slate-400">2 new this month</p>
-                            <button
-                                className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium"
+                            <p className="text-xs text-muted-foreground">2 new this month</p>
+                            <Button
+                                variant="link"
+                                className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium h-fit p-0"
                                 onClick={() => setActiveTab('Career History')}
                             >
                                 View Career →
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -571,26 +584,26 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
+                <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Career Progression</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Download Resume</button>
+                        <h3 className="text-lg font-bold text-foreground">Career Progression</h3>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">Download Resume</Button>
                     </div>
                     <div className="space-y-6">
                         {careerHistory.map((role, i) => (
-                            <div key={i} className="relative pl-8 pb-6 border-l-2 border-slate-200 dark:border-slate-700 last:border-0">
-                                <div className="absolute left-0 top-0 w-4 h-4 bg-blue-600 rounded-full border-4 border-white dark:border-slate-800 -translate-x-1/2"></div>
-                                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-6">
+                            <div key={i} className="relative pl-8 pb-6 border-l-2 border-border last:border-0">
+                                <div className="absolute left-0 top-0 w-4 h-4 bg-blue-600 rounded-full border-4 border-card -translate-x-1/2"></div>
+                                <div className="bg-muted rounded-xl p-6">
                                     <div className="flex items-start justify-between mb-3">
                                         <div>
-                                            <h4 className="font-bold text-slate-900 dark:text-white">{role.title}</h4>
-                                            <p className="text-sm text-slate-600 dark:text-slate-400">{role.department} • {role.location}</p>
+                                            <h4 className="font-bold text-foreground">{role.title}</h4>
+                                            <p className="text-sm text-muted-foreground">{role.department} • {role.location}</p>
                                         </div>
                                         <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full">{role.period}</span>
                                     </div>
                                     <div className="space-y-2">
                                         {role.achievements.map((achievement, j) => (
-                                            <div key={j} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                            <div key={j} className="flex items-center gap-2 text-sm text-muted-foreground">
                                                 <Award size={14} className="text-amber-500" />
                                                 {achievement}
                                             </div>
@@ -621,216 +634,222 @@ const DashboardHome = () => {
                     {profileStats.map((stat, i) => (
                         <div
                             key={i}
-                            className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200/60 dark:border-slate-700 hover:shadow-md transition-all cursor-pointer group"
+                            className="bg-card rounded-2xl p-6 border border-border hover:shadow-md transition-all cursor-pointer group"
                             onClick={() => setActiveTab(stat.relatedTab)}
                         >
                             <div className="flex items-center justify-between mb-4">
-                                <div className={`p-2 rounded-xl ${stat.color === 'amber' ? 'bg-amber-50 text-amber-600' : stat.color === 'red' ? 'bg-red-50 text-red-600' : stat.color === 'blue' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'}`}>
+                                <div className={`p-2 rounded-xl ${stat.color === 'amber' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' : stat.color === 'red' ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400' : stat.color === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'}`}>
                                     <stat.icon size={20} />
                                 </div>
-                                <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                <ChevronRight size={16} className="text-muted-foreground group-hover:text-blue-600 transition-colors" />
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
+                            <h3 className="text-2xl font-bold text-foreground">{stat.value}</h3>
+                            <p className="text-sm text-muted-foreground">{stat.label}</p>
                             <p className="text-xs text-blue-600 mt-2 font-medium">View Details →</p>
                         </div>
                     ))}
                 </div>
 
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
+                <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Personal Information</h3>
+                        <h3 className="text-lg font-bold text-foreground">Personal Information</h3>
                         <div className="flex items-center gap-3">
-                            <button
+                            <Button
+                                variant="link"
                                 onClick={() => setShowProfileModal(true)}
-                                className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0"
                             >
                                 <Edit3 size={16} />
                                 Edit Profile
-                            </button>
-                            <button
-                                className="text-sm text-slate-600 hover:text-slate-700 font-medium"
+                            </Button>
+                            <Button
+                                variant="link"
+                                className="text-sm text-muted-foreground hover:text-foreground font-medium h-fit p-0"
                                 onClick={() => setActiveTab('Career History')}
                             >
                                 View Career →
-                            </button>
+                            </Button>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-6">
                             <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Full Name</label>
-                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">Jane Cooper</p>
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Full Name</label>
+                                <p className="mt-1 font-semibold text-foreground">Jane Cooper</p>
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Employee ID</label>
-                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">EMP-2024-0156</p>
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Employee ID</label>
+                                <p className="mt-1 font-semibold text-foreground">EMP-2024-0156</p>
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Department</label>
-                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">Sales & Marketing</p>
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Department</label>
+                                <p className="mt-1 font-semibold text-foreground">Sales & Marketing</p>
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Designation</label>
-                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">Regional Manager</p>
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Designation</label>
+                                <p className="mt-1 font-semibold text-foreground">Regional Manager</p>
                             </div>
                         </div>
                         <div className="space-y-6">
                             <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <Mail size={14} /> Email
                                 </label>
-                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">jane.cooper@company.com</p>
+                                <p className="mt-1 font-semibold text-foreground">jane.cooper@company.com</p>
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <Phone size={14} /> Phone
                                 </label>
-                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">+1 (555) 123-4567</p>
+                                <p className="mt-1 font-semibold text-foreground">+1 (555) 123-4567</p>
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <MapPin size={14} /> Location
                                 </label>
-                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">New York, USA</p>
+                                <p className="mt-1 font-semibold text-foreground">New York, USA</p>
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <Building size={14} /> Office
                                 </label>
-                                <p className="mt-1 font-semibold text-slate-900 dark:text-white">Headquarters - Floor 12</p>
+                                <p className="mt-1 font-semibold text-foreground">Headquarters - Floor 12</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Related Actions */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/40 dark:to-purple-900/40 rounded-3xl p-6 border border-blue-100 dark:border-blue-900">
-                    <h4 className="font-bold text-slate-900 dark:text-white mb-4">Quick Actions</h4>
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-3xl p-6 border border-blue-100 dark:border-blue-900">
+                    <h4 className="font-bold text-foreground mb-4">Quick Actions</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <button
-                            className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
+                        <Button
+                            className="bg-card text-foreground px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white border border-border"
                             onClick={() => setActiveTab('Career History')}
                         >
                             Update Profile
-                        </button>
-                        <button
-                            className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
+                        </Button>
+                        <Button
+                            className="bg-card text-foreground px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white border border-border"
                             onClick={() => setActiveTab('Approvals')}
                         >
                             Check Approvals
-                        </button>
-                        <button
-                            className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
+                        </Button>
+                        <Button
+                            className="bg-card text-foreground px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white border border-border"
                             onClick={() => setActiveTab('Leave')}
                         >
                             Request Leave
-                        </button>
-                        <button
-                            className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200"
+                        </Button>
+                        <Button
+                            className="bg-card text-foreground px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white border border-border"
                             onClick={() => setActiveTab('Activities')}
                         >
                             View Activities
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
                 {/* Additional Action Options */}
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Profile Actions</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All Options</button>
+                        <h3 className="text-lg font-bold text-foreground">Profile Actions</h3>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">View All Options</Button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button
-                            className="flex items-center justify-between p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-left"
+                        <Button
+                            variant="ghost"
+                            className="flex items-center justify-between p-4 border border-border rounded-xl hover:bg-muted text-left h-fit"
                             onClick={() => setActiveTab('Leave')}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+                                <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
                                     <Calendar size={18} />
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-slate-900">Request Leave</h4>
-                                    <p className="text-sm text-slate-500">Apply for time off</p>
+                                    <h4 className="font-semibold text-foreground">Request Leave</h4>
+                                    <p className="text-sm text-muted-foreground">Apply for time off</p>
                                 </div>
                             </div>
-                            <ChevronRight size={16} className="text-slate-400" />
-                        </button>
-                        <button
-                            className="flex items-center justify-between p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-left"
+                            <ChevronRight size={16} className="text-muted-foreground" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            className="flex items-center justify-between p-4 border border-border rounded-xl hover:bg-muted text-left h-fit"
                             onClick={() => setActiveTab('Activities')}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-xl bg-green-50 text-green-600">
+                                <div className="p-2 rounded-xl bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
                                     <Target size={18} />
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-slate-900">View Activities</h4>
-                                    <p className="text-sm text-slate-500">Check recent activities</p>
+                                    <h4 className="font-semibold text-foreground">View Activities</h4>
+                                    <p className="text-sm text-muted-foreground">Check recent activities</p>
                                 </div>
                             </div>
-                            <ChevronRight size={16} className="text-slate-400" />
-                        </button>
-                        <button
-                            className="flex items-center justify-between p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-left"
+                            <ChevronRight size={16} className="text-muted-foreground" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            className="flex items-center justify-between p-4 border border-border rounded-xl hover:bg-muted text-left h-fit"
                             onClick={() => setActiveTab('Career History')}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
                                     <Edit3 size={18} />
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-slate-900">Update Profile</h4>
-                                    <p className="text-sm text-slate-500">Edit personal information</p>
+                                    <h4 className="font-semibold text-foreground">Update Profile</h4>
+                                    <p className="text-sm text-muted-foreground">Edit personal information</p>
                                 </div>
                             </div>
-                            <ChevronRight size={16} className="text-slate-400" />
-                        </button>
-                        <button
-                            className="flex items-center justify-between p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-left"
+                            <ChevronRight size={16} className="text-muted-foreground" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            className="flex items-center justify-between p-4 border border-border rounded-xl hover:bg-muted text-left h-fit"
                             onClick={() => setActiveTab('Approvals')}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
+                                <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400">
                                     <FileText size={18} />
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-slate-900">Check Approvals</h4>
-                                    <p className="text-sm text-slate-500">Review pending requests</p>
+                                    <h4 className="font-semibold text-foreground">Check Approvals</h4>
+                                    <p className="text-sm text-muted-foreground">Review pending requests</p>
                                 </div>
                             </div>
-                            <ChevronRight size={16} className="text-slate-400" />
-                        </button>
+                            <ChevronRight size={16} className="text-muted-foreground" />
+                        </Button>
                     </div>
                 </div>
 
                 {/* Recent Profile Activity */}
-                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-8">
+                <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900">Recent Profile Updates</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
+                        <h3 className="text-lg font-bold text-foreground">Recent Profile Updates</h3>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">View All</Button>
                     </div>
                     <div className="space-y-4">
-                        <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                        <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-muted transition-colors">
+                            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
                                 <Edit3 size={18} />
                             </div>
                             <div className="flex-1">
-                                <h4 className="font-semibold text-slate-900">Profile Information Updated</h4>
-                                <p className="text-sm text-slate-500">Phone number and contact details</p>
+                                <h4 className="font-semibold text-foreground">Profile Information Updated</h4>
+                                <p className="text-sm text-muted-foreground">Phone number and contact details</p>
                             </div>
-                            <span className="text-xs text-slate-400">2 days ago</span>
+                            <span className="text-xs text-muted-foreground">2 days ago</span>
                         </div>
-                        <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div className="p-2 rounded-xl bg-green-50 text-green-600">
+                        <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-muted transition-colors">
+                            <div className="p-2 rounded-xl bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400">
                                 <Award size={18} />
                             </div>
                             <div className="flex-1">
-                                <h4 className="font-semibold text-slate-900">New Achievement Added</h4>
-                                <p className="text-sm text-slate-500">5 years of service milestone</p>
+                                <h4 className="font-semibold text-foreground">New Achievement Added</h4>
+                                <p className="text-sm text-muted-foreground">5 years of service milestone</p>
                             </div>
-                            <span className="text-xs text-slate-400">1 week ago</span>
+                            <span className="text-xs text-muted-foreground">1 week ago</span>
                         </div>
                     </div>
                 </div>
@@ -848,17 +867,17 @@ const DashboardHome = () => {
 
         return (
             <div className="space-y-6">
-                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
+                <div className="bg-card rounded-3xl shadow-sm border border-border p-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Pending Approvals</h3>
+                        <h3 className="text-lg font-bold text-foreground">Pending Approvals</h3>
                         <div className="flex items-center gap-2">
-                            <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">4 Pending</span>
-                            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
+                            <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full text-xs font-bold">4 Pending</span>
+                            <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">View All</Button>
                         </div>
                     </div>
                     <div className="space-y-4">
                         {approvals.map((approval, i) => (
-                            <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-xl p-6 hover:shadow-md transition-shadow">
+                            <div key={i} className="border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-start gap-4">
                                         <div className={`p-2 rounded-xl ${approval.type === 'leave' ? 'bg-blue-50 text-blue-600' : approval.type === 'expense' ? 'bg-green-50 text-green-600' : 'bg-purple-50 text-purple-600'}`}>
@@ -875,12 +894,12 @@ const DashboardHome = () => {
                                             {approval.status === 'pending' ? 'Pending' : 'Approved'}
                                         </span>
                                         <div className="flex gap-2">
-                                            <button className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700">
+                                            <Button className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 h-fit">
                                                 Approve
-                                            </button>
-                                            <button className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700">
+                                            </Button>
+                                            <Button className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 h-fit">
                                                 Reject
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -935,53 +954,55 @@ const DashboardHome = () => {
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Attendance Records</h3>
                         <div className="flex items-center gap-3">
-                            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Export Report</button>
-                            <button
-                                className="text-sm text-slate-600 hover:text-slate-700 font-medium"
+                            <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">Export Report</Button>
+                            <Button
+                                variant="link"
+                                className="text-sm text-slate-600 hover:text-slate-700 font-medium h-fit p-0"
                                 onClick={() => setActiveTab('Activities')}
                             >
                                 View Activity Log →
-                            </button>
+                            </Button>
                         </div>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-slate-200 dark:border-slate-700">
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Date</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Check In</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Check Out</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Hours</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Check In</TableHead>
+                                    <TableHead>Check Out</TableHead>
+                                    <TableHead>Hours</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
                                 {attendanceData.map((record, i) => (
-                                    <tr key={i} className="border-b border-slate-100 dark:border-slate-700 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                        <td className="py-3 px-4 text-sm font-medium text-slate-900 dark:text-white">{record.date}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{record.checkIn}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{record.checkOut}</td>
-                                        <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{record.hours}</td>
-                                        <td className="py-3 px-4">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-bold ${record.status === 'present' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                    <TableRow key={i}>
+                                        <TableCell className="font-medium">{record.date}</TableCell>
+                                        <TableCell>{record.checkIn}</TableCell>
+                                        <TableCell>{record.checkOut}</TableCell>
+                                        <TableCell>{record.hours}</TableCell>
+                                        <TableCell>
+                                            <Badge variant={record.status === 'present' ? 'default' : 'destructive'} className={record.status === 'present' ? 'bg-green-100 text-green-700 hover:bg-green-200' : ''}>
                                                 {record.status === 'present' ? 'Present' : 'Absent'}
-                                            </span>
-                                        </td>
-                                        <td className="py-3 px-4">
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
                                             {record.relatedTab && (
-                                                <button
-                                                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                                                <Button
+                                                    variant="link"
+                                                    className="text-xs text-blue-600 hover:text-blue-700 font-medium h-fit p-0"
                                                     onClick={() => setActiveTab(record.relatedTab)}
                                                 >
                                                     View {record.relatedTab} →
-                                                </button>
+                                                </Button>
                                             )}
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 ))}
-                            </tbody>
-                        </table>
+                            </TableBody>
+                        </Table>
                     </div>
                 </div>
 
@@ -989,30 +1010,30 @@ const DashboardHome = () => {
                 <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/40 dark:to-green-900/40 rounded-3xl p-6 border border-blue-100 dark:border-blue-900">
                     <h4 className="font-bold text-slate-900 dark:text-white mb-4">Quick Actions</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <button
-                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200 dark:border-slate-700"
+                        <Button
+                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white border border-slate-200 dark:border-slate-700"
                             onClick={() => setActiveTab('Leave')}
                         >
                             Request Leave
-                        </button>
-                        <button
-                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200 dark:border-slate-700"
+                        </Button>
+                        <Button
+                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white border border-slate-200 dark:border-slate-700"
                             onClick={() => setActiveTab('Activities')}
                         >
                             View Activities
-                        </button>
-                        <button
-                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200 dark:border-slate-700"
+                        </Button>
+                        <Button
+                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white border border-slate-200 dark:border-slate-700"
                             onClick={() => setActiveTab('Profile')}
                         >
                             Update Profile
-                        </button>
-                        <button
-                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white transition-colors border border-slate-200 dark:border-slate-700"
+                        </Button>
+                        <Button
+                            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 hover:text-white border border-slate-200 dark:border-slate-700"
                             onClick={() => setActiveTab('Approvals')}
                         >
                             Check Approvals
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -1020,7 +1041,7 @@ const DashboardHome = () => {
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Monthly Summary</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View Details</button>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">View Details</Button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-900/30">
@@ -1060,7 +1081,7 @@ const DashboardHome = () => {
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Leave Balance</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Request Leave</button>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">Request Leave</Button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {leaveBalance.map((leave, i) => (
@@ -1097,7 +1118,7 @@ const DashboardHome = () => {
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Leave History</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">View All</Button>
                     </div>
                     <div className="space-y-4">
                         {leaveRequests.map((request, i) => (
@@ -1144,28 +1165,29 @@ const DashboardHome = () => {
                             <input
                                 type="text"
                                 placeholder="Search anything..."
-                                className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/20 outline-none w-64 transition-all text-slate-900 dark:text-white placeholder-slate-400"
+                                className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/20 outline-none w-64 text-slate-900 dark:text-white placeholder-slate-400"
                             />
                         </div>
-                        <button className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                        <Button variant="ghost" size="icon" className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 h-fit w-fit">
                             <Bell size={18} className="text-slate-600 dark:text-slate-300" />
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
                 {/* --- Tab Navigation --- */}
                 <div className="flex items-center gap-1 mb-10 bg-white rounded-2xl p-1 shadow-sm border border-slate-100">
                     {tabs.map((tab) => (
-                        <button
+                        <Button
                             key={tab}
+                            variant="ghost"
                             onClick={() => setActiveTab(tab)}
-                            className={`px-6 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === tab
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
+                            className={`px-6 py-3 rounded-xl text-sm font-bold h-fit ${activeTab === tab
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-100 hover:bg-blue-700'
                                 : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'
                                 }`}
                         >
                             {tab}
-                        </button>
+                        </Button>
                     ))}
                 </div>
 
@@ -1183,12 +1205,14 @@ const DashboardHome = () => {
                                     <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Edit Profile</h3>
                                     <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Update your personal information and preferences.</p>
                                 </div>
-                                <button
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
                                     onClick={() => setShowProfileModal(false)}
-                                    className="p-3 hover:bg-slate-100 rounded-2xl transition-all text-slate-400 hover:text-slate-900"
+                                    className="p-3 hover:bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-900 h-fit w-fit"
                                 >
                                     <X size={24} />
-                                </button>
+                                </Button>
                             </div>
 
                             <form className="space-y-10">
@@ -1200,12 +1224,14 @@ const DashboardHome = () => {
                                             <img src={profileData.backgroundImage} alt="Background" className="w-full h-full object-cover" />
                                         )}
                                         <div className="absolute inset-0 bg-black/20" />
-                                        <button
+                                        <Button
                                             type="button"
-                                            className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-md rounded-xl hover:bg-white/30 transition-all"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-md rounded-xl hover:bg-white/30 h-fit w-fit"
                                         >
                                             <Palette size={18} className="text-white" />
-                                        </button>
+                                        </Button>
                                     </div>
 
                                     {/* Profile Photo */}
@@ -1222,12 +1248,14 @@ const DashboardHome = () => {
                                                     )}
                                                 </div>
                                             </div>
-                                            <button
+                                            <Button
                                                 type="button"
-                                                className="absolute bottom-2 right-2 p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg"
+                                                variant="default"
+                                                size="icon"
+                                                className="absolute bottom-2 right-2 p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg h-fit w-fit"
                                             >
                                                 <Camera size={16} />
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -1393,14 +1421,15 @@ const DashboardHome = () => {
 
                                 {/* Action Buttons */}
                                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                    <button
+                                    <Button
                                         type="button"
+                                        variant="ghost"
                                         onClick={() => setShowProfileModal(false)}
-                                        className="flex-1 px-8 py-4 text-slate-500 dark:text-slate-400 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 font-bold transition-all order-2 sm:order-1"
+                                        className="flex-1 px-8 py-4 text-slate-500 dark:text-slate-400 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 font-bold order-2 sm:order-1"
                                     >
                                         Cancel
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
                                         type="submit"
                                         onClick={(e) => {
                                             e.preventDefault();
@@ -1408,11 +1437,11 @@ const DashboardHome = () => {
                                             console.log('Profile updated:', profileData);
                                             setShowProfileModal(false);
                                         }}
-                                        className="flex-[2] px-8 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 font-bold transition-all shadow-xl shadow-blue-100 flex items-center justify-center gap-3 order-1 sm:order-2"
+                                        className="flex-[2] px-8 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 font-bold shadow-xl shadow-blue-100 flex items-center justify-center gap-3 order-1 sm:order-2"
                                     >
                                         <Save size={18} />
                                         Save Changes
-                                    </button>
+                                    </Button>
                                 </div>
                             </form>
                         </div>
@@ -1435,37 +1464,37 @@ const DashboardHome = () => {
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Time Logs</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Export Logs</button>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">Export Logs</Button>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-slate-200 dark:border-slate-700">
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Check In</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Check Out</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Total Hours</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Project</th>
-                                    <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Check In</TableHead>
+                                    <TableHead>Check Out</TableHead>
+                                    <TableHead>Total Hours</TableHead>
+                                    <TableHead>Project</TableHead>
+                                    <TableHead>Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
                                 {timeLogs.map((log, i) => (
-                                    <tr key={i} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                        <td className="py-4 px-4 text-sm font-semibold text-slate-900 dark:text-white">{log.date}</td>
-                                        <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">{log.checkIn}</td>
-                                        <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">{log.checkOut}</td>
-                                        <td className="py-4 px-4 text-sm font-bold text-blue-600 dark:text-blue-400">{log.totalHours}</td>
-                                        <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-400">{log.project}</td>
-                                        <td className="py-4 px-4">
-                                            <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full">
+                                    <TableRow key={i}>
+                                        <TableCell className="font-semibold">{log.date}</TableCell>
+                                        <TableCell>{log.checkIn}</TableCell>
+                                        <TableCell>{log.checkOut}</TableCell>
+                                        <TableCell className="font-bold text-blue-600 dark:text-blue-400">{log.totalHours}</TableCell>
+                                        <TableCell>{log.project}</TableCell>
+                                        <TableCell>
+                                            <Badge className="bg-green-50 text-green-700 hover:bg-green-100">
                                                 {log.status}
-                                            </span>
-                                        </td>
-                                    </tr>
+                                            </Badge>
+                                        </TableCell>
+                                    </TableRow>
                                 ))}
-                            </tbody>
-                        </table>
+                            </TableBody>
+                        </Table>
                     </div>
                 </div>
             </div>
@@ -1484,7 +1513,7 @@ const DashboardHome = () => {
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Feedback History</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Request Feedback</button>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">Request Feedback</Button>
                     </div>
                     <div className="space-y-6">
                         {feedbackItems.map((feedback, i) => (
@@ -1535,9 +1564,9 @@ const DashboardHome = () => {
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">My Cases</h3>
-                        <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-colors">
+                        <Button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700">
                             Create New Case
-                        </button>
+                        </Button>
                     </div>
                     <div className="space-y-4">
                         {cases.map((caseItem, i) => (
@@ -1587,7 +1616,7 @@ const DashboardHome = () => {
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-8">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Related Data & Documents</h3>
-                        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
+                        <Button variant="link" className="text-sm text-blue-600 hover:text-blue-700 font-medium h-fit p-0">View All</Button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

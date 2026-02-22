@@ -10,6 +10,9 @@ import {
     Plus,
     CheckCircle
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const Shift = () => {
     const shiftStats = [
@@ -46,35 +49,35 @@ const Shift = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <button className="flex items-center px-4 py-2.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700/50 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold transition-all backdrop-blur-sm">
-                            <Calendar size={18} className="mr-2 text-slate-400 dark:text-slate-500" />
+                        <Button variant="outline" className="rounded-2xl">
+                            <Calendar size={18} className="mr-2" />
                             This Week
-                        </button>
-                        <button className="flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:shadow-xl hover:scale-105 transition-all shadow-lg shadow-blue-100 dark:shadow-blue-900/20 text-sm font-bold">
+                        </Button>
+                        <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-2xl shadow-lg">
                             <RefreshCw size={18} className="mr-2" />
                             New Swap Request
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
                 {/* --- Stats --- */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     {shiftStats.map((stat, i) => (
-                        <div key={i} className="bg-white dark:bg-slate-900/60 rounded-[2rem] p-6 border border-slate-100 dark:border-white/10 shadow-sm hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1 backdrop-blur-sm">
+                        <Card key={i} className="p-6 hover:shadow-md transition-all cursor-pointer hover:-translate-y-1">
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`p-3 rounded-2xl ${stat.bg} dark:bg-opacity-20 ${stat.color} dark:text-opacity-90`}>
                                     <stat.icon size={22} />
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-700/50 px-2 py-1 rounded-md uppercase tracking-wider">{stat.change}</span>
+                                <Badge variant="secondary" className="text-xs">{stat.change}</Badge>
                             </div>
                             <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-1">{stat.value}</h3>
-                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{stat.label}</p>
-                        </div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                        </Card>
                     ))}
                 </div>
 
                 {/* --- Weekly Timeline Strip --- */}
-                <div className="bg-white dark:bg-slate-900/60 rounded-[2.5rem] border border-slate-100 dark:border-white/10 shadow-sm p-8 mb-10 overflow-hidden transition-colors backdrop-blur-sm">
+                <Card className="p-8 mb-10">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <Clock size={20} className="text-blue-600 dark:text-blue-400" />
@@ -115,19 +118,19 @@ const Shift = () => {
                             </div>
                         ))}
                     </div>
-                </div>
+                </Card>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                     {/* --- Shift Swaps --- */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white dark:bg-slate-900/60 rounded-[2.5rem] border border-slate-100 dark:border-white/10 shadow-sm p-8 transition-colors backdrop-blur-sm">
+                        <Card className="p-8">
                             <div className="flex items-center justify-between mb-8">
                                 <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <RefreshCw size={20} className="text-emerald-600 dark:text-emerald-400" />
+                                    <RefreshCw size={20} className="text-emerald-600" />
                                     Swap Requests
                                 </h3>
-                                <button className="text-sm font-bold text-blue-600 dark:text-blue-400 hover:underline">View All Requests</button>
+                                <Button variant="link" className="text-blue-600">View All Requests</Button>
                             </div>
 
                             <div className="space-y-4">
@@ -137,9 +140,9 @@ const Shift = () => {
                                             <img src={request.avatar} className="w-12 h-12 rounded-2xl shadow-sm" alt="avatar" />
                                             <div>
                                                 <h4 className="font-bold text-slate-900 dark:text-white">{request.requester}</h4>
-                                                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${request.status === 'Approved' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'}`}>
+                                                <Badge variant={request.status === 'Approved' ? 'default' : 'secondary'} className="text-xs">
                                                     {request.status}
-                                                </span>
+                                                </Badge>
                                             </div>
                                         </div>
 
@@ -156,20 +159,20 @@ const Shift = () => {
                                         </div>
 
                                         <div className="flex gap-2 mt-4 md:mt-0">
-                                            <button className="px-4 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Details</button>
+                                            <Button variant="ghost" size="sm">Details</Button>
                                             {request.status === 'Pending' && (
-                                                <button className="px-4 py-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 dark:hover:bg-slate-600 transition-all hover:scale-105">Respond</button>
+                                                <Button size="sm" className="bg-slate-900 hover:bg-slate-800">Respond</Button>
                                             )}
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                        </div>
+                        </Card>
                     </div>
 
                     {/* --- Sidebar: Upcoming --- */}
                     <div className="space-y-6">
-                        <div className="bg-white dark:bg-slate-900/60 rounded-[2.5rem] border border-slate-100 dark:border-white/10 shadow-sm p-8 transition-colors backdrop-blur-sm">
+                        <Card className="p-8">
                             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                                 <Plus size={20} className="text-indigo-600 dark:text-indigo-400" />
                                 Next Shifts
@@ -197,13 +200,13 @@ const Shift = () => {
                                     </div>
                                 ))}
                             </div>
-                            <button className="w-full mt-6 py-3 bg-slate-900 dark:bg-slate-700 text-white rounded-2xl text-xs font-bold hover:bg-slate-800 dark:hover:bg-slate-600 transition-all">
+                            <Button className="w-full mt-6 bg-slate-900 hover:bg-slate-800">
                                 Full Schedule
-                            </button>
-                        </div>
+                            </Button>
+                        </Card>
 
                         {/* Team Availability */}
-                        <div className="bg-indigo-600 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
+                        <Card className="bg-indigo-600 p-8 text-white border-0">
                             <div className="relative z-10">
                                 <Users className="mb-4 text-indigo-200" size={24} />
                                 <h4 className="text-lg font-bold mb-1">Team on Shift</h4>
@@ -217,8 +220,7 @@ const Shift = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-                        </div>
+                        </Card>
                     </div>
 
                 </div>

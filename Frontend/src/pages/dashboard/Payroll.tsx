@@ -11,6 +11,17 @@ import {
     ArrowUpRight,
     ShieldCheck
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from '@/components/ui/table';
 
 const Payroll = () => {
     const payrollStats = [
@@ -47,14 +58,14 @@ const Payroll = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <button className="flex items-center px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold transition-all shadow-sm">
-                            <Calendar size={18} className="mr-2 text-slate-400" />
+                        <Button variant="outline" className="rounded-2xl">
+                            <Calendar size={18} className="mr-2" />
                             Feb 2026
-                        </button>
-                        <button className="flex items-center px-6 py-2.5 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 dark:shadow-emerald-900/20 text-sm font-bold group">
-                            <Send size={18} className="mr-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        </Button>
+                        <Button className="bg-emerald-600 hover:bg-emerald-700 rounded-2xl shadow-lg">
+                            <Send size={18} className="mr-2" />
                             Run Payroll
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -81,58 +92,64 @@ const Payroll = () => {
 
                     {/* --- Left Column: History --- */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                            <div className="p-8 border-b border-slate-50 dark:border-slate-700 flex justify-between items-center">
+                        <Card className="overflow-hidden">
+                            <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                                 <div>
                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">Payroll History</h3>
-                                    <p className="text-xs font-medium text-slate-400">Previous 3 billing cycles</p>
+                                    <p className="text-xs text-muted-foreground mt-1">Previous 3 billing cycles</p>
                                 </div>
-                                <button className="text-sm font-bold text-blue-600 hover:text-blue-700">View All</button>
+                                <Button variant="ghost" className="text-blue-600 hover:text-blue-700">
+                                    View All
+                                </Button>
                             </div>
-                            <div className="p-4 overflow-x-auto">
-                                <table className="w-full">
-                                    <thead className="bg-slate-50/50 dark:bg-slate-900/50">
-                                        <tr className="text-left">
-                                            <th className="px-4 py-3 text-[11px] font-bold text-slate-400 uppercase">Billing Month</th>
-                                            <th className="px-4 py-3 text-[11px] font-bold text-slate-400 uppercase text-center">Staff</th>
-                                            <th className="px-4 py-3 text-[11px] font-bold text-slate-400 uppercase">Amount</th>
-                                            <th className="px-4 py-3 text-[11px] font-bold text-slate-400 uppercase text-right">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
-                                        {payrollHistory.map((payroll, i) => (
-                                            <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors group">
-                                                <td className="px-4 py-5">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:bg-white dark:group-hover:bg-slate-600 group-hover:shadow-sm transition-all">
-                                                            <FileText size={18} />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-bold text-slate-900 dark:text-white">{payroll.month}</p>
-                                                            <p className="text-[11px] font-medium text-slate-400">Sent on {payroll.processedDate}</p>
-                                                        </div>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Billing Month</TableHead>
+                                        <TableHead className="text-center">Staff</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead className="text-right">Action</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {payrollHistory.map((payroll, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                                        <FileText size={18} className="text-muted-foreground" />
                                                     </div>
-                                                </td>
-                                                <td className="px-4 py-5 text-center">
-                                                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">{payroll.employees}</span>
-                                                </td>
-                                                <td className="px-4 py-5">
-                                                    <p className="text-sm font-mono font-bold text-slate-900 dark:text-white">{payroll.amount}</p>
-                                                    <div className="flex items-center text-[10px] text-emerald-600 font-bold uppercase">
-                                                        <CheckCircle size={10} className="mr-1" /> Processed
+                                                    <div>
+                                                        <p className="font-semibold text-slate-900 dark:text-white">
+                                                            {payroll.month}
+                                                        </p>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            Sent on {payroll.processedDate}
+                                                        </p>
                                                     </div>
-                                                </td>
-                                                <td className="px-4 py-5 text-right">
-                                                    <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all">
-                                                        <Download size={18} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                <Badge variant="secondary">{payroll.employees}</Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <p className="font-mono font-bold text-slate-900 dark:text-white">
+                                                    {payroll.amount}
+                                                </p>
+                                                <div className="flex items-center text-xs text-emerald-600 font-semibold mt-1">
+                                                    <CheckCircle size={12} className="mr-1" /> Processed
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="ghost" size="icon">
+                                                    <Download size={18} />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </Card>
 
                         {/* Summary Widget */}
                         <div className="bg-slate-900 dark:bg-slate-800 rounded-[2.5rem] p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
@@ -174,19 +191,19 @@ const Payroll = () => {
                                     </div>
                                 ))}
                             </div>
-                            <button className="w-full mt-6 py-4 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-all">
+                            <Button variant="outline" className="w-full mt-6 py-4 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl text-slate-400 hover:border-blue-400 hover:text-blue-500">
                                 + Add One-time Payment
-                            </button>
+                            </Button>
                         </div>
 
                         {/* Quick Actions */}
                         <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm p-6">
                             <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 px-2">Quick Access</h4>
                             <div className="grid grid-cols-2 gap-3">
-                                <button className="p-4 bg-slate-50 dark:bg-slate-700 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all">Staff Profiles</button>
-                                <button className="p-4 bg-slate-50 dark:bg-slate-700 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all">Tax Reports</button>
-                                <button className="p-4 bg-slate-50 dark:bg-slate-700 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all">Bank Settings</button>
-                                <button className="p-4 bg-slate-50 dark:bg-slate-700 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all">Compliance</button>
+                                <Button className="p-4 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white rounded-2xl h-fit">Staff Profiles</Button>
+                                <Button className="p-4 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white rounded-2xl h-fit">Tax Reports</Button>
+                                <Button className="p-4 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white rounded-2xl h-fit">Bank Settings</Button>
+                                <Button className="p-4 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white rounded-2xl h-fit">Compliance</Button>
                             </div>
                         </div>
                     </div>

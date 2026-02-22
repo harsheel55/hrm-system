@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -16,6 +16,18 @@ import Timesheet from './pages/dashboard/Timesheet';
 import Analytics from './pages/dashboard/Analytics';
 import OrganizationTree from './pages/dashboard/OrganizationTree';
 import { TooltipProvider } from '@/components/ui/tooltip';
+
+// Super Admin Imports
+import AdminLayout from './components/layouts/AdminLayout';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserManagementPage from './pages/admin/UserManagementPage';
+import RoleManagementPage from './pages/admin/RoleManagementPage';
+import UserRightsPage from './pages/admin/UserRightsPage';
+import MenuManagementPage from './pages/admin/MenuManagementPage';
+import BlogManagementPage from './pages/admin/BlogManagementPage';
+import BlogCategoryPage from './pages/admin/BlogCategoryPage';
+import BlogTagPage from './pages/admin/BlogTagPage';
 
 function App() {
   return (
@@ -41,6 +53,22 @@ function App() {
             <Route path="timesheet" element={<Timesheet />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="organization" element={<OrganizationTree />} />
+          </Route>
+
+          {/* Super Admin Login Route */}
+          <Route path="/login" element={<AdminLoginPage />} />
+
+          {/* Super Admin Routes (Unprotected for Development) */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<UserManagementPage />} />
+            <Route path="roles" element={<RoleManagementPage />} />
+            <Route path="rights" element={<UserRightsPage />} />
+            <Route path="menus" element={<MenuManagementPage />} />
+            <Route path="blogs" element={<BlogManagementPage />} />
+            <Route path="blog-categories" element={<BlogCategoryPage />} />
+            <Route path="blog-tags" element={<BlogTagPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

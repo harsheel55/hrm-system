@@ -29,8 +29,8 @@ const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center justify-center min-h-dvh">
-      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14">
+    <div className="flex items-center justify-center min-h-dvh bg-background text-foreground transition-colors duration-300">
+      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14 bg-card text-card-foreground border-border shadow-sm transition-colors duration-300">
         <CardContent className="">
           <div className="flex flex-col items-center space-y-8">
             <Logo />
@@ -51,17 +51,17 @@ export default function LoginPage() {
               <Input
                 type="text"
                 placeholder="Username"
-                className="w-full rounded-xl"
+                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
               />
               <Input
                 type="password"
                 placeholder="Password"
-                className="w-full rounded-xl"
+                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
               />
               
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="rounded" />
+                  <input type="checkbox" className="rounded border-border bg-background" />
                   <span className="text-muted-foreground">Remember me</span>
                 </label>
                 <a href="#" className="text-foreground hover:underline">

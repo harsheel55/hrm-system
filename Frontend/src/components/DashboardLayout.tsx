@@ -18,8 +18,6 @@ import {
     Users,
     ChevronUp,
     User2,
-    Moon,
-    Sun
 } from 'lucide-react';
 import {
     Sidebar,
@@ -41,29 +39,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 
 const DashboardLayout = () => {
     const location = useLocation();
-
-    // Dark Mode State
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        const saved = localStorage.getItem('theme');
-        return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    });
-
-    useEffect(() => {
-        if (isDarkMode) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        }
-    }, [isDarkMode]);
-
-    const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-    };
 
     // Main Navigation (Sidebar Icons)
     const apps = [
@@ -184,17 +163,7 @@ const DashboardLayout = () => {
                     </div>
                     <div className="flex items-center gap-3">
                         {/* Dark Mode Toggle */}
-                        <button
-                            onClick={toggleTheme}
-                            className="relative p-2.5 text-muted-foreground hover:text-blue-600 dark:hover:text-yellow-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950 group"
-                            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                        >
-                            {isDarkMode ? (
-                                <Sun size={20} className="group-hover:rotate-180 transition-transform duration-500" />
-                            ) : (
-                                <Moon size={20} className="group-hover:-rotate-12 transition-transform duration-300" />
-                            )}
-                        </button>
+                        <AnimatedThemeToggler className="relative text-muted-foreground hover:text-blue-600 dark:hover:text-yellow-400 transition-all rounded-xl" />
 
                         <button className="relative p-2.5 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-slate-800 group">
                             <Bell size={20} className="group-hover:animate-pulse" />

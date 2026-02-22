@@ -10,6 +10,18 @@ import {
     BarChart3,
     Clock4
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from '@/components/ui/table';
 
 const Timesheet = () => {
     const timesheetData = [
@@ -37,41 +49,41 @@ const Timesheet = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 pb-12 transition-colors">
+        <div className="min-h-screen bg-background text-foreground pb-12 transition-colors">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
 
                 {/* --- Header --- */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                     <div>
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Time Tracking</h1>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">Log your project hours and submit for manager approval.</p>
+                        <h1 className="text-3xl font-black text-foreground tracking-tight">Time Tracking</h1>
+                        <p className="text-muted-foreground text-sm font-medium mt-1">Log your project hours and submit for manager approval.</p>
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <button className="flex items-center px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold transition-all">
-                            <Calendar size={18} className="mr-2 text-slate-400" />
+                        <Button variant="outline" className="rounded-2xl">
+                            <Calendar size={18} className="mr-2" />
                             Jun 12 - Jun 18
-                        </button>
-                        <button className="flex items-center px-6 py-2.5 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 text-sm font-bold">
+                        </Button>
+                        <Button className="rounded-2xl shadow-lg">
                             <Save size={18} className="mr-2" />
                             Save & Submit
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
                 {/* --- Stats Grid --- */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     {timesheetStats.map((stat, i) => (
-                        <div key={i} className="bg-white dark:bg-slate-800 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group cursor-pointer">
+                        <Card key={i} className="p-6 hover:shadow-md transition-all cursor-pointer bg-card text-card-foreground border-border">
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color}`}>
                                     <stat.icon size={22} />
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-1 rounded-md">{stat.change}</span>
+                                <Badge variant="secondary" className="text-xs">{stat.change}</Badge>
                             </div>
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-0.5">{stat.value}</h3>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                        </div>
+                            <h3 className="text-2xl font-black text-foreground mb-0.5">{stat.value}</h3>
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</p>
+                        </Card>
                     ))}
                 </div>
 
@@ -79,84 +91,84 @@ const Timesheet = () => {
 
                     {/* --- Main Timesheet Table --- */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                            <div className="p-8 border-b border-slate-50 dark:border-slate-700 flex justify-between items-center">
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <Clock4 size={20} className="text-indigo-600" />
+                        <Card className="overflow-hidden bg-card text-card-foreground border-border">
+                            <div className="p-6 border-b border-border flex justify-between items-center">
+                                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                    <Clock4 size={20} className="text-primary" />
                                     Weekly Log
                                 </h3>
                                 <div className="flex gap-2">
-                                    <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors"><Download size={20} /></button>
-                                    <button className="flex items-center gap-1 px-4 py-2 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 transition-all">
-                                        <Plus size={14} /> Add Task
-                                    </button>
+                                    <Button variant="ghost" size="icon">
+                                        <Download size={20} />
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                        <Plus size={14} className="mr-1" /> Add Task
+                                    </Button>
                                 </div>
                             </div>
 
                             <div className="overflow-x-auto">
-                                <table className="w-full text-center border-collapse">
-                                    <thead>
-                                        <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.1em]">
-                                            <th className="px-6 py-4 text-left font-black">Project / Task</th>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/60">
+                                            <TableHead className="text-left font-black">Project / Task</TableHead>
                                             {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(day => (
-                                                <th key={day} className="px-2 py-4">{day}</th>
+                                                <TableHead key={day} className="text-center">{day}</TableHead>
                                             ))}
-                                            <th className="px-4 py-4">Total</th>
-                                            <th className="px-6 py-4 text-right">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
+                                            <TableHead className="text-center">Total</TableHead>
+                                            <TableHead className="text-right">Status</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
                                         {timesheetData.map((project, i) => (
-                                            <tr key={i} className="hover:bg-slate-50/80 dark:hover:bg-slate-700/30 transition-colors group">
-                                                <td className="px-6 py-5 text-left">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors">{project.project}</p>
-                                                    <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase">Development</p>
-                                                </td>
+                                            <TableRow key={i} className="group">
+                                                <TableCell className="text-left">
+                                                    <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{project.project}</p>
+                                                    <p className="text-[10px] font-medium text-muted-foreground uppercase">Development</p>
+                                                </TableCell>
                                                 {[project.mon, project.tue, project.wed, project.thu, project.fri, project.sat, project.sun].map((hr, idx) => (
-                                                    <td key={idx} className={`px-2 py-5 font-mono text-sm ${hr === 0 ? 'text-slate-200 dark:text-slate-700' : 'text-slate-600 dark:text-slate-300 font-bold'}`}>
+                                                    <TableCell key={idx} className={`text-center font-mono ${hr === 0 ? 'text-muted-foreground/40' : 'text-foreground font-bold'}`}>
                                                         {hr}
-                                                    </td>
+                                                    </TableCell>
                                                 ))}
-                                                <td className="px-4 py-5 font-mono font-black text-slate-900 dark:text-white bg-slate-50/30 dark:bg-slate-700/30">
+                                                <TableCell className="text-center font-mono font-black bg-muted/30">
                                                     {project.total}
-                                                </td>
-                                                <td className="px-6 py-5 text-right">
-                                                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${project.status === 'Approved' ? 'bg-emerald-50 text-emerald-600' :
-                                                            project.status === 'Submitted' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-700'
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <Badge className={`${project.status === 'Approved' ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' :
+                                                        project.status === 'Submitted' ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
                                                         }`}>
-                                                        <span className={`w-1.5 h-1.5 rounded-full ${project.status === 'Approved' ? 'bg-emerald-500' :
-                                                                project.status === 'Submitted' ? 'bg-blue-500' : 'bg-amber-500'
+                                                        <span className={`w-1.5 h-1.5 rounded-full mr-1.5 inline-block ${project.status === 'Approved' ? 'bg-emerald-600' :
+                                                            project.status === 'Submitted' ? 'bg-blue-600' : 'bg-amber-600'
                                                             }`}></span>
                                                         {project.status}
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    </Badge>
+                                                </TableCell>
+                                            </TableRow>
                                         ))}
-                                    </tbody>
-                                </table>
+                                    </TableBody>
+                                </Table>
                             </div>
-                        </div>
+                        </Card>
 
                         {/* Submission Warning */}
-                        <div className="bg-amber-50 dark:bg-amber-900/10 rounded-[2rem] border border-amber-100 dark:border-amber-900/30 p-6 flex gap-4 items-start">
-                            <div className="p-2 bg-white dark:bg-amber-900/20 rounded-xl shadow-sm text-amber-600">
-                                <AlertCircle size={20} />
-                            </div>
-                            <div>
-                                <h4 className="text-sm font-bold text-amber-900 dark:text-amber-100">Review Required</h4>
-                                <p className="text-xs text-amber-700 dark:text-amber-200/80 mt-1 leading-relaxed">
+                        <Alert className="bg-amber-50 border-amber-200">
+                            <AlertCircle className="h-5 w-5 text-amber-600" />
+                            <AlertDescription>
+                                <h4 className="font-semibold text-amber-900 mb-1">Review Required</h4>
+                                <p className="text-xs text-amber-700">
                                     Double-check your billable hours for <strong>Frontend Development</strong>.
                                     Once submitted, hours are locked for payroll processing and cannot be edited without manager reversal.
                                 </p>
-                            </div>
-                        </div>
+                            </AlertDescription>
+                        </Alert>
                     </div>
 
                     {/* --- Sidebar: Daily Breakdown --- */}
                     <div className="space-y-6">
-                        <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm p-8">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-2">
-                                <BarChart3 size={20} className="text-indigo-600" />
+                        <Card className="p-8 bg-card text-card-foreground border-border">
+                            <h3 className="text-lg font-bold text-foreground mb-8 flex items-center gap-2">
+                                <BarChart3 size={20} className="text-primary" />
                                 Daily Output
                             </h3>
 
@@ -164,39 +176,38 @@ const Timesheet = () => {
                                 {weeklySummary.map((day, i) => (
                                     <div key={i} className="flex flex-col items-center gap-2 w-full group">
                                         <div
-                                            className={`w-full rounded-t-lg transition-all duration-500 ${day.percentage > 0 ? 'bg-indigo-500 group-hover:bg-indigo-600' : 'bg-slate-100 dark:bg-slate-700'}`}
+                                            className={`w-full rounded-t-lg transition-all duration-500 ${day.percentage > 0 ? 'bg-primary group-hover:bg-primary/90' : 'bg-muted'}`}
                                             style={{ height: `${day.percentage}%` }}
                                         ></div>
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase">{day.day}</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase">{day.day}</span>
                                     </div>
                                 ))}
                             </div>
 
                             <div className="space-y-4">
-                                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Avg. Productive Time</p>
-                                    <p className="text-lg font-black text-slate-900 dark:text-white">8.4h</p>
+                                <div className="p-4 rounded-2xl bg-muted border border-border flex justify-between items-center">
+                                    <p className="text-xs font-bold text-muted-foreground uppercase">Avg. Productive Time</p>
+                                    <p className="text-lg font-black text-foreground">8.4h</p>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Project Overlap</p>
-                                    <p className="text-lg font-black text-slate-900 dark:text-white">03 Tasks</p>
+                                <div className="p-4 rounded-2xl bg-muted border border-border flex justify-between items-center">
+                                    <p className="text-xs font-bold text-muted-foreground uppercase">Project Overlap</p>
+                                    <p className="text-lg font-black text-foreground">03 Tasks</p>
                                 </div>
                             </div>
-                        </div>
+                        </Card>
 
                         {/* Quick Action Widget */}
-                        <div className="bg-slate-900 dark:bg-slate-800 rounded-[2.5rem] p-8 text-white relative overflow-hidden group">
-                            <div className="relative z-10">
+                        <Card className="p-8 bg-card text-card-foreground border-border">
+                            <div>
                                 <h4 className="text-xl font-bold mb-2">Need Help?</h4>
-                                <p className="text-slate-400 text-xs leading-relaxed mb-6">
+                                <p className="text-muted-foreground text-xs leading-relaxed mb-6">
                                     If your project is not listed, please contact the Resource Manager to be assigned.
                                 </p>
-                                <button className="w-full py-3 bg-white text-slate-900 rounded-2xl text-xs font-bold hover:bg-indigo-50 transition-all">
+                                <Button variant="secondary" className="w-full">
                                     Contact Resource Team
-                                </button>
+                                </Button>
                             </div>
-                            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl group-hover:bg-indigo-500/30 transition-all"></div>
-                        </div>
+                        </Card>
                     </div>
 
                 </div>

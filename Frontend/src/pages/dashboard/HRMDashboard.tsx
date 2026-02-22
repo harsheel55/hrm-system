@@ -146,14 +146,16 @@ const HRMDashboard = () => {
           {/* Navigation Tabs */}
           <nav className="flex gap-6">
             {['My Space', 'Team', 'Organization'].map((tab) => (
-              <button
+              <Button
                 key={tab}
+                variant="ghost"
                 onClick={() => setActiveNav(tab)}
-                className={`px-3 py-2 text-sm font-medium transition-colors ${activeNav === tab ? 'text-blue-400 border-b-2 border-blue-400' : 'hover:text-gray-300 dark:hover:text-slate-200'
+                className={`px-3 py-2 h-fit text-sm font-medium rounded-none ${
+                  activeNav === tab ? 'text-blue-400 border-b-2 border-blue-400' : 'hover:text-gray-300 dark:hover:text-slate-200 hover:bg-transparent'
                   }`}
               >
                 {tab}
-              </button>
+              </Button>
             ))}
           </nav>
         </div>
@@ -174,13 +176,15 @@ const HRMDashboard = () => {
       {/* Secondary Navigation Bar */}
       <div className="bg-white dark:bg-slate-800 h-[45px] border-b border-gray-200 dark:border-slate-700 flex items-center px-6 transition-colors">
         {['Overview', 'Dashboard', 'Calendar'].map((tab) => (
-          <button
+          <Button
             key={tab}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${tab === 'Dashboard' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white'
+            variant="ghost"
+            className={`px-4 py-2 h-fit text-sm font-medium rounded-none ${
+              tab === 'Dashboard' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-transparent'
               }`}
           >
             {tab}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -190,29 +194,34 @@ const HRMDashboard = () => {
           {/* Main Navigation */}
           <div className="flex-1 flex flex-col gap-4">
             {sidebarItems.map((item, index) => (
-              <button
+              <Button
                 key={index}
-                className={`p-2 rounded-lg transition-all ${item.active
-                    ? 'bg-blue-600 text-white'
+                variant="ghost"
+                size="icon"
+                className={`p-2 rounded-lg ${
+                  item.active
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
                     : 'text-slate-200/80 hover:text-white hover:bg-white/10'
                   }`}
                 title={item.label}
               >
                 <item.icon className="w-5 h-5" />
-              </button>
+              </Button>
             ))}
           </div>
 
           {/* Bottom Section */}
           <div className="flex flex-col gap-4">
             {bottomSidebarItems.map((item, index) => (
-              <button
+              <Button
                 key={index}
-                className="p-2 text-slate-200/80 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                variant="ghost"
+                size="icon"
+                className="p-2 text-slate-200/80 hover:text-white hover:bg-white/10 rounded-lg"
                 title={item.label}
               >
                 <item.icon className="w-5 h-5" />
-              </button>
+              </Button>
             ))}
           </div>
         </aside>
@@ -318,9 +327,9 @@ const HRMDashboard = () => {
                   </span>
                 </div>
               ))}
-              <button className="text-teal-600 dark:text-teal-400 text-sm font-medium hover:text-teal-700 dark:hover:text-teal-300">
+              <Button variant="link" className="text-teal-600 dark:text-teal-400 text-sm font-medium hover:text-teal-700 dark:hover:text-teal-300 h-fit p-0">
                 +5 More
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -469,12 +478,12 @@ const HRMDashboard = () => {
 
         {/* Right Side Elements */}
         <div className="relative">
-          <button className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600">
+          <Button variant="ghost" size="icon" className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 h-fit w-fit">
             <MoreHorizontal className="w-5 h-5" />
-          </button>
-          <button className="absolute bottom-4 right-4 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
+          </Button>
+          <Button className="absolute bottom-4 right-4 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700">
             <HelpCircle className="w-6 h-6" />
-          </button>
+          </Button>
         </div>
       </div>
 

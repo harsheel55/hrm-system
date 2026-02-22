@@ -10,6 +10,11 @@ import {
     HardDrive,
     Eye
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const Documents = () => {
     const documentStats = [
@@ -46,35 +51,35 @@ const Documents = () => {
 
                     <div className="flex items-center gap-3">
                         <div className="relative hidden lg:block">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                            <input
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                            <Input
                                 type="text"
                                 placeholder="Search all files..."
-                                className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500/20 outline-none w-64 transition-all text-slate-600 dark:text-slate-200 relative z-10"
+                                className="pl-10 w-64"
                             />
                         </div>
-                        <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-2xl hover:shadow-xl hover:scale-105 transition-all shadow-lg shadow-blue-200 dark:shadow-blue-900/20 font-bold text-sm group">
-                            <Upload size={18} className="group-hover:animate-bounce" />
+                        <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg">
+                            <Upload size={18} className="mr-2" />
                             Upload New File
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
                 {/* --- Stats Grid --- */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     {documentStats.map((stat, i) => (
-                        <div key={i} className="card-premium dark:bg-slate-900/60 dark:border-white/10 backdrop-blur-sm rounded-[2rem] p-6 shadow-sm hover-lift group cursor-pointer animate-scale-in" style={{ animationDelay: `${i * 0.1}s` }}>
+                        <Card key={i} className="p-6 hover:shadow-md transition-all cursor-pointer">
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
                                     <stat.icon size={22} className="group-hover:animate-pulse" />
                                 </div>
-                                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${stat.change.includes('+') ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-500'}`}>
+                                <Badge variant="secondary" className="text-xs">
                                     {stat.change}
-                                </span>
+                                </Badge>
                             </div>
                             <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-0.5">{stat.value}</h3>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                        </div>
+                        </Card>
                     ))}
                 </div>
 
@@ -90,42 +95,42 @@ const Documents = () => {
                                     <Folder size={20} className="text-amber-500" />
                                     Library
                                 </h3>
-                                <button className="text-sm font-bold text-blue-600">New Folder</button>
+                                <Button variant="link" className="text-blue-600">New Folder</Button>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                 {folders.map((folder, i) => (
-                                    <div key={i} className="card-premium dark:bg-slate-900/60 dark:border-white/10 backdrop-blur-sm border border-slate-100 rounded-3xl p-5 hover:border-blue-300 dark:hover:border-blue-500/50 hover-lift cursor-pointer group transition-all duration-300">
+                                    <Card key={i} className="p-5 hover:border-blue-300 dark:hover:border-blue-500/50 cursor-pointer transition-all">
                                         <div className={`w-10 h-10 rounded-xl ${folder.color} flex items-center justify-center text-white shadow-lg mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all`}>
                                             <Folder size={20} fill="currentColor" className="group-hover:animate-pulse" />
                                         </div>
                                         <h4 className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{folder.name}</h4>
-                                        <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase mt-1">{folder.count} Files • {folder.size}</p>
-                                    </div>
+                                        <p className="text-xs text-muted-foreground mt-1">{folder.count} Files • {folder.size}</p>
+                                    </Card>
                                 ))}
                             </div>
                         </div>
 
                         {/* Recent Files List */}
-                        <div className="card-premium dark:bg-slate-900/60 dark:border-white/10 backdrop-blur-sm rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden hover-lift">
-                            <div className="p-8 border-b border-slate-50 dark:border-white/5 flex justify-between items-center">
+                        <Card className="overflow-hidden">
+                            <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Documents</h3>
-                                <button className="text-sm font-bold text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">Filter By Date</button>
+                                <Button variant="ghost" size="sm">Filter By Date</Button>
                             </div>
                             <div className="p-4 overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="text-slate-400 dark:text-slate-500 text-[11px] font-bold uppercase tracking-widest border-b border-slate-50 dark:border-white/5">
-                                            <th className="px-4 py-3">File Name</th>
-                                            <th className="px-4 py-3">Size</th>
-                                            <th className="px-4 py-3">Date</th>
-                                            <th className="px-4 py-3">Status</th>
-                                            <th className="px-4 py-3 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-50 dark:divide-white/5">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>File Name</TableHead>
+                                            <TableHead>Size</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
                                         {recentFiles.map((file, i) => (
-                                            <tr key={i} className="group hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-purple-50/30 dark:hover:from-blue-500/5 dark:hover:to-purple-500/5 transition-all">
-                                                <td className="px-4 py-5">
+                                            <TableRow key={i} className="group">
+                                                <TableCell>
                                                     <div className="flex items-center gap-3">
                                                         <div className={`p-2 rounded-lg ${file.type === 'PDF' ? 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'} group-hover:scale-110 transition-transform`}>
                                                             {file.type === 'PDF' ? <FileText size={18} className="group-hover:animate-pulse" /> : <FileCode size={18} className="group-hover:animate-pulse" />}
@@ -135,33 +140,36 @@ const Documents = () => {
                                                             <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500">Application/{file.type}</p>
                                                         </div>
                                                     </div>
-                                                </td>
-                                                <td className="px-4 py-5 text-xs font-mono font-bold text-slate-500 dark:text-slate-400">{file.size}</td>
-                                                <td className="px-4 py-5 text-xs font-bold text-slate-700 dark:text-slate-300">{file.date}</td>
-                                                <td className="px-4 py-5">
-                                                    <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${file.status === 'Approved' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400'
-                                                        }`}>
+                                                </TableCell>
+                                                <TableCell className="font-mono font-bold text-slate-500 dark:text-slate-400">{file.size}</TableCell>
+                                                <TableCell className="font-bold">{file.date}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={file.status === 'Approved' ? 'default' : 'secondary'}>
                                                         {file.status}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 py-5 text-right">
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right">
                                                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all hover:scale-110"><Eye size={16} /></button>
-                                                        <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-all hover:scale-110"><Download size={16} /></button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                            <Eye size={16} />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                            <Download size={16} />
+                                                        </Button>
                                                     </div>
-                                                </td>
-                                            </tr>
+                                                </TableCell>
+                                            </TableRow>
                                         ))}
-                                    </tbody>
-                                </table>
+                                    </TableBody>
+                                </Table>
                             </div>
-                        </div>
+                        </Card>
                     </div>
 
                     {/* --- Sidebar --- */}
                     <div className="space-y-6">
                         {/* Storage Health */}
-                        <div className="card-premium dark:bg-slate-900/60 dark:border-white/10 backdrop-blur-sm rounded-[2.5rem] border border-slate-100 shadow-sm p-8 hover-lift">
+                        <Card className="p-8">
                             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                                 <PieChart size={20} className="text-indigo-600" />
                                 Storage Health
@@ -200,23 +208,21 @@ const Documents = () => {
                                     </div>
                                 </div>
                             </div>
-                            <button className="w-full mt-8 py-3 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl text-xs font-bold hover:shadow-xl hover:scale-105 transition-all">
+                            <Button className="w-full mt-8 bg-slate-900 hover:bg-slate-800">
                                 Upgrade Storage
-                            </button>
-                        </div>
+                            </Button>
+                        </Card>
 
                         {/* Recent Activity Mini-Feed */}
-                        <div className="glass-dark rounded-[2.5rem] p-8 text-white relative overflow-hidden group hover-lift">
+                        <Card className="bg-slate-900 p-8 text-white border-0">
                             <h3 className="text-lg font-bold mb-6 relative z-10">Quick Support</h3>
-                            <p className="text-slate-400 text-xs leading-relaxed mb-6 relative z-10">
+                            <p className="text-slate-400 text-xs leading-relaxed mb-6">
                                 Having trouble finding a file? Contact your HR manager or check the FAQ.
                             </p>
-                            <button className="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs font-bold transition-all border border-white/10 relative z-10">
+                            <Button variant="outline" className="w-full text-white border-white/20 hover:bg-white/10">
                                 View Help Center
-                            </button>
-                            {/* Decorative element */}
-                            <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl"></div>
-                        </div>
+                            </Button>
+                        </Card>
                     </div>
 
                 </div>

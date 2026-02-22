@@ -4,12 +4,46 @@ import {
     Plus,
     Filter,
     MoreVertical,
-    X,
-    Save,
     Camera,
     User,
     AlertCircle
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Employees = () => {
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
@@ -97,11 +131,14 @@ const Employees = () => {
     ];
 
     return (
-        <div>
+        <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                <h2 className="text-xl font-bold text-gray-900">Employees</h2>
-                <button
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Employees</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage your team members</p>
+                </div>
+                <Button
                     onClick={() => {
                         setEditingEmployee(null);
                         setFormData({
@@ -123,343 +160,344 @@ const Employees = () => {
                         });
                         setShowEmployeeModal(true);
                     }}
-                    className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:shadow-xl hover:scale-105 transition-all shadow-sm group"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                 >
-                    <Plus size={18} className="mr-2 group-hover:rotate-90 transition-transform" />
+                    <Plus size={18} className="mr-2" />
                     Add Employee
-                </button>
+                </Button>
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="relative flex-1 group">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={20} />
-                    <input
+            <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+                    <Input
                         type="text"
                         placeholder="Search employees..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        className="pl-10"
                     />
                 </div>
-                <button className="flex items-center px-4 py-2 border border-gray-200 rounded-lg bg-white hover:bg-blue-50 hover:border-blue-300 text-gray-700 hover:text-blue-600 transition-all">
+                <Button variant="outline">
                     <Filter size={18} className="mr-2" />
                     Filter
-                </button>
+                </Button>
             </div>
 
             {/* Table */}
-            <div className="card-premium rounded-xl shadow-sm border border-gray-200 overflow-hidden hover-lift">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+            <Card>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Employee</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         {employees.map((person) => (
-                            <tr key={person.id} className="hover:bg-gradient-to-r hover:from-blue-50/40 hover:to-purple-50/40 transition-all group">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center">
-                                        <div className="flex-shrink-0 h-10 w-10 group-hover:scale-110 transition-transform">
-                                            <img className="h-10 w-10 rounded-full ring-2 ring-white group-hover:ring-blue-300 transition-all" src={person.image} alt="" />
+                            <TableRow key={person.id}>
+                                <TableCell>
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-full overflow-hidden ring-2 ring-white dark:ring-slate-800">
+                                            <img className="h-full w-full object-cover" src={person.image} alt="" />
                                         </div>
-                                        <div className="ml-4">
-                                            <div className="text-sm font-medium text-gray-900">{person.firstName} {person.lastName}</div>
-                                            <div className="text-sm text-gray-500">{person.email}</div>
+                                        <div>
+                                            <div className="font-medium text-slate-900 dark:text-white">
+                                                {person.firstName} {person.lastName}
+                                            </div>
+                                            <div className="text-sm text-muted-foreground">{person.email}</div>
                                         </div>
                                     </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-900">{person.role}</div>
-                                    <div className="text-sm text-gray-500">{person.department}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${person.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="text-sm text-slate-900 dark:text-white font-medium">{person.role}</div>
+                                    <div className="text-sm text-muted-foreground">{person.department}</div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant={person.status === 'Active' ? 'default' : 'secondary'} 
+                                           className={person.status === 'Active' ? 'bg-green-100 text-green-800 hover:bg-green-200' : ''}>
                                         {person.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button className="text-gray-400 hover:text-gray-600">
-                                        <MoreVertical size={18} />
-                                    </button>
-                                </td>
-                            </tr>
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreVertical size={18} />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem>View Details</DropdownMenuItem>
+                                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
-            </div>
+                    </TableBody>
+                </Table>
+            </Card>
 
-            {/* Employee Management Modal */}
-            {showEmployeeModal && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
-                    <div className="card-premium rounded-[2.5rem] w-full max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl animate-scale-in custom-scrollbar">
-                        <div className="p-8">
-                            <div className="flex items-center justify-between mb-8">
-                                <div>
-                                    <h3 className="text-2xl font-bold text-gray-900">
-                                        {editingEmployee ? 'Edit Employee' : 'Add New Employee'}
-                                    </h3>
-                                    <p className="text-sm text-gray-500 mt-1">
-                                        {editingEmployee ? 'Update employee information' : 'Create a new employee record'}
-                                    </p>
+            {/* Employee Management Dialog */}
+            <Dialog open={showEmployeeModal} onOpenChange={setShowEmployeeModal}>
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl">
+                            {editingEmployee ? 'Edit Employee' : 'Add New Employee'}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {editingEmployee ? 'Update employee information' : 'Create a new employee record'}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form className="space-y-6">
+                        {/* Profile Photo Section */}
+                        <div className="flex items-center gap-6">
+                            <div className="relative">
+                                <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    {formData.profileImage ? (
+                                        <img src={formData.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <User size={32} className="text-slate-400" />
+                                        </div>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => setShowEmployeeModal(false)}
-                                    className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                                <Button
+                                    type="button"
+                                    size="icon"
+                                    className="absolute bottom-0 right-0 h-7 w-7 rounded-full"
                                 >
-                                    <X size={20} className="text-gray-400" />
-                                </button>
+                                    <Camera size={14} />
+                                </Button>
                             </div>
-
-                            <form className="space-y-8">
-                                {/* Profile Photo Section */}
-                                <div className="flex items-center gap-6">
-                                    <div className="relative">
-                                        <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden">
-                                            {formData.profileImage ? (
-                                                <img src={formData.profileImage} alt="Profile" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <User size={32} className="text-gray-400" />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <button
-                                            type="button"
-                                            className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all"
-                                        >
-                                            <Camera size={16} />
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-bold text-gray-900">Profile Photo</h4>
-                                        <p className="text-sm text-gray-500">Upload a professional headshot</p>
-                                    </div>
-                                </div>
-
-                                {/* Personal Information */}
-                                <div className="space-y-6">
-                                    <h4 className="text-lg font-bold text-gray-900">Personal Information</h4>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                            <input
-                                                type="text"
-                                                value={formData.firstName}
-                                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                            <input
-                                                type="text"
-                                                value={formData.lastName}
-                                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                                            <input
-                                                type="email"
-                                                value={formData.email}
-                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                            <input
-                                                type="tel"
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                                            <input
-                                                type="text"
-                                                value={formData.address}
-                                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Contact</label>
-                                            <input
-                                                type="text"
-                                                value={formData.emergencyContact}
-                                                onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Job Information */}
-                                <div className="space-y-6">
-                                    <h4 className="text-lg font-bold text-gray-900">Job Information</h4>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Role/Position</label>
-                                            <input
-                                                type="text"
-                                                value={formData.role}
-                                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                                            <select
-                                                value={formData.department}
-                                                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                required
-                                            >
-                                                <option value="">Select department</option>
-                                                <option value="Engineering">Engineering</option>
-                                                <option value="Sales & Marketing">Sales & Marketing</option>
-                                                <option value="Human Resources">Human Resources</option>
-                                                <option value="Finance">Finance</option>
-                                                <option value="Operations">Operations</option>
-                                            </select>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                                            <input
-                                                type="text"
-                                                value={formData.location}
-                                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                                            <input
-                                                type="date"
-                                                value={formData.startDate}
-                                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Salary</label>
-                                            <input
-                                                type="text"
-                                                value={formData.salary}
-                                                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                                                placeholder="e.g. $60,000"
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Work Schedule</label>
-                                            <select
-                                                value={formData.workSchedule}
-                                                onChange={(e) => setFormData({ ...formData, workSchedule: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            >
-                                                <option value="Full-time">Full-time</option>
-                                                <option value="Part-time">Part-time</option>
-                                                <option value="Contract">Contract</option>
-                                                <option value="Internship">Internship</option>
-                                            </select>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Manager</label>
-                                            <input
-                                                type="text"
-                                                value={formData.manager}
-                                                onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                            <select
-                                                value={formData.status}
-                                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            >
-                                                <option value="Active">Active</option>
-                                                <option value="On Leave">On Leave</option>
-                                                <option value="Terminated">Terminated</option>
-                                                <option value="Pending">Pending</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Important Information */}
-                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                                    <div className="flex items-start gap-3">
-                                        <AlertCircle size={20} className="text-blue-600 mt-0.5" />
-                                        <div>
-                                            <p className="text-sm font-bold text-blue-900 mb-2">Employee Guidelines</p>
-                                            <ul className="text-xs text-blue-700 space-y-1">
-                                                <li>• Ensure all required fields are completed accurately</li>
-                                                <li>• Professional email addresses are required for system access</li>
-                                                <li>• Emergency contacts will be used for urgent communications</li>
-                                                <li>• New employees will receive onboarding materials via email</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Action Buttons */}
-                                <div className="flex gap-4 pt-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowEmployeeModal(false)}
-                                        className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-all"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            // Handle form submission here
-                                            console.log('Employee data:', formData);
-                                            setShowEmployeeModal(false);
-                                        }}
-                                        className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:shadow-xl hover:scale-105 font-medium transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <Save size={18} />
-                                        {editingEmployee ? 'Update Employee' : 'Add Employee'}
-                                    </button>
-                                </div>
-                            </form>
+                            <div>
+                                <h4 className="font-semibold">Profile Photo</h4>
+                                <p className="text-sm text-muted-foreground">Upload a professional headshot</p>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            )}
+
+                        <Separator />
+
+                        {/* Personal Information */}
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-lg">Personal Information</h4>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="firstName">First Name</Label>
+                                    <Input
+                                        id="firstName"
+                                        value={formData.firstName}
+                                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="lastName">Last Name</Label>
+                                    <Input
+                                        id="lastName"
+                                        value={formData.lastName}
+                                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email Address</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="phone">Phone Number</Label>
+                                    <Input
+                                        id="phone"
+                                        type="tel"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-2 md:col-span-2">
+                                    <Label htmlFor="address">Address</Label>
+                                    <Input
+                                        id="address"
+                                        value={formData.address}
+                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-2 md:col-span-2">
+                                    <Label htmlFor="emergencyContact">Emergency Contact</Label>
+                                    <Input
+                                        id="emergencyContact"
+                                        value={formData.emergencyContact}
+                                        onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <Separator />
+
+                        {/* Job Information */}
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-lg">Job Information</h4>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="role">Role/Position</Label>
+                                    <Input
+                                        id="role"
+                                        value={formData.role}
+                                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="department">Department</Label>
+                                    <Select
+                                        value={formData.department}
+                                        onValueChange={(value) => setFormData({ ...formData, department: value })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select department" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Engineering">Engineering</SelectItem>
+                                            <SelectItem value="Sales & Marketing">Sales & Marketing</SelectItem>
+                                            <SelectItem value="Human Resources">Human Resources</SelectItem>
+                                            <SelectItem value="Finance">Finance</SelectItem>
+                                            <SelectItem value="Operations">Operations</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="location">Location</Label>
+                                    <Input
+                                        id="location"
+                                        value={formData.location}
+                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="startDate">Start Date</Label>
+                                    <Input
+                                        id="startDate"
+                                        type="date"
+                                        value={formData.startDate}
+                                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="salary">Salary</Label>
+                                    <Input
+                                        id="salary"
+                                        value={formData.salary}
+                                        onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                                        placeholder="e.g. $60,000"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="workSchedule">Work Schedule</Label>
+                                    <Select
+                                        value={formData.workSchedule}
+                                        onValueChange={(value) => setFormData({ ...formData, workSchedule: value })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Full-time">Full-time</SelectItem>
+                                            <SelectItem value="Part-time">Part-time</SelectItem>
+                                            <SelectItem value="Contract">Contract</SelectItem>
+                                            <SelectItem value="Internship">Internship</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="manager">Manager</Label>
+                                    <Input
+                                        id="manager"
+                                        value={formData.manager}
+                                        onChange={(e) => setFormData({ ...formData, manager: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="status">Status</Label>
+                                    <Select
+                                        value={formData.status}
+                                        onValueChange={(value) => setFormData({ ...formData, status: value })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Active">Active</SelectItem>
+                                            <SelectItem value="On Leave">On Leave</SelectItem>
+                                            <SelectItem value="Terminated">Terminated</SelectItem>
+                                            <SelectItem value="Pending">Pending</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Important Information */}
+                        <Alert>
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription className="text-sm">
+                                <p className="font-semibold mb-1">Employee Guidelines</p>
+                                <ul className="text-xs space-y-0.5 ml-4 list-disc">
+                                    <li>Ensure all required fields are completed accurately</li>
+                                    <li>Professional email addresses are required for system access</li>
+                                    <li>Emergency contacts will be used for urgent communications</li>
+                                    <li>New employees will receive onboarding materials via email</li>
+                                </ul>
+                            </AlertDescription>
+                        </Alert>
+                    </form>
+
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowEmployeeModal(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                console.log('Employee data:', formData);
+                                setShowEmployeeModal(false);
+                            }}
+                            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                        >
+                            {editingEmployee ? 'Update Employee' : 'Add Employee'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
