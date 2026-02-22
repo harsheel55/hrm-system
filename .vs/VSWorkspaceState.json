@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Backend",
+    "\\Backend\\HRM-Backend",
+    "\\Backend\\HRM-Backend\\Controllers",
+    "\\Backend\\HRM-Backend\\Data",
+    "\\Backend\\HRM-Backend\\Models",
+    "\\Frontend",
+    "\\Frontend\\src",
+    "\\Frontend\\src\\pages"
+  ],
+  "SelectedNode": "\\Backend\\HRM-Backend\\Models\\LoginRequest.cs",
+  "PreviewInSolutionExplorer": false
+}

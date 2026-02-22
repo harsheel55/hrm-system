@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -28,19 +29,21 @@ function App() {
             <Route path="register" element={<RegisterPage />} />
           </Route>
 
-          {/* Dashboard Routes */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardHome />} />
-            <Route path="employees" element={<Employees />} />
-            <Route path="attendance" element={<Attendance />} />
-            <Route path="payroll" element={<Payroll />} />
-            <Route path="recruitment" element={<Recruitment />} />
-            <Route path="shift" element={<Shift />} />
-            <Route path="documents" element={<Documents />} />
-            <Route path="leave" element={<Leave />} />
-            <Route path="timesheet" element={<Timesheet />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="organization" element={<OrganizationTree />} />
+          {/* Protected Dashboard Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="employees" element={<Employees />} />
+              <Route path="attendance" element={<Attendance />} />
+              <Route path="payroll" element={<Payroll />} />
+              <Route path="recruitment" element={<Recruitment />} />
+              <Route path="shift" element={<Shift />} />
+              <Route path="documents" element={<Documents />} />
+              <Route path="leave" element={<Leave />} />
+              <Route path="timesheet" element={<Timesheet />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="organization" element={<OrganizationTree />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

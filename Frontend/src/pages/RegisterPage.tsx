@@ -2,17 +2,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { registerApi } from "@/api/authApi";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { JSX, SVGProps } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+
+const schema = z.object({
+  fullName: z.string().min(1, "Full name is required"),
+  email: z.string().email("Enter a valid work email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  agreeToTerms: z.boolean().refine((v) => v === true, {
+    message: "You must agree to the Terms of Service",
+  }),
+});
+
+type FormValues = z.infer<typeof schema>;
 
 const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
-  <svg
-    fill="currentColor"
-    height="48"
-    viewBox="0 0 40 48"
-    width="40"
-    {...props}
-  >
+  <svg fill="currentColor" height="48" viewBox="0 0 40 48" width="40" {...props}>
     <clipPath id="a">
       <path d="m0 0h40v48h-40z" />
     </clipPath>
@@ -28,10 +38,38 @@ const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
 );
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { fullName: "", email: "", password: "", agreeToTerms: false },
+  });
+
+  const onSubmit = async (data: FormValues) => {
+    setServerError(null);
+    try {
+      await registerApi({
+        fullName: data.fullName,
+        email: data.email,
+        password: data.password,
+      });
+      setSuccess(true);
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : "Something went wrong.");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-dvh">
       <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14">
-        <CardContent className="">
+        <CardContent>
           <div className="flex flex-col items-center space-y-8">
             <Logo />
 
@@ -47,39 +85,95 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            <div className="w-full space-y-4">
-              <Input
-                type="text"
-                placeholder="Full Name"
-                className="w-full rounded-xl"
-              />
-              <Input
-                type="email"
-                placeholder="Work Email"
-                className="w-full rounded-xl"
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                className="w-full rounded-xl"
-              />
-              
-              <div className="flex items-start gap-2 text-sm">
-                <input type="checkbox" className="rounded mt-0.5" required />
-                <span className="text-muted-foreground">
-                  I agree to the{" "}
-                  <a href="#" className="text-foreground hover:underline">
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-foreground hover:underline">
-                    Privacy Policy
-                  </a>
-                </span>
+            {/* Server error banner */}
+            {serverError && (
+              <div className="w-full rounded-xl bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm text-destructive">
+                {serverError}
+              </div>
+            )}
+
+            {/* Success banner */}
+            {success && (
+              <div className="w-full rounded-xl bg-green-50 border border-green-300 px-4 py-3 text-sm text-green-700">
+                Account created! Redirecting to login…
+              </div>
+            )}
+
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+              className="w-full space-y-4"
+            >
+              {/* Full Name */}
+              <div className="space-y-1">
+                <Input
+                  type="text"
+                  placeholder="Full Name"
+                  className="w-full rounded-xl"
+                  {...register("fullName")}
+                />
+                {errors.fullName && (
+                  <p className="text-xs text-destructive">{errors.fullName.message}</p>
+                )}
               </div>
 
-              <Button className="w-full rounded-xl" size="lg">
-                Create My Account
+              {/* Work Email */}
+              <div className="space-y-1">
+                <Input
+                  type="email"
+                  placeholder="Work Email"
+                  className="w-full rounded-xl"
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1">
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full rounded-xl"
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <p className="text-xs text-destructive">{errors.password.message}</p>
+                )}
+              </div>
+
+              {/* Terms checkbox */}
+              <div className="space-y-1">
+                <div className="flex items-start gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    className="rounded mt-0.5"
+                    {...register("agreeToTerms")}
+                  />
+                  <span className="text-muted-foreground">
+                    I agree to the{" "}
+                    <a href="#" className="text-foreground hover:underline">
+                      Terms of Service
+                    </a>{" "}
+                    and{" "}
+                    <a href="#" className="text-foreground hover:underline">
+                      Privacy Policy
+                    </a>
+                  </span>
+                </div>
+                {errors.agreeToTerms && (
+                  <p className="text-xs text-destructive">{errors.agreeToTerms.message}</p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full rounded-xl"
+                size="lg"
+                disabled={isSubmitting || success}
+              >
+                {isSubmitting ? "Creating account…" : "Create My Account"}
               </Button>
 
               <div className="flex items-center gap-4 py-2">
@@ -88,10 +182,15 @@ export default function RegisterPage() {
                 <Separator className="flex-1" />
               </div>
 
-              <Button variant="outline" className="w-full rounded-xl" size="lg">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full rounded-xl"
+                size="lg"
+              >
                 Single sign-on (SSO)
               </Button>
-            </div>
+            </form>
 
             <p className="text-pretty text-center text-xs w-11/12 text-muted-foreground">
               No credit card required for trial. Get started in less than 2 minutes.
