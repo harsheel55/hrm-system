@@ -2,20 +2,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { loginApi } from "@/api/authApi";
+import { authStore } from "@/store/authStore";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { JSX, SVGProps } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+
+const schema = z.object({
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean().optional(),
+});
+
+type FormValues = z.infer<typeof schema>;
 
 const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
-  <svg
-    fill="currentColor"
-    height="48"
-    viewBox="0 0 40 48"
-    width="40"
-    {...props}
-  >
-    <clipPath id="a">
-      <path d="m0 0h40v48h-40z" />
-    </clipPath>
+  <svg fill="currentColor" height="48" viewBox="0 0 40 48" width="40" {...props}>
+    <clipPath id="a"><path d="m0 0h40v48h-40z" /></clipPath>
     <g clipPath="url(#a)">
       <path d="m25.0887 5.05386-3.933-1.05386-3.3145 12.3696-2.9923-11.16736-3.9331 1.05386 3.233 12.0655-8.05262-8.0526-2.87919 2.8792 8.83271 8.8328-10.99975-2.9474-1.05385625 3.933 12.01860625 3.2204c-.1376-.5935-.2104-1.2119-.2104-1.8473 0-4.4976 3.646-8.1436 8.1437-8.1436 4.4976 0 8.1436 3.646 8.1436 8.1436 0 .6313-.0719 1.2459-.2078 1.8359l10.9227 2.9267 1.0538-3.933-12.0664-3.2332 11.0005-2.9476-1.0539-3.933-12.0659 3.233 8.0526-8.0526-2.8792-2.87916-8.7102 8.71026z" />
       <path d="m27.8723 26.2214c-.3372 1.4256-1.0491 2.7063-2.0259 3.7324l7.913 7.9131 2.8792-2.8792z" />
@@ -28,10 +34,39 @@ const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
 );
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: "", password: "", rememberMe: false },
+  });
+
+  const onSubmit = async (data: FormValues) => {
+    setServerError(null);
+    try {
+      const res = await loginApi({ email: data.email, password: data.password });
+      authStore.saveSession(res.token, { email: res.email });
+      navigate("/dashboard");
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : "Something went wrong.");
+    }
+  };
+
   return (
+<<<<<<< HEAD
     <div className="flex items-center justify-center min-h-dvh bg-background text-foreground transition-colors duration-300">
       <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14 bg-card text-card-foreground border-border shadow-sm transition-colors duration-300">
         <CardContent className="">
+=======
+    <div className="flex items-center justify-center min-h-dvh">
+      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14">
+        <CardContent>
+>>>>>>> f3aa6659ac8e2b3bad09505ba5a3258b75b89903
           <div className="flex flex-col items-center space-y-8">
             <Logo />
 
@@ -47,6 +82,7 @@ export default function LoginPage() {
               </p>
             </div>
 
+<<<<<<< HEAD
             <div className="w-full space-y-4">
               <Input
                 type="text"
@@ -62,6 +98,54 @@ export default function LoginPage() {
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" className="rounded border-border bg-background" />
+=======
+            {/* Server error banner */}
+            {serverError && (
+              <div className="w-full rounded-xl bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm text-destructive">
+                {serverError}
+              </div>
+            )}
+
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+              className="w-full space-y-4"
+            >
+              {/* Email */}
+              <div className="space-y-1">
+                <Input
+                  type="email"
+                  placeholder="Work Email"
+                  className="w-full rounded-xl"
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1">
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full rounded-xl"
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <p className="text-xs text-destructive">{errors.password.message}</p>
+                )}
+              </div>
+
+              {/* Remember me + Forgot password */}
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="rounded"
+                    {...register("rememberMe")}
+                  />
+>>>>>>> f3aa6659ac8e2b3bad09505ba5a3258b75b89903
                   <span className="text-muted-foreground">Remember me</span>
                 </label>
                 <a href="#" className="text-foreground hover:underline">
@@ -69,8 +153,13 @@ export default function LoginPage() {
                 </a>
               </div>
 
-              <Button className="w-full rounded-xl" size="lg">
-                Sign in
+              <Button
+                type="submit"
+                className="w-full rounded-xl"
+                size="lg"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Signing in…" : "Sign in"}
               </Button>
 
               <div className="flex items-center gap-4 py-2">
@@ -79,10 +168,15 @@ export default function LoginPage() {
                 <Separator className="flex-1" />
               </div>
 
-              <Button variant="outline" className="w-full rounded-xl" size="lg">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full rounded-xl"
+                size="lg"
+              >
                 Single sign-on (SSO)
               </Button>
-            </div>
+            </form>
 
             <p className="text-pretty text-center text-xs w-11/12 text-muted-foreground">
               You acknowledge that you read, and agree, to our{" "}

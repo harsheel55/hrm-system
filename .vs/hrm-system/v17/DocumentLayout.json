@@ -1,0 +1,113 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Internship\\Sarjen System\\hrm-system\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\pages\\LoginPage.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\pages\\LoginPage.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\pages\\RegisterPage.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\pages\\RegisterPage.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\components\\ProtectedRoute.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\components\\ProtectedRoute.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\App.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Frontend\\src\\App.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Internship\\Sarjen System\\hrm-system\\Backend\\HRM-Backend\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\HRM-Backend\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Internship\\Sarjen System\\hrm-system\\Backend\\HRM-Backend\\Program.cs",
+              "RelativeDocumentMoniker": "Backend\\HRM-Backend\\Program.cs",
+              "ToolTip": "D:\\Internship\\Sarjen System\\hrm-system\\Backend\\HRM-Backend\\Program.cs",
+              "RelativeToolTip": "Backend\\HRM-Backend\\Program.cs",
+              "ViewState": "AgIAAEcAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-22T09:22:53.94Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "App.tsx",
+              "DocumentMoniker": "D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\App.tsx",
+              "RelativeDocumentMoniker": "Frontend\\src\\App.tsx",
+              "ToolTip": "D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\App.tsx",
+              "RelativeToolTip": "Frontend\\src\\App.tsx",
+              "ViewState": "AgIAADQAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-02-22T09:22:35.459Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ProtectedRoute.tsx",
+              "DocumentMoniker": "D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\components\\ProtectedRoute.tsx",
+              "RelativeDocumentMoniker": "Frontend\\src\\components\\ProtectedRoute.tsx",
+              "ToolTip": "D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\components\\ProtectedRoute.tsx",
+              "RelativeToolTip": "Frontend\\src\\components\\ProtectedRoute.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-02-22T09:22:25.411Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RegisterPage.tsx",
+              "DocumentMoniker": "D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\pages\\RegisterPage.tsx",
+              "RelativeDocumentMoniker": "Frontend\\src\\pages\\RegisterPage.tsx",
+              "ToolTip": "D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\pages\\RegisterPage.tsx",
+              "RelativeToolTip": "Frontend\\src\\pages\\RegisterPage.tsx",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-02-22T09:19:26.563Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LoginPage.tsx",
+              "DocumentMoniker": "D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\pages\\LoginPage.tsx",
+              "RelativeDocumentMoniker": "Frontend\\src\\pages\\LoginPage.tsx",
+              "ToolTip": "D:\\Internship\\Sarjen System\\hrm-system\\Frontend\\src\\pages\\LoginPage.tsx",
+              "RelativeToolTip": "Frontend\\src\\pages\\LoginPage.tsx",
+              "ViewState": "AgIAAKcAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-02-22T09:19:22.149Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
