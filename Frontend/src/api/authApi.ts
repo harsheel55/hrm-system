@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:5139/api/auth";
+const BASE_URL =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() ||
+  "http://localhost:5139/api/auth";
 
 export interface RegisterPayload {
   fullName: string;
@@ -22,6 +24,7 @@ export interface LoginPayload {
 export interface LoginResponse {
   email: string;
   token: string;
+  role: string;
 }
 
 async function handleResponse<T>(res: Response): Promise<T> {
@@ -35,24 +38,46 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return data as T;
 }
 
+async function postJson<T>(url: string, payload: unknown): Promise<T> {
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    return handleResponse<T>(res);
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        "Cannot reach backend API. Make sure backend is running and CORS is configured."
+      );
+    }
+
+    throw error;
+  }
+}
+
 export async function registerApi(
   payload: RegisterPayload
 ): Promise<RegisterResponse> {
-  const res = await fetch(`${BASE_URL}/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  return handleResponse<RegisterResponse>(res);
+  return postJson<RegisterResponse>(`${BASE_URL}/register`, payload);
 }
 
 export async function loginApi(
   payload: LoginPayload
 ): Promise<LoginResponse> {
-  const res = await fetch(`${BASE_URL}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  return handleResponse<LoginResponse>(res);
+  return postJson<LoginResponse>(`${BASE_URL}/login`, payload);
+}
+
+export async function adminRegisterApi(
+  payload: RegisterPayload
+): Promise<RegisterResponse> {
+  return postJson<RegisterResponse>(`${BASE_URL}/admin/register`, payload);
+}
+
+export async function adminLoginApi(
+  payload: LoginPayload
+): Promise<LoginResponse> {
+  return postJson<LoginResponse>(`${BASE_URL}/admin/login`, payload);
 }

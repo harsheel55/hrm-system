@@ -121,12 +121,12 @@ const AdminLayout = () => {
                   >
                     <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-500 to-indigo-500">
                       <span className="text-xs font-semibold text-white">
-                        {(user?.strUserName || 'Admin').slice(0, 2).toUpperCase()}
+                        {(user?.name || 'Admin').slice(0, 2).toUpperCase()}
                       </span>
                     </div>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user?.strUserName || 'Admin'}</span>
-                      <span className="truncate text-xs text-muted-foreground">{user?.strEmail || 'admin@nemsys.local'}</span>
+                      <span className="truncate font-semibold">{user?.name || 'Admin'}</span>
+                      <span className="truncate text-xs text-muted-foreground">{user?.email || 'admin@nemsys.local'}</span>
                     </div>
                     <ChevronUp className="ml-auto size-4" />
                   </SidebarMenuButton>

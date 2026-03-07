@@ -152,8 +152,8 @@ export default function RoleManagementPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Role Management</h1>
-          <p className="text-gray-500 mt-1">Manage user roles and permissions</p>
+          <h1 className="text-3xl font-bold text-foreground">Role Management</h1>
+          <p className="text-muted-foreground mt-1">Manage user roles and permissions</p>
         </div>
         <Button onClick={handleAddRole} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="mr-2 h-4 w-4" />
@@ -169,7 +169,7 @@ export default function RoleManagementPage() {
           </CardTitle>
           <CardDescription>Total: {roles.length} roles</CardDescription>
           <div className="relative mt-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search roles..."
               value={searchQuery}
@@ -194,7 +194,7 @@ export default function RoleManagementPage() {
               <TableBody>
                 {filteredRoles.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       No roles found
                     </TableCell>
                   </TableRow>
@@ -216,7 +216,7 @@ export default function RoleManagementPage() {
                           className={
                             role.bolIsActive
                               ? 'bg-green-100 text-green-700 border-green-200'
-                              : 'bg-gray-100 text-gray-700 border-gray-200'
+                              : 'bg-muted text-muted-foreground border-border'
                           }
                         >
                           {role.bolIsActive ? 'Active' : 'Inactive'}
@@ -230,7 +230,7 @@ export default function RoleManagementPage() {
                           </Badge>
                         )}
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {new Date(role.dtCreatedDate).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right">

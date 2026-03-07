@@ -187,8 +187,8 @@ export default function UserRightsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">User Rights Management</h1>
-          <p className="text-gray-500 mt-1">Configure role-based menu permissions</p>
+          <h1 className="text-3xl font-bold text-foreground">User Rights Management</h1>
+          <p className="text-muted-foreground mt-1">Configure role-based menu permissions</p>
         </div>
         {selectedRoleId && (
           <Button onClick={handleSaveAll} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
@@ -232,8 +232,8 @@ export default function UserRightsPage() {
         </CardHeader>
         <CardContent>
           {!selectedRoleId ? (
-            <div className="text-center py-12 text-gray-500">
-              <Lock className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <div className="text-center py-12 text-muted-foreground">
+              <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <p>Select a role to manage permissions</p>
             </div>
           ) : (

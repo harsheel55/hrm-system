@@ -1,38 +1,54 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { authService } from '../services/auth.service';
-import type { LoginDto, LoginResponseDto } from '../types/api.types';
+import { adminLoginApi, loginApi } from '../api/authApi';
+import { authStore, type AuthUser } from '../store/authStore';
 
 interface AuthContextType {
-  user: LoginResponseDto | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: LoginDto) => Promise<void>;
+  login: (
+    credentials: { email: string; password: string },
+    mode?: 'user' | 'admin'
+  ) => Promise<AuthUser>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<LoginResponseDto | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
-    const currentUser = authService.getCurrentUser();
+    const currentUser = authStore.getUser();
     if (currentUser) {
       setUser(currentUser);
     }
     setIsLoading(false);
   }, []);
 
-  const login = async (credentials: LoginDto) => {
-    const response = await authService.login(credentials);
-    setUser(response.data);
+  const login = async (
+    credentials: { email: string; password: string },
+    mode: 'user' | 'admin' = 'user'
+  ): Promise<AuthUser> => {
+    const response = mode === 'admin'
+      ? await adminLoginApi(credentials)
+      : await loginApi(credentials);
+
+    const authUser: AuthUser = {
+      email: response.email,
+      role: response.role === 'Admin' ? 'Admin' : 'User',
+      name: response.email.split('@')[0],
+    };
+
+    authStore.saveSession(response.token, authUser);
+    setUser(authUser);
+    return authUser;
   };
 
   const logout = () => {
-    authService.logout();
+    authStore.clearSession();
     setUser(null);
   };
 

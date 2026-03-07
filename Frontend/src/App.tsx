@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -20,7 +20,6 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 // Super Admin Imports
 import AdminLayout from './components/layouts/AdminLayout';
-import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import RoleManagementPage from './pages/admin/RoleManagementPage';
@@ -58,20 +57,19 @@ function App() {
             </Route>
           </Route>
 
-          {/* Super Admin Login Route */}
-          <Route path="/login" element={<AdminLoginPage />} />
-
-          {/* Super Admin Routes (Unprotected for Development) */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="users" element={<UserManagementPage />} />
-            <Route path="roles" element={<RoleManagementPage />} />
-            <Route path="rights" element={<UserRightsPage />} />
-            <Route path="menus" element={<MenuManagementPage />} />
-            <Route path="blogs" element={<BlogManagementPage />} />
-            <Route path="blog-categories" element={<BlogCategoryPage />} />
-            <Route path="blog-tags" element={<BlogTagPage />} />
+          {/* Super Admin Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<UserManagementPage />} />
+              <Route path="roles" element={<RoleManagementPage />} />
+              <Route path="rights" element={<UserRightsPage />} />
+              <Route path="menus" element={<MenuManagementPage />} />
+              <Route path="blogs" element={<BlogManagementPage />} />
+              <Route path="blog-categories" element={<BlogCategoryPage />} />
+              <Route path="blog-tags" element={<BlogTagPage />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

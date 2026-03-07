@@ -51,6 +51,42 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
         });
     }
 
+    // POST api/auth/admin/register
+    [HttpPost("admin/register")]
+    public async Task<IActionResult> AdminRegister([FromBody] RegisterRequest request, CancellationToken cancellationToken)
+    {
+        bool emailExists = await dbContext.Users
+            .AsNoTracking()
+            .AnyAsync(x => x.Email == request.Email, cancellationToken);
+
+        if (emailExists)
+        {
+            return Conflict(new { message = "An admin account with this email already exists." });
+        }
+
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+        var newAdmin = new Register
+        {
+            FullName = request.FullName,
+            Email = request.Email,
+            Password = hashedPassword,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        dbContext.Users.Add(newAdmin);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return CreatedAtAction(nameof(AdminRegister), new RegisterResponse
+        {
+            Id = newAdmin.Id,
+            FullName = newAdmin.FullName,
+            Email = newAdmin.Email,
+            CreatedAt = newAdmin.CreatedAt,
+            Message = "Admin account created successfully."
+        });
+    }
+
     // POST api/auth/login
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
@@ -68,8 +104,8 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
                 return Unauthorized(new { message = "Invalid email or password." });
             }
 
-            var token = GenerateToken(configuration, registeredUser.Email);
-            return Ok(new LoginResponse { Email = registeredUser.Email, Token = token });
+            var token = GenerateToken(configuration, registeredUser.Email, "User");
+            return Ok(new LoginResponse { Email = registeredUser.Email, Token = token, Role = "User" });
         }
 
         // Fall back to the legacy Login table (plain-text passwords)
@@ -84,11 +120,34 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
             return Unauthorized(new { message = "Invalid email or password." });
         }
 
-        var legacyToken = GenerateToken(configuration, legacyUser.Email);
-        return Ok(new LoginResponse { Email = legacyUser.Email, Token = legacyToken });
+        var legacyToken = GenerateToken(configuration, legacyUser.Email, "User");
+        return Ok(new LoginResponse { Email = legacyUser.Email, Token = legacyToken, Role = "User" });
     }
 
-    private static string GenerateToken(IConfiguration configuration, string email)
+    // POST api/auth/admin/login
+    [HttpPost("admin/login")]
+    public async Task<IActionResult> AdminLogin([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    {
+        var adminUser = await dbContext.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+
+        if (adminUser is null)
+        {
+            return Unauthorized(new { message = "Invalid admin email or password." });
+        }
+
+        bool passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, adminUser.Password);
+        if (!passwordValid)
+        {
+            return Unauthorized(new { message = "Invalid admin email or password." });
+        }
+
+        var token = GenerateToken(configuration, adminUser.Email, "Admin");
+        return Ok(new LoginResponse { Email = adminUser.Email, Token = token, Role = "Admin" });
+    }
+
+    private static string GenerateToken(IConfiguration configuration, string email, string role)
     {
         var key          = configuration["Jwt:Key"]           ?? string.Empty;
         var issuer       = configuration["Jwt:Issuer"]        ?? string.Empty;
@@ -98,6 +157,7 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, email),
+            new(ClaimTypes.Role, role),
             new(JwtRegisteredClaimNames.Sub, email)
         };
 

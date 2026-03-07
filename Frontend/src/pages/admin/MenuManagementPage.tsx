@@ -126,8 +126,8 @@ export default function MenuManagementPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Menu Management</h1>
-          <p className="text-gray-500 mt-1">Configure application navigation menus</p>
+          <h1 className="text-3xl font-bold text-foreground">Menu Management</h1>
+          <p className="text-muted-foreground mt-1">Configure application navigation menus</p>
         </div>
         <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="mr-2 h-4 w-4" />
@@ -143,7 +143,7 @@ export default function MenuManagementPage() {
           </CardTitle>
           <CardDescription>Total: {menus.length} menu items</CardDescription>
           <div className="relative mt-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search menus..."
               value={searchQuery}
@@ -170,7 +170,7 @@ export default function MenuManagementPage() {
                   <TableRow key={menu.strMenuGUID}>
                     <TableCell className="font-medium">{menu.strMenuName}</TableCell>
                     <TableCell><code className="text-sm">{menu.strMenuKey}</code></TableCell>
-                    <TableCell className="text-sm text-gray-600">{menu.strPath || '-'}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{menu.strPath || '-'}</TableCell>
                     <TableCell>{menu.dblSeqNo}</TableCell>
                     <TableCell>
                       <Badge variant={menu.bolIsActive ? 'default' : 'secondary'}>

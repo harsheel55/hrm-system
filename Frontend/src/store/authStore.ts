@@ -3,6 +3,8 @@ const USER_KEY = "hrm_user";
 
 export interface AuthUser {
   email: string;
+  role: "Admin" | "User";
+  name?: string;
 }
 
 export const authStore = {

@@ -1,5 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     Clock,
     Calendar,
@@ -40,9 +39,17 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
+import { useAuth } from '@/contexts/AuthContext';
 
 const DashboardLayout = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+
+    const handleSignOut = () => {
+        logout();
+        navigate('/login');
+    };
 
     // Main Navigation (Sidebar Icons)
     const apps = [
@@ -121,8 +128,8 @@ const DashboardLayout = () => {
                                             <User2 className="size-4 text-white" />
                                         </div>
                                         <div className="grid flex-1 text-left text-sm leading-tight">
-                                            <span className="truncate font-semibold">User Name</span>
-                                            <span className="truncate text-xs text-muted-foreground">user@email.com</span>
+                                            <span className="truncate font-semibold">{user?.name || 'User'}</span>
+                                            <span className="truncate text-xs text-muted-foreground">{user?.email || 'user@email.com'}</span>
                                         </div>
                                         <ChevronUp className="ml-auto size-4" />
                                     </SidebarMenuButton>
@@ -137,7 +144,7 @@ const DashboardLayout = () => {
                                         <Settings className="mr-2 h-4 w-4" />
                                         <span>Settings</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem onClick={handleSignOut}>
                                         <LogOut className="mr-2 h-4 w-4" />
                                         <span>Sign out</span>
                                     </DropdownMenuItem>

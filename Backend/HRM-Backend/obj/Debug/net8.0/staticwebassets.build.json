@@ -1,1 +1,11 @@
-{"Version":1,"Hash":"GLRVVFeC0RL7x7m6iTmlqpi7Y285jhZfmrC0FOVvhFg=","Source":"HRM-Backend","BasePath":"_content/HRM-Backend","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "FdhONhA51A29soxieJSz1TxbkkO6WvKW990aIjVNaro=",
+  "Source": "HRM-Backend",
+  "BasePath": "_content/HRM-Backend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -2,14 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { loginApi } from "@/api/authApi";
-import { authStore } from "@/store/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { JSX, SVGProps } from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { useAuth } from "@/contexts/AuthContext";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -35,7 +34,11 @@ const Logo = (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
+  const adminEmail =
+    ((import.meta.env.VITE_ADMIN_EMAIL as string | undefined)?.trim().toLowerCase()) ||
+    "admin@hrm.local";
 
   const {
     register,
@@ -49,8 +52,15 @@ export default function LoginPage() {
   const onSubmit = async (data: FormValues) => {
     setServerError(null);
     try {
-      const res = await loginApi({ email: data.email, password: data.password });
-      authStore.saveSession(res.token, { email: res.email });
+      const normalizedEmail = data.email.trim().toLowerCase();
+      const mode = normalizedEmail === adminEmail ? "admin" : "user";
+      const authUser = await login({ email: data.email, password: data.password }, mode);
+
+      if (authUser.role === "Admin") {
+        navigate("/admin/dashboard");
+        return;
+      }
+
       navigate("/dashboard");
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Something went wrong.");
@@ -58,15 +68,9 @@ export default function LoginPage() {
   };
 
   return (
-<<<<<<< HEAD
     <div className="flex items-center justify-center min-h-dvh bg-background text-foreground transition-colors duration-300">
       <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14 bg-card text-card-foreground border-border shadow-sm transition-colors duration-300">
-        <CardContent className="">
-=======
-    <div className="flex items-center justify-center min-h-dvh">
-      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14">
         <CardContent>
->>>>>>> f3aa6659ac8e2b3bad09505ba5a3258b75b89903
           <div className="flex flex-col items-center space-y-8">
             <Logo />
 
@@ -82,23 +86,6 @@ export default function LoginPage() {
               </p>
             </div>
 
-<<<<<<< HEAD
-            <div className="w-full space-y-4">
-              <Input
-                type="text"
-                placeholder="Username"
-                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
-              />
-              
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="rounded border-border bg-background" />
-=======
             {/* Server error banner */}
             {serverError && (
               <div className="w-full rounded-xl bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm text-destructive">
@@ -145,7 +132,6 @@ export default function LoginPage() {
                     className="rounded"
                     {...register("rememberMe")}
                   />
->>>>>>> f3aa6659ac8e2b3bad09505ba5a3258b75b89903
                   <span className="text-muted-foreground">Remember me</span>
                 </label>
                 <a href="#" className="text-foreground hover:underline">
@@ -159,7 +145,7 @@ export default function LoginPage() {
                 size="lg"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Signing in…" : "Sign in"}
+                {isSubmitting ? "Signing in..." : "Sign in"}
               </Button>
 
               <div className="flex items-center gap-4 py-2">

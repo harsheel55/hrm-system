@@ -67,15 +67,9 @@ export default function RegisterPage() {
   };
 
   return (
-<<<<<<< HEAD
     <div className="flex items-center justify-center min-h-dvh bg-background text-foreground transition-colors duration-300">
       <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14 bg-card text-card-foreground border-border shadow-sm transition-colors duration-300">
-        <CardContent className="">
-=======
-    <div className="flex items-center justify-center min-h-dvh">
-      <Card className="w-full max-w-sm rounded-4xl px-6 py-10 pt-14">
         <CardContent>
->>>>>>> f3aa6659ac8e2b3bad09505ba5a3258b75b89903
           <div className="flex flex-col items-center space-y-8">
             <Logo />
 
@@ -91,37 +85,6 @@ export default function RegisterPage() {
               </p>
             </div>
 
-<<<<<<< HEAD
-            <div className="w-full space-y-4">
-              <Input
-                type="text"
-                placeholder="Full Name"
-                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
-              />
-              <Input
-                type="email"
-                placeholder="Work Email"
-                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                className="w-full rounded-xl bg-background text-foreground border-border placeholder:text-muted-foreground"
-              />
-              
-              <div className="flex items-start gap-2 text-sm">
-                <input type="checkbox" className="rounded mt-0.5 border-border bg-background" required />
-                <span className="text-muted-foreground">
-                  I agree to the{" "}
-                  <a href="#" className="text-foreground hover:underline">
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-foreground hover:underline">
-                    Privacy Policy
-                  </a>
-                </span>
-=======
             {/* Server error banner */}
             {serverError && (
               <div className="w-full rounded-xl bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm text-destructive">
@@ -132,7 +95,7 @@ export default function RegisterPage() {
             {/* Success banner */}
             {success && (
               <div className="w-full rounded-xl bg-green-50 border border-green-300 px-4 py-3 text-sm text-green-700">
-                Account created! Redirecting to login…
+                Account created! Redirecting to login...
               </div>
             )}
 
@@ -152,7 +115,6 @@ export default function RegisterPage() {
                 {errors.fullName && (
                   <p className="text-xs text-destructive">{errors.fullName.message}</p>
                 )}
->>>>>>> f3aa6659ac8e2b3bad09505ba5a3258b75b89903
               </div>
 
               {/* Work Email */}
@@ -211,7 +173,7 @@ export default function RegisterPage() {
                 size="lg"
                 disabled={isSubmitting || success}
               >
-                {isSubmitting ? "Creating account…" : "Create My Account"}
+                {isSubmitting ? "Creating account..." : "Create My Account"}
               </Button>
 
               <div className="flex items-center gap-4 py-2">

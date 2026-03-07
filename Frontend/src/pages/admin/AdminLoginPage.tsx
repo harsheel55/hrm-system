@@ -12,8 +12,8 @@ import { Alert, AlertDescription } from '../../components/ui/alert';
 import { Eye, EyeOff, LogIn, Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
-  strEmail: z.string().email('Invalid email address'),
-  strPassword: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
     setError(null);
 
     try {
-      await login(data);
+      await login(data, 'admin');
       navigate('/admin/dashboard');
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check your credentials.');
@@ -77,12 +77,12 @@ export default function AdminLoginPage() {
                 id="email"
                 type="email"
                 placeholder="admin@example.com"
-                {...register('strEmail')}
+                {...register('email')}
                 disabled={isLoading}
                 className="h-11"
               />
-              {errors.strEmail && (
-                <p className="text-sm text-red-500">{errors.strEmail.message}</p>
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
               )}
             </div>
 
@@ -93,7 +93,7 @@ export default function AdminLoginPage() {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
-                  {...register('strPassword')}
+                  {...register('password')}
                   disabled={isLoading}
                   className="h-11 pr-10"
                 />
@@ -106,8 +106,8 @@ export default function AdminLoginPage() {
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              {errors.strPassword && (
-                <p className="text-sm text-red-500">{errors.strPassword.message}</p>
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password.message}</p>
               )}
             </div>
 
@@ -131,8 +131,14 @@ export default function AdminLoginPage() {
           </form>
 
           <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Default Credentials:</p>
-            <p className="font-mono text-xs mt-1">superadmin@nemsys.local</p>
+            <p>Need an admin account?</p>
+            <button
+              type="button"
+              onClick={() => navigate('/admin/register')}
+              className="font-semibold text-blue-600 hover:underline"
+            >
+              Register admin
+            </button>
           </div>
         </CardContent>
       </Card>
