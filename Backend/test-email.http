@@ -1,0 +1,114 @@
+### Test Email Functionality - Forgot Password with OTP Email
+
+### Step 1: Request OTP (will send email if SMTP configured)
+POST http://localhost:5244/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "strEmail": "neminath@admin.com"
+}
+
+### Expected Response (Development):
+# {
+#   "statusCode": 200,
+#   "message": "If the email exists, an OTP has been sent to it",
+#   "data": {
+#     "strOTP": "123456",  // Only visible in DEBUG mode
+#     "dtOTPExpiry": "2026-01-19T12:30:00Z"
+#   }
+# }
+
+### Expected Email:
+# Subject: Password Reset OTP - Neminath
+# Body: Beautiful HTML template with OTP code
+# To: neminath@admin.com
+
+---
+
+### Step 2: Reset Password with OTP (will send confirmation email)
+POST http://localhost:5244/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "strEmail": "neminath@admin.com",
+  "strOTP": "123456",
+  "strNewPassword": "NewAdmin@123",
+  "strConfirmPassword": "NewAdmin@123"
+}
+
+### Expected Response:
+# {
+#   "statusCode": 200,
+#   "message": "Password reset successfully",
+#   "data": {}
+# }
+
+### Expected Email:
+# Subject: Password Reset Successful - Neminath
+# Body: Confirmation with success icon
+# To: neminath@admin.com
+
+---
+
+### Step 3: Login with New Password
+POST http://localhost:5244/api/auth/login
+Content-Type: application/json
+
+{
+  "strEmail": "neminath@admin.com",
+  "strPassword": "NewAdmin@123"
+}
+
+---
+
+### SMTP Configuration Check
+
+# Before testing, update your appsettings.Development.json:
+
+# {
+#   "Smtp": {
+#     "Host": "smtp.gmail.com",
+#     "Port": "587",
+#     "Username": "your-email@gmail.com",
+#     "Password": "your-16-char-app-password",
+#     "FromEmail": "your-email@gmail.com",
+#     "FromName": "Neminath Support (Dev)",
+#     "EnableSsl": "true"
+#   }
+# }
+
+# See EMAIL_SETUP.md for detailed SMTP configuration instructions
+
+---
+
+### Notes:
+
+# 1. In DEBUG mode, OTP is returned in response for testing
+# 2. In RELEASE mode, OTP is only sent via email (more secure)
+# 3. Email sending is fire-and-forget (async) to prevent timing attacks
+# 4. Check application logs if emails are not being sent
+# 5. OTP expires in 10 minutes
+
+---
+
+### Troubleshooting:
+
+# If emails are not being sent, check:
+# 1. SMTP configuration in appsettings.Development.json
+# 2. Console logs for error messages: "Failed to send email to..."
+# 3. Gmail: Use App Password, not regular password (see EMAIL_SETUP.md)
+# 4. Port 587 is not blocked by firewall
+# 5. Enable 2FA on Gmail and generate App Password
+
+---
+
+### Change Password Back (if needed)
+POST http://localhost:5244/api/auth/change-password
+Content-Type: application/json
+Authorization: Bearer YOUR_AUTH_TOKEN
+
+{
+  "strCurrentPassword": "NewAdmin@123",
+  "strNewPassword": "Admin@123",
+  "strConfirmPassword": "Admin@123"
+}

@@ -1,0 +1,695 @@
+{
+  "info": {
+    "name": "Neminath Blog System API",
+    "description": "Complete API collection for Blog, Blog Category, and Blog Tag endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"SuperAdmin@123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5244/api/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blog Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5244/api/blogcategory",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogcategory"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5244/api/blogcategory/550e8400-e29b-41d4-a716-446655440001",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogcategory",
+                "550e8400-e29b-41d4-a716-446655440001"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Category by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5244/api/blogcategory/slug/technology",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogcategory",
+                "slug",
+                "technology"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"strCategoryName\": \"Technology\",\n  \"strCategorySlug\": \"technology\",\n  \"strCategoryDescription\": \"Technology and programming related posts\",\n  \"strMetaTitle\": \"Technology Blog\",\n  \"strMetaDescription\": \"Technology posts and tutorials\",\n  \"strMetaKeywords\": \"tech,technology,programming\",\n  \"intDisplayOrder\": 1,\n  \"bolIsActive\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5244/api/blogcategory",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogcategory"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"strCategoryName\": \"Updated Technology\",\n  \"strCategorySlug\": \"technology\",\n  \"strCategoryDescription\": \"Updated technology posts\",\n  \"intDisplayOrder\": 2,\n  \"bolIsActive\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5244/api/blogcategory/{{category_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogcategory",
+                "{{category_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5244/api/blogcategory/{{category_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogcategory",
+                "{{category_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blog Tags",
+      "item": [
+        {
+          "name": "Get All Tags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5244/api/blogtag",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogtag"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tag by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5244/api/blogtag/550e8400-e29b-41d4-a716-446655440003",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogtag",
+                "550e8400-e29b-41d4-a716-446655440003"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tag by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5244/api/blogtag/slug/csharp",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogtag",
+                "slug",
+                "csharp"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Tag",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"strTagName\": \"C#\",\n  \"strTagSlug\": \"csharp\",\n  \"bolIsActive\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5244/api/blogtag",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogtag"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Tag",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"strTagName\": \"C# Advanced\",\n  \"strTagSlug\": \"csharp\",\n  \"bolIsActive\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5244/api/blogtag/{{tag_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogtag",
+                "{{tag_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Tag",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5244/api/blogtag/{{tag_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blogtag",
+                "{{tag_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "item": [
+        {
+          "name": "Get All Blogs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5244/api/blog?includeInactive=false",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog"
+              ],
+              "query": [
+                {
+                  "key": "includeInactive",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Published Blogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5244/api/blog/published",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog",
+                "published"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Featured Blogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5244/api/blog/featured",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog",
+                "featured"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blog by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5244/api/blog/{{blog_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog",
+                "{{blog_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blog by Slug",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5244/api/blog/slug/intro-to-aspnet-core",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog",
+                "slug",
+                "intro-to-aspnet-core"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blogs by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5244/api/blog/category/{{category_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog",
+                "category",
+                "{{category_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Blog",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "strCategoryGUID",
+                  "value": "550e8400-e29b-41d4-a716-446655440001",
+                  "type": "text"
+                },
+                {
+                  "key": "strBlogSlug",
+                  "value": "intro-to-aspnet-core",
+                  "type": "text"
+                },
+                {
+                  "key": "strBlogTitle",
+                  "value": "Introduction to ASP.NET Core",
+                  "type": "text"
+                },
+                {
+                  "key": "strShortDescription",
+                  "value": "Learn the basics of ASP.NET Core framework",
+                  "type": "text"
+                },
+                {
+                  "key": "strFullContent",
+                  "value": "ASP.NET Core is a modern, open-source framework for building cloud-enabled applications...",
+                  "type": "text"
+                },
+                {
+                  "key": "strMetaTitle",
+                  "value": "ASP.NET Core Tutorial",
+                  "type": "text"
+                },
+                {
+                  "key": "strMetaDescription",
+                  "value": "Learn ASP.NET Core development from basics",
+                  "type": "text"
+                },
+                {
+                  "key": "strMetaKeywords",
+                  "value": "aspnet,core,tutorial,dotnet",
+                  "type": "text"
+                },
+                {
+                  "key": "dtPublishDate",
+                  "value": "2026-01-21T10:00:00Z",
+                  "type": "text"
+                },
+                {
+                  "key": "bolIsPublished",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "bolIsFeatured",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "bolIsActive",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "strFeaturedImage",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:5244/api/blog",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "strBlogTitle",
+                  "value": "Updated: Introduction to ASP.NET Core",
+                  "type": "text"
+                },
+                {
+                  "key": "strShortDescription",
+                  "value": "Learn the basics of ASP.NET Core framework - updated version",
+                  "type": "text"
+                },
+                {
+                  "key": "bolIsFeatured",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:5244/api/blog/{{blog_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog",
+                "{{blog_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5244/api/blog/{{blog_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5244",
+              "path": [
+                "api",
+                "blog",
+                "{{blog_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5244/api"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "description": "JWT Bearer token obtained from login"
+    },
+    {
+      "key": "blog_id",
+      "value": "",
+      "description": "Blog GUID (strBlogGUID)"
+    },
+    {
+      "key": "category_id",
+      "value": "",
+      "description": "Category GUID (strCategoryGUID)"
+    },
+    {
+      "key": "tag_id",
+      "value": "",
+      "description": "Tag GUID (strTagGUID)"
+    }
+  ]
+}

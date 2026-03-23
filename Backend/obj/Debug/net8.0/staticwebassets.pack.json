@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\sem-8\\HRM service system\\Backend\\wwwroot\\uploads\\blog-categories\\8f396f2b-b1db-4e13-b753-579ca49a83c1_download.jpg",
+      "PackagePath": "staticwebassets\\uploads\\blog-categories\\8f396f2b-b1db-4e13-b753-579ca49a83c1_download.jpg"
+    },
+    {
+      "Id": "D:\\sem-8\\HRM service system\\Backend\\wwwroot\\uploads\\blog-featured\\1597846e-9142-4d60-9f99-79e6083f42da_download.jpg",
+      "PackagePath": "staticwebassets\\uploads\\blog-featured\\1597846e-9142-4d60-9f99-79e6083f42da_download.jpg"
+    },
+    {
+      "Id": "D:\\sem-8\\HRM service system\\Backend\\wwwroot\\uploads\\blog-featured\\32fb9574-77b0-4ae2-95db-8c627c255881_download.jpg",
+      "PackagePath": "staticwebassets\\uploads\\blog-featured\\32fb9574-77b0-4ae2-95db-8c627c255881_download.jpg"
+    },
+    {
+      "Id": "D:\\sem-8\\HRM service system\\Backend\\wwwroot\\uploads\\blog-featured\\5176606b-282e-4118-9d84-ca1e1b2ba5f1_download.jpg",
+      "PackagePath": "staticwebassets\\uploads\\blog-featured\\5176606b-282e-4118-9d84-ca1e1b2ba5f1_download.jpg"
+    },
+    {
+      "Id": "D:\\sem-8\\HRM service system\\Backend\\wwwroot\\uploads\\profiles\\bd6ee6af-a7f8-4a84-b3bb-82e93ec9d9a4_639045110276518390.jpg",
+      "PackagePath": "staticwebassets\\uploads\\profiles\\bd6ee6af-a7f8-4a84-b3bb-82e93ec9d9a4_639045110276518390.jpg"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Backend.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.Backend.props",
+      "PackagePath": "build\\Backend.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.Backend.props",
+      "PackagePath": "buildMultiTargeting\\Backend.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.Backend.props",
+      "PackagePath": "buildTransitive\\Backend.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
