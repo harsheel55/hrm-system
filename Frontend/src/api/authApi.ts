@@ -9,7 +9,7 @@ export interface RegisterPayload {
 }
 
 export interface RegisterResponse {
-  id: number;
+  id: string;
   fullName: string;
   email: string;
   createdAt: string;

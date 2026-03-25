@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Backend.Data;
 using Backend.Models;
@@ -18,10 +19,12 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
         // Check if email is already taken
-        bool emailExists = await dbContext.Registers
+        bool emailExists = await dbContext.Logins
             .AsNoTracking()
-            .AnyAsync(x => x.Email == request.Email, cancellationToken);
+            .AnyAsync(x => x.Email == normalizedEmail, cancellationToken);
 
         if (emailExists)
         {
@@ -31,24 +34,22 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
         // Hash the password before saving
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-        var newUser = new Register
+        var newUser = new Login
         {
-            FullName  = request.FullName,
-            Email     = request.Email,
-            Password  = hashedPassword,
-            CreatedAt = DateTime.UtcNow
+            Email = normalizedEmail,
+            Password = hashedPassword
         };
 
-        dbContext.Registers.Add(newUser);
+        dbContext.Logins.Add(newUser);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return CreatedAtAction(nameof(Register), new RegisterResponse
         {
-            Id        = newUser.Id,
-            FullName  = newUser.FullName,
-            Email     = newUser.Email,
-            CreatedAt = newUser.CreatedAt,
-            Message   = "Account created successfully."
+            Id = Guid.NewGuid(),
+            FullName = request.FullName,
+            Email = newUser.Email,
+            CreatedAt = DateTime.UtcNow,
+            Message = "Account created successfully."
         });
     }
 
@@ -56,9 +57,11 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
     [HttpPost("admin/register")]
     public async Task<IActionResult> AdminRegister([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
-        bool emailExists = await dbContext.Registers
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
+        bool emailExists = await dbContext.Logins
             .AsNoTracking()
-            .AnyAsync(x => x.Email == request.Email, cancellationToken);
+            .AnyAsync(x => x.Email == normalizedEmail, cancellationToken);
 
         if (emailExists)
         {
@@ -67,23 +70,21 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
 
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-        var newAdmin = new Register
+        var newAdmin = new Login
         {
-            FullName = request.FullName,
-            Email = request.Email,
-            Password = hashedPassword,
-            CreatedAt = DateTime.UtcNow
+            Email = normalizedEmail,
+            Password = hashedPassword
         };
 
-        dbContext.Registers.Add(newAdmin);
+        dbContext.Logins.Add(newAdmin);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return CreatedAtAction(nameof(AdminRegister), new RegisterResponse
         {
-            Id = newAdmin.Id,
-            FullName = newAdmin.FullName,
+            Id = Guid.NewGuid(),
+            FullName = request.FullName,
             Email = newAdmin.Email,
-            CreatedAt = newAdmin.CreatedAt,
+            CreatedAt = DateTime.UtcNow,
             Message = "Admin account created successfully."
         });
     }
@@ -92,14 +93,15 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
-        // First try the Users table (registered via /register, BCrypt hashed)
-        var registeredUser = await dbContext.Registers
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
+        var registeredUser = await dbContext.Logins
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+            .SingleOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken);
 
         if (registeredUser is not null)
         {
-            bool passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, registeredUser.Password);
+            bool passwordValid = VerifyPassword(request.Password, registeredUser.Password);
             if (!passwordValid)
             {
                 return Unauthorized(new { message = "Invalid email or password." });
@@ -109,36 +111,25 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
             return Ok(new LoginResponse { Email = registeredUser.Email, Token = token, Role = "User" });
         }
 
-        // Fall back to the legacy Login table (plain-text passwords)
-        var legacyUser = await dbContext.Logins
-            .AsNoTracking()
-            .SingleOrDefaultAsync(
-                x => x.Email == request.Email && x.Password == request.Password,
-                cancellationToken);
-
-        if (legacyUser is null)
-        {
-            return Unauthorized(new { message = "Invalid email or password." });
-        }
-
-        var legacyToken = GenerateToken(configuration, legacyUser.Email, "User");
-        return Ok(new LoginResponse { Email = legacyUser.Email, Token = legacyToken, Role = "User" });
+        return Unauthorized(new { message = "Invalid email or password." });
     }
 
     // POST api/auth/admin/login
     [HttpPost("admin/login")]
     public async Task<IActionResult> AdminLogin([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
-        var adminUser = await dbContext.Registers
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
+        var adminUser = await dbContext.Logins
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+            .SingleOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken);
 
         if (adminUser is null)
         {
             return Unauthorized(new { message = "Invalid admin email or password." });
         }
 
-        bool passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, adminUser.Password);
+        bool passwordValid = VerifyPassword(request.Password, adminUser.Password);
         if (!passwordValid)
         {
             return Unauthorized(new { message = "Invalid admin email or password." });
@@ -146,6 +137,37 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
 
         var token = GenerateToken(configuration, adminUser.Email, "Admin");
         return Ok(new LoginResponse { Email = adminUser.Email, Token = token, Role = "Admin" });
+    }
+
+    private static bool VerifyPassword(string plainPassword, string storedHash)
+    {
+        if (string.IsNullOrWhiteSpace(storedHash))
+        {
+            return false;
+        }
+
+        // BCrypt hashes start with "$2".
+        if (storedHash.StartsWith("$2", StringComparison.Ordinal))
+        {
+            return BCrypt.Net.BCrypt.Verify(plainPassword, storedHash);
+        }
+
+        // Backward compatibility for legacy SHA-256 password records.
+        using var sha256 = SHA256.Create();
+        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(plainPassword));
+        var builder = new StringBuilder(hashedBytes.Length * 2);
+        foreach (var b in hashedBytes)
+        {
+            builder.Append(b.ToString("x2"));
+        }
+
+        if (string.Equals(builder.ToString(), storedHash, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        // Final fallback for legacy plain-text records in Login table.
+        return string.Equals(plainPassword, storedHash, StringComparison.Ordinal);
     }
 
     private static string GenerateToken(IConfiguration configuration, string email, string role)

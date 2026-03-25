@@ -112,34 +112,29 @@ using (var scope = app.Services.CreateScope())
 
     const string defaultAdminEmail = "admin@hrm.local";
     const string defaultAdminPassword = "Admin@123";
-    const string defaultAdminName = "System Admin";
-
     try
     {
-        // Only try to seed if database is connected and schema is ready
+        // Seed admin in Login table used by AuthController login endpoints.
         if (!useInMemoryDatabase)
         {
             try
             {
-                var adminExists = db.Users.Any(u => u.strEmail == defaultAdminEmail);
+                var adminExists = db.Logins.Any(l => l.Email == defaultAdminEmail);
                 if (!adminExists)
                 {
-                    db.Users.Add(new User
+                    db.Logins.Add(new Login
                     {
-                        strUserGUID = Guid.NewGuid(),
-                        strUserName = defaultAdminName,
-                        strEmail = defaultAdminEmail,
-                        strPassword = BCrypt.Net.BCrypt.HashPassword(defaultAdminPassword),
-                        dtCreatedOn = DateTime.UtcNow
+                        Email = defaultAdminEmail,
+                        Password = BCrypt.Net.BCrypt.HashPassword(defaultAdminPassword)
                     });
 
                     db.SaveChanges();
-                    logger.LogInformation("Seeded default admin account: {AdminEmail}", defaultAdminEmail);
+                    logger.LogInformation("Seeded default admin login account: {AdminEmail}", defaultAdminEmail);
                 }
             }
             catch (Exception schemaEx)
             {
-                logger.LogWarning(schemaEx, "Could not seed admin account. Database schema may not match model. Will use in-memory fallback.");
+                logger.LogWarning(schemaEx, "Could not seed admin login account in Login table.");
                 // Continue running - schema mismatch is not critical at startup
             }
         }
