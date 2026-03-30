@@ -187,88 +187,13 @@ export function OrgTree() {
     n.dept.toLowerCase().includes(search.toLowerCase());
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="w-52 bg-white border-r flex flex-col shrink-0">
-        <div className="p-4 border-b">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-500 rounded-xl flex items-center justify-center shadow">
-              <Users className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <span className="font-bold text-sm block leading-tight">HRM Portal</span>
-              <span className="text-[10px] text-muted-foreground">Acme Corp</span>
-            </div>
-          </div>
-        </div>
-
-        <nav className="p-3 space-y-0.5 border-b">
-          {[
-            { icon: <Home className="w-4 h-4" />,       label: "Dashboard" },
-            { icon: <Users className="w-4 h-4" />,      label: "Employees" },
-            { icon: <Network className="w-4 h-4" />,    label: "Org Tree", active: true },
-            { icon: <Calendar className="w-4 h-4" />,   label: "Leave" },
-            { icon: <Clock className="w-4 h-4" />,      label: "Attendance" },
-            { icon: <RefreshCw className="w-4 h-4" />,  label: "Shifts" },
-            { icon: <Briefcase className="w-4 h-4" />,  label: "Recruitment" },
-            { icon: <DollarSign className="w-4 h-4" />, label: "Payroll" },
-            { icon: <Target className="w-4 h-4" />,     label: "Performance" },
-            { icon: <Settings className="w-4 h-4" />,   label: "Settings" },
-          ].map(item => (
-            <button key={item.label} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${"active" in item && item.active ? "bg-violet-50 text-violet-700 font-semibold" : "text-gray-600 hover:bg-gray-50"}`}>
-              {item.icon}{item.label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Dept filter */}
-        <div className="p-3 flex-1 overflow-auto">
-          <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-2 px-1">Departments</p>
-          <button
-            onClick={() => setFilterDept(null)}
-            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs mb-0.5 transition-colors ${filterDept === null ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}
-          >
-            <div className="w-2 h-2 rounded-full bg-gray-400" />
-            <span className="flex-1 text-left">All</span>
-            <span className="text-muted-foreground font-bold">{total}</span>
-          </button>
-          {Object.entries(depts).map(([dept, cnt]) => {
-            const s = DEPT_STYLE[dept] ?? DEPT_STYLE.Executive;
-            return (
-              <button
-                key={dept}
-                onClick={() => setFilterDept(dept === filterDept ? null : dept)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs mb-0.5 transition-colors ${filterDept === dept ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}
-              >
-                <div className={`w-2 h-2 rounded-full ${s.dot}`} />
-                <span className="flex-1 text-left truncate">{dept}</span>
-                <span className="text-muted-foreground font-bold">{cnt}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Org stats */}
-        <div className="p-3 border-t space-y-2">
-          <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide px-1">Org Stats</p>
-          {[
-            { label: "Total Employees",  value: total },
-            { label: "Departments",      value: Object.keys(depts).length },
-            { label: "Hierarchy Levels", value: 4 },
-            { label: "Avg Span of Ctrl", value: "3.5" },
-          ].map(s => (
-            <div key={s.label} className="flex justify-between px-1">
-              <span className="text-xs text-muted-foreground">{s.label}</span>
-              <span className="text-xs font-bold">{s.value}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-foreground flex">
+ 
 
       {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Top bar */}
-        <div className="bg-white border-b px-5 py-3 flex items-center gap-3">
+        <div className="bg-white dark:bg-slate-900 border-b dark:border-slate-800 px-5 py-3 flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold">Organization Chart</h1>
             <p className="text-xs text-muted-foreground">Acme Corp · {total} employees · Last updated Mar 30, 2026</p>
@@ -277,11 +202,11 @@ export function OrgTree() {
             <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input className="h-7 pl-8 text-xs w-44" placeholder="Search people…" value={search} onChange={e => setSearch(e.target.value)} />
           </div>
-          <div className="flex items-center gap-1 border rounded-lg p-0.5 bg-white">
+          <div className="flex items-center gap-1 border dark:border-slate-700 rounded-lg p-0.5 bg-white dark:bg-slate-900">
             <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={expandAll}>Expand all</Button>
             <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={collapseAll}>Collapse</Button>
           </div>
-          <div className="flex items-center gap-1 border rounded-lg p-0.5 bg-white">
+          <div className="flex items-center gap-1 border dark:border-slate-700 rounded-lg p-0.5 bg-white dark:bg-slate-900">
             <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setZoom(z => Math.min(1.5, z + 0.1))}><ZoomIn className="w-3.5 h-3.5" /></Button>
             <span className="text-xs font-semibold w-9 text-center">{Math.round(zoom * 100)}%</span>
             <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setZoom(z => Math.max(0.4, z - 0.1))}><ZoomOut className="w-3.5 h-3.5" /></Button>
@@ -292,7 +217,7 @@ export function OrgTree() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* Chart canvas */}
-          <div className="flex-1 overflow-auto bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px]">
+          <div className="flex-1 overflow-auto bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]">
             <div style={{ transform: `scale(${zoom})`, transformOrigin: "top center", width: svgW, minHeight: maxY }}>
               <svg
                 width={svgW}
@@ -306,7 +231,7 @@ export function OrgTree() {
                       key={i}
                       d={`M ${e.x1} ${e.y1} V ${midY} H ${e.x2} V ${e.y2}`}
                       fill="none"
-                      stroke="#d1d5db"
+                      stroke="#94a3b8"
                       strokeWidth="1.5"
                       strokeDasharray="4 2"
                     />
@@ -338,11 +263,10 @@ export function OrgTree() {
                     >
                       <div
                         onClick={() => setSelected(isSelected ? null : node.id)}
-                        className={`w-full h-full rounded-xl border-2 cursor-pointer transition-all select-none flex flex-col justify-center px-3 gap-0.5 shadow-sm hover:shadow-md ${isSelected ? "shadow-lg ring-2 ring-offset-1" : ""}`}
+                        className={`w-full h-full rounded-xl border-2 cursor-pointer transition-all select-none flex flex-col justify-center px-3 gap-0.5 shadow-sm hover:shadow-md ${isSelected ? "shadow-lg ring-2 ring-offset-1 ring-offset-background" : ""}`}
                         style={{
-                          borderColor: isSelected ? s.stroke : highlight ? s.stroke : "#e5e7eb",
-                          backgroundColor: isSelected ? s.fill : "#ffffff",
-                          ringColor: s.stroke,
+                          borderColor: isSelected ? s.stroke : highlight ? s.stroke : "#cbd5e1",
+                          backgroundColor: isSelected ? s.fill : "hsl(var(--card))",
                         }}
                       >
                         <div className="flex items-center gap-2">
@@ -357,14 +281,14 @@ export function OrgTree() {
                           {hasKids && (
                             <button
                               onClickCapture={e => { e.stopPropagation(); toggle(node.id); }}
-                              className="w-4 h-4 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center flex-shrink-0 transition-colors"
+                              className="w-4 h-4 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 flex items-center justify-center flex-shrink-0 transition-colors"
                             >
                               {isOpen
-                                ? <ChevronUp className="w-2.5 h-2.5 text-gray-500" />
-                                : <ChevronDown className="w-2.5 h-2.5 text-gray-500" />}
+                                ? <ChevronUp className="w-2.5 h-2.5 text-gray-500 dark:text-slate-300" />
+                                : <ChevronDown className="w-2.5 h-2.5 text-gray-500 dark:text-slate-300" />}
                             </button>
                           )}
-                          {!hasKids && <div className="w-4 h-4 rounded-full border border-gray-200 flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-gray-300" /></div>}
+                          {!hasKids && <div className="w-4 h-4 rounded-full border border-gray-200 dark:border-slate-700 flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-slate-500" /></div>}
                         </div>
                       </div>
                     </div>
@@ -376,7 +300,7 @@ export function OrgTree() {
 
           {/* Detail panel */}
           {selectedPerson && (
-            <div className="w-64 bg-white border-l flex flex-col shrink-0 overflow-auto">
+            <div className="w-64 bg-white dark:bg-slate-900 border-l dark:border-slate-800 flex flex-col shrink-0 overflow-auto">
               {/* Header */}
               <div className="h-20 bg-gradient-to-br from-violet-600 to-indigo-500 flex items-end px-4 pb-3 relative">
                 <button
@@ -386,7 +310,7 @@ export function OrgTree() {
                   <ChevronRight className="w-4 h-4" />
                 </button>
                 <div className="flex items-end gap-3">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold shadow-md ${DEPT_STYLE[selectedPerson.dept]?.avatar ?? "bg-gray-100"}`}>{selectedPerson.avatar}</div>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold shadow-md ${DEPT_STYLE[selectedPerson.dept]?.avatar ?? "bg-gray-100 dark:bg-slate-700"}`}>{selectedPerson.avatar}</div>
                   <div>
                     <p className="text-white font-bold text-sm leading-tight">{selectedPerson.name}</p>
                     <p className="text-white/75 text-xs">{selectedPerson.role}</p>
@@ -483,3 +407,5 @@ export function OrgTree() {
     </div>
   );
 }
+
+export default OrgTree;
