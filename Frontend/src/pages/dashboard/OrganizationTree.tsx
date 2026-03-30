@@ -1,484 +1,485 @@
-import { useState } from 'react';
+import { useState, useMemo, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
-    Users,
-    ChevronRight,
-    ChevronDown,
-    Search,
-    UserPlus,
-    Mail,
-    Phone,
-    MapPin,
-    Briefcase,
-    Calendar,
-    MoreHorizontal,
-    Edit3,
-    UserCheck,
-    Building2,
-    Crown,
-    Shield
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+  Users, Home, Calendar, Clock, DollarSign, Briefcase,
+  FileText, Settings, RefreshCw, Target, Search, ChevronDown, ChevronUp,
+  ZoomIn, ZoomOut, Maximize2, Mail, Phone, MapPin, UserPlus,
+  Download, List, Network, ChevronRight, Layers,
+} from "lucide-react";
 
-interface Employee {
-    id: string;
-    name: string;
-    position: string;
-    department: string;
-    email: string;
-    phone: string;
-    location: string;
-    avatar: string;
-    status: 'online' | 'offline' | 'busy' | 'away';
-    level: number;
-    parentId?: string;
-    children?: Employee[];
-    joinDate: string;
-    reports: number;
+/* ─── Data ────────────────────────────────────────────────────────────────── */
+
+interface OrgPerson {
+  id: string; name: string; role: string; dept: string; avatar: string;
+  email: string; phone: string; location: string; joined: string;
+  reports: number; // total direct reports (used for sidebar info)
+  children?: OrgPerson[];
 }
 
-const OrganizationTree = () => {
-    const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['ceo', 'cto', 'cfo']));
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-
-    // Mock organization data
-    const organizationData: Employee = {
-        id: 'ceo',
-        name: 'Sarah Mitchell',
-        position: 'Chief Executive Officer',
-        department: 'Executive',
-        email: 'sarah.mitchell@company.com',
-        phone: '+1 (555) 123-4567',
-        location: 'New York, NY',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-        status: 'online',
-        level: 0,
-        joinDate: '2018-03-15',
-        reports: 3,
-        children: [
-            {
-                id: 'cto',
-                name: 'Michael Chen',
-                position: 'Chief Technology Officer',
-                department: 'Technology',
-                email: 'michael.chen@company.com',
-                phone: '+1 (555) 234-5678',
-                location: 'San Francisco, CA',
-                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                status: 'online',
-                level: 1,
-                parentId: 'ceo',
-                joinDate: '2019-01-20',
-                reports: 4,
-                children: [
-                    {
-                        id: 'eng-manager',
-                        name: 'Jennifer Davis',
-                        position: 'Engineering Manager',
-                        department: 'Engineering',
-                        email: 'jennifer.davis@company.com',
-                        phone: '+1 (555) 345-6789',
-                        location: 'San Francisco, CA',
-                        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                        status: 'busy',
-                        level: 2,
-                        parentId: 'cto',
-                        joinDate: '2020-06-10',
-                        reports: 8,
-                        children: [
-                            {
-                                id: 'senior-dev1',
-                                name: 'Alex Thompson',
-                                position: 'Senior Frontend Developer',
-                                department: 'Engineering',
-                                email: 'alex.thompson@company.com',
-                                phone: '+1 (555) 456-7890',
-                                location: 'Remote',
-                                avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                                status: 'online',
-                                level: 3,
-                                parentId: 'eng-manager',
-                                joinDate: '2021-03-15',
-                                reports: 0
-                            },
-                            {
-                                id: 'senior-dev2',
-                                name: 'Maria Rodriguez',
-                                position: 'Senior Backend Developer',
-                                department: 'Engineering',
-                                email: 'maria.rodriguez@company.com',
-                                phone: '+1 (555) 567-8901',
-                                location: 'Austin, TX',
-                                avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                                status: 'away',
-                                level: 3,
-                                parentId: 'eng-manager',
-                                joinDate: '2020-11-20',
-                                reports: 0
-                            }
-                        ]
-                    },
-                    {
-                        id: 'product-manager',
-                        name: 'David Kim',
-                        position: 'Product Manager',
-                        department: 'Product',
-                        email: 'david.kim@company.com',
-                        phone: '+1 (555) 678-9012',
-                        location: 'Seattle, WA',
-                        avatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                        status: 'online',
-                        level: 2,
-                        parentId: 'cto',
-                        joinDate: '2019-08-15',
-                        reports: 3,
-                        children: [
-                            {
-                                id: 'product-designer',
-                                name: 'Emma Wilson',
-                                position: 'Product Designer',
-                                department: 'Product',
-                                email: 'emma.wilson@company.com',
-                                phone: '+1 (555) 789-0123',
-                                location: 'Portland, OR',
-                                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                                status: 'offline',
-                                level: 3,
-                                parentId: 'product-manager',
-                                joinDate: '2021-01-10',
-                                reports: 0
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'cfo',
-                name: 'Robert Johnson',
-                position: 'Chief Financial Officer',
-                department: 'Finance',
-                email: 'robert.johnson@company.com',
-                phone: '+1 (555) 890-1234',
-                location: 'New York, NY',
-                avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                status: 'online',
-                level: 1,
-                parentId: 'ceo',
-                joinDate: '2018-07-22',
-                reports: 2,
-                children: [
-                    {
-                        id: 'finance-manager',
-                        name: 'Lisa Anderson',
-                        position: 'Finance Manager',
-                        department: 'Finance',
-                        email: 'lisa.anderson@company.com',
-                        phone: '+1 (555) 901-2345',
-                        location: 'New York, NY',
-                        avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                        status: 'online',
-                        level: 2,
-                        parentId: 'cfo',
-                        joinDate: '2019-04-10',
-                        reports: 5
-                    }
-                ]
-            }
-        ]
-    };
-
-    const toggleNode = (nodeId: string) => {
-        const newExpanded = new Set(expandedNodes);
-        if (newExpanded.has(nodeId)) {
-            newExpanded.delete(nodeId);
-        } else {
-            newExpanded.add(nodeId);
-        }
-        setExpandedNodes(newExpanded);
-    };
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'online': return 'bg-emerald-500';
-            case 'busy': return 'bg-red-500';
-            case 'away': return 'bg-amber-500';
-            case 'offline': return 'bg-slate-400';
-            default: return 'bg-slate-400';
-        }
-    };
-
-    const getLevelIcon = (level: number) => {
-        switch (level) {
-            case 0: return <Crown className="w-4 h-4 text-purple-600" />;
-            case 1: return <Shield className="w-4 h-4 text-blue-600" />;
-            default: return <UserCheck className="w-4 h-4 text-slate-600" />;
-        }
-    };
-
-    const renderEmployeeNode = (employee: Employee) => {
-        const isExpanded = expandedNodes.has(employee.id);
-        const hasChildren = employee.children && employee.children.length > 0;
-        const isSearchMatch = searchTerm && employee.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-        return (
-            <div key={employee.id} className="select-none">
-                <div
-                    className={`flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-all group ${isSearchMatch ? 'bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700' : ''
-                        }`}
-                    onClick={() => {
-                        if (hasChildren) toggleNode(employee.id);
-                        setSelectedEmployee(employee);
-                    }}
-                >
-                    {/* Expand/Collapse Icon */}
-                    {hasChildren && (
-                        <div className="w-5 h-5 flex items-center justify-center">
-                            {isExpanded ? (
-                                <ChevronDown className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                            ) : (
-                                <ChevronRight className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                            )}
-                        </div>
-                    )}
-                    {!hasChildren && <div className="w-5" />}
-
-                    {/* Avatar */}
-                    <div className="relative">
-                        <img
-                            src={employee.avatar}
-                            alt={employee.name}
-                            className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
-                        />
-                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(employee.status)}`} />
-                    </div>
-
-                    {/* Employee Info */}
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                            {getLevelIcon(employee.level)}
-                            <p className="font-semibold text-slate-900 dark:text-white truncate">{employee.name}</p>
-                            {isSearchMatch && <Badge className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 px-2 py-0.5">Match</Badge>}
-                        </div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{employee.position}</p>
-                        <div className="flex items-center gap-3 mt-1">
-                            <span className="text-xs text-slate-400 dark:text-slate-500">{employee.department}</span>
-                            {employee.reports > 0 && (
-                                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">{employee.reports} reports</span>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="sm" className="p-1.5 h-fit hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                            <Mail size={14} className="text-slate-400 dark:text-slate-500" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="p-1.5 h-fit hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                            <MoreHorizontal size={14} className="text-slate-400 dark:text-slate-500" />
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Children */}
-                {hasChildren && isExpanded && (
-                    <div className="ml-8 mt-2 space-y-1 border-l-2 border-slate-100 dark:border-slate-700 pl-4">
-                        {employee.children?.map(child => renderEmployeeNode(child))}
-                    </div>
-                )}
-            </div>
-        );
-    };
-
-    const filteredOrg = (employee: Employee): Employee => {
-        if (!searchTerm) return employee;
-
-        if (employee.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-            return employee;
-        }
-
-        if (employee.children) {
-            const filteredChildren = employee.children
-                .map(child => filteredOrg(child))
-                .filter(child => child.name.toLowerCase().includes(searchTerm.toLowerCase()) || child.children?.length);
-
-            return { ...employee, children: filteredChildren };
-        }
-
-        return employee;
-    };
-
-    return (
-        <div className="min-h-screen pb-12 animate-fade-in bg-[#f8fafc] dark:bg-slate-950 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-slate-900 dark:via-slate-950 dark:to-slate-950 transition-colors">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                            <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[10px] rounded-full uppercase">Organization</Badge>
-                        </div>
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Organization Tree</h1>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">Visualize your company hierarchy and team structure.</p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
-                            <Input
-                                type="text"
-                                placeholder="Search employees..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 w-64"
-                            />
-                        </div>
-                        <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-xl hover:scale-105 shadow-lg shadow-blue-100 dark:shadow-blue-900/20">
-                            <UserPlus size={18} />
-                            Add Employee
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                    {/* Organization Tree */}
-                    <div className="lg:col-span-2">
-                        <Card className="rounded-[2.5rem] p-8">
-                            <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <Users size={20} className="text-blue-600 dark:text-blue-400" />
-                                    Company Hierarchy
-                                </h3>
-                                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 dark:text-slate-500">
-                                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Online</span>
-                                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Away</span>
-                                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"></span> Busy</span>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
-                                {renderEmployeeNode(filteredOrg(organizationData))}
-                            </div>
-                        </Card>
-                    </div>
-
-                    {/* Employee Details Sidebar */}
-                    <div className="space-y-6">
-                        {selectedEmployee ? (
-                            <Card className="rounded-[2.5rem] p-8">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Employee Details</h3>
-                                    <Button variant="ghost" size="sm" className="text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400">
-                                        <Edit3 size={18} />
-                                    </Button>
-                                </div>
-
-                                <div className="text-center mb-6">
-                                    <div className="relative inline-block mb-4">
-                                        <img
-                                            src={selectedEmployee.avatar}
-                                            alt={selectedEmployee.name}
-                                            className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
-                                        />
-                                        <div className={`absolute bottom-2 right-2 w-6 h-6 rounded-full border-3 border-white ${getStatusColor(selectedEmployee.status)}`} />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-slate-900 dark:text-white">{selectedEmployee.name}</h4>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">{selectedEmployee.position}</p>
-                                    <div className="flex items-center justify-center gap-1 mt-2">
-                                        {getLevelIcon(selectedEmployee.level)}
-                                        <span className="text-xs text-slate-400 dark:text-slate-500">{selectedEmployee.department}</span>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-transparent dark:border-white/5">
-                                        <Mail size={16} className="text-slate-400 dark:text-slate-500" />
-                                        <div className="flex-1">
-                                            <p className="text-xs text-slate-400 dark:text-slate-500">Email</p>
-                                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{selectedEmployee.email}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-transparent dark:border-white/5">
-                                        <Phone size={16} className="text-slate-400 dark:text-slate-500" />
-                                        <div className="flex-1">
-                                            <p className="text-xs text-slate-400 dark:text-slate-500">Phone</p>
-                                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{selectedEmployee.phone}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-transparent dark:border-white/5">
-                                        <MapPin size={16} className="text-slate-400 dark:text-slate-500" />
-                                        <div className="flex-1">
-                                            <p className="text-xs text-slate-400 dark:text-slate-500">Location</p>
-                                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{selectedEmployee.location}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-transparent dark:border-white/5">
-                                        <Calendar size={16} className="text-slate-400 dark:text-slate-500" />
-                                        <div className="flex-1">
-                                            <p className="text-xs text-slate-400 dark:text-slate-500">Joined</p>
-                                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{new Date(selectedEmployee.joinDate).toLocaleDateString()}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-transparent dark:border-white/5">
-                                        <Briefcase size={16} className="text-slate-400 dark:text-slate-500" />
-                                        <div className="flex-1">
-                                            <p className="text-xs text-slate-400 dark:text-slate-500">Reports</p>
-                                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{selectedEmployee.reports} direct reports</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 grid grid-cols-2 gap-3">
-                                    <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-lg hover:scale-105">
-                                        Send Message
-                                    </Button>
-                                    <Button variant="outline" className="rounded-xl">
-                                        View Profile
-                                    </Button>
-                                </div>
-                            </Card>
-                        ) : (
-                            <Card className="rounded-[2.5rem] p-8 bg-slate-900 dark:bg-slate-900/40 text-white relative overflow-hidden">
-                                <Users className="mb-4 text-slate-400 dark:text-slate-500" size={32} />
-                                <h3 className="text-xl font-bold mb-2">Select an Employee</h3>
-                                <p className="text-slate-400 dark:text-slate-500 text-sm leading-relaxed">
-                                    Click on any employee in the organization tree to view their detailed information and manage their profile.
-                                </p>
-                                <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl"></div>
-                            </Card>
-                        )}
-
-                        {/* Statistics */}
-                        <Card className="rounded-[2.5rem] p-8">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Organization Stats</h3>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
-                                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">Total Employees</span>
-                                    <span className="text-lg font-black text-blue-600 dark:text-blue-400">24</span>
-                                </div>
-                                <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
-                                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">Departments</span>
-                                    <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">6</span>
-                                </div>
-                                <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
-                                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">Avg. Team Size</span>
-                                    <span className="text-lg font-black text-amber-600 dark:text-amber-400">4.2</span>
-                                </div>
-                            </div>
-                        </Card>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+const ORG: OrgPerson = {
+  id: "ceo", name: "Jennifer Walsh",    role: "CEO",            dept: "Executive",   avatar: "JW", email: "j.walsh@acme.com",     phone: "+1 415-000-0001", location: "San Francisco", joined: "Jan 2018",  reports: 6,
+  children: [
+    {
+      id: "cto", name: "Priya Sharma",  role: "CTO",            dept: "Engineering", avatar: "PS", email: "p.sharma@acme.com",     phone: "+1 415-000-0010", location: "San Francisco", joined: "Mar 2019",  reports: 2,
+      children: [
+        {
+          id: "em", name: "Kevin Lee",  role: "Eng Manager",    dept: "Engineering", avatar: "KL", email: "k.lee@acme.com",         phone: "+1 415-000-0020", location: "San Francisco", joined: "Jun 2020",  reports: 3,
+          children: [
+            { id: "sj", name: "Sarah Johnson",  role: "Senior Dev",      dept: "Engineering", avatar: "SJ", email: "s.johnson@acme.com", phone: "+1 415-000-0030", location: "Remote",         joined: "Aug 2021",  reports: 0 },
+            { id: "dp", name: "David Park",     role: "Backend Dev",     dept: "Engineering", avatar: "DP", email: "d.park@acme.com",    phone: "+1 415-000-0031", location: "San Francisco", joined: "Oct 2021",  reports: 0 },
+            { id: "yt", name: "Yuki Tanaka",    role: "Sr Frontend",     dept: "Engineering", avatar: "YT", email: "y.tanaka@acme.com",  phone: "+1 415-000-0032", location: "Remote",         joined: "Jan 2026",  reports: 0 },
+          ],
+        },
+        { id: "ms", name: "Marco Santos",  role: "DevOps Lead",     dept: "Engineering", avatar: "MS", email: "m.santos@acme.com",     phone: "+1 415-000-0021", location: "Austin",           joined: "Sep 2020",  reports: 0 },
+      ],
+    },
+    {
+      id: "vps", name: "Robert Chen",    role: "VP Sales",       dept: "Sales",       avatar: "RC", email: "r.chen@acme.com",       phone: "+1 212-000-0010", location: "New York",         joined: "Feb 2019",  reports: 1,
+      children: [
+        {
+          id: "th", name: "Tom Harris",  role: "Sales Lead",     dept: "Sales",       avatar: "TH", email: "t.harris@acme.com",     phone: "+1 212-000-0020", location: "New York",         joined: "Apr 2020",  reports: 2,
+          children: [
+            { id: "jk", name: "James Kim",      role: "Sales Rep",       dept: "Sales",       avatar: "JK", email: "j.kim@acme.com",     phone: "+1 212-000-0030", location: "New York",         joined: "Mar 2022",  reports: 0 },
+            { id: "ng", name: "Nina Gupta",     role: "Sales Rep",       dept: "Sales",       avatar: "NG", email: "n.gupta@acme.com",   phone: "+1 212-000-0031", location: "Chicago",          joined: "Jul 2022",  reports: 0 },
+          ],
+        },
+      ],
+    },
+    {
+      id: "vpm", name: "Clara West",     role: "VP Marketing",   dept: "Marketing",   avatar: "CW", email: "c.west@acme.com",       phone: "+1 415-000-0011", location: "San Francisco", joined: "May 2019",  reports: 1,
+      children: [
+        { id: "er", name: "Emily Rodriguez", role: "Mktg Lead",      dept: "Marketing",   avatar: "ER", email: "e.rodriguez@acme.com",phone: "+1 415-000-0022", location: "San Francisco", joined: "Sep 2020",  reports: 0 },
+      ],
+    },
+    {
+      id: "chro", name: "Aisha Patel",   role: "CHRO",           dept: "HR",          avatar: "AP", email: "a.patel@acme.com",      phone: "+1 415-000-0012", location: "San Francisco", joined: "Jan 2018",  reports: 1,
+      children: [
+        { id: "ln", name: "Lisa Nguyen",     role: "HR Coordinator",  dept: "HR",          avatar: "LN", email: "l.nguyen@acme.com",   phone: "+1 415-000-0023", location: "San Francisco", joined: "Feb 2023",  reports: 0 },
+      ],
+    },
+    {
+      id: "cfo", name: "Sandra Brooks",  role: "CFO",            dept: "Finance",     avatar: "SB", email: "s.brooks@acme.com",     phone: "+1 212-000-0011", location: "New York",         joined: "Aug 2018",  reports: 1,
+      children: [
+        { id: "lw", name: "Lisa Wang",       role: "Finance Analyst", dept: "Finance",     avatar: "LW", email: "l.wang@acme.com",      phone: "+1 212-000-0022", location: "New York",         joined: "Mar 2022",  reports: 0 },
+      ],
+    },
+    {
+      id: "cd", name: "Alex Turner",     role: "Creative Dir.",  dept: "Design",      avatar: "AT", email: "a.turner@acme.com",     phone: "+1 415-000-0013", location: "San Francisco", joined: "Jun 2019",  reports: 2,
+      children: [
+        { id: "mc", name: "Michael Chen",    role: "UI Designer",     dept: "Design",      avatar: "MC", email: "m.chen@acme.com",      phone: "+1 415-000-0024", location: "San Francisco", joined: "Nov 2021",  reports: 0 },
+        { id: "cr", name: "Carlos Romero",   role: "UX Designer",     dept: "Design",      avatar: "CR", email: "c.romero@acme.com",    phone: "+1 415-000-0025", location: "San Francisco", joined: "Mar 2026",  reports: 0 },
+      ],
+    },
+  ],
 };
 
-export default OrganizationTree;
+/* ─── Colors ──────────────────────────────────────────────────────────────── */
+
+const DEPT_STYLE: Record<string, { stroke: string; fill: string; avatar: string; text: string; dot: string; badge: string }> = {
+  Executive:   { stroke: "#7c3aed", fill: "#faf5ff", avatar: "bg-violet-100 text-violet-700",  text: "text-violet-700",  dot: "bg-violet-500",  badge: "bg-violet-100 text-violet-700" },
+  Engineering: { stroke: "#2563eb", fill: "#eff6ff", avatar: "bg-blue-100 text-blue-700",      text: "text-blue-700",    dot: "bg-blue-500",    badge: "bg-blue-100 text-blue-700" },
+  Sales:       { stroke: "#059669", fill: "#ecfdf5", avatar: "bg-emerald-100 text-emerald-700",text: "text-emerald-700", dot: "bg-emerald-500", badge: "bg-emerald-100 text-emerald-700" },
+  Marketing:   { stroke: "#d97706", fill: "#fffbeb", avatar: "bg-amber-100 text-amber-700",    text: "text-amber-700",   dot: "bg-amber-500",   badge: "bg-amber-100 text-amber-700" },
+  HR:          { stroke: "#e11d48", fill: "#fff1f2", avatar: "bg-rose-100 text-rose-700",      text: "text-rose-700",    dot: "bg-rose-500",    badge: "bg-rose-100 text-rose-700" },
+  Finance:     { stroke: "#0d9488", fill: "#f0fdfa", avatar: "bg-teal-100 text-teal-700",      text: "text-teal-700",    dot: "bg-teal-500",    badge: "bg-teal-100 text-teal-700" },
+  Design:      { stroke: "#4f46e5", fill: "#eef2ff", avatar: "bg-indigo-100 text-indigo-700",  text: "text-indigo-700",  dot: "bg-indigo-500",  badge: "bg-indigo-100 text-indigo-700" },
+};
+
+/* ─── Layout Engine ───────────────────────────────────────────────────────── */
+
+const CW = 148, CH = 66, HG = 26, VG = 54, PAD = 40;
+
+interface LNode extends OrgPerson { x: number; y: number; sw: number; lchildren: LNode[] }
+
+function layout(node: OrgPerson, depth: number, left: number, ex: Set<string>): LNode {
+  const open = ex.has(node.id) && (node.children?.length ?? 0) > 0;
+  if (!open || !node.children || node.children.length === 0) {
+    return { ...node, x: left + CW / 2, y: depth * (CH + VG) + PAD, sw: CW, lchildren: [] };
+  }
+  let cur = left;
+  const lc: LNode[] = [];
+  for (const ch of node.children) {
+    const n = layout(ch, depth + 1, cur, ex);
+    lc.push(n);
+    cur += n.sw + HG;
+  }
+  const sw = Math.max(cur - left - HG, CW);
+  return { ...node, x: left + sw / 2, y: depth * (CH + VG) + PAD, sw, lchildren: lc };
+}
+
+function allNodes(n: LNode): LNode[] { return [n, ...n.lchildren.flatMap(allNodes)]; }
+
+function allEdges(n: LNode): { x1: number; y1: number; x2: number; y2: number }[] {
+  const edges: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  for (const c of n.lchildren) {
+    edges.push({ x1: n.x, y1: n.y + CH, x2: c.x, y2: c.y });
+    edges.push(...allEdges(c));
+  }
+  return edges;
+}
+
+function countAll(n: OrgPerson): number {
+  return 1 + (n.children ?? []).reduce((s, c) => s + countAll(c), 0);
+}
+
+function collectByDept(n: OrgPerson, acc: Record<string, number> = {}): Record<string, number> {
+  acc[n.dept] = (acc[n.dept] ?? 0) + 1;
+  (n.children ?? []).forEach(c => collectByDept(c, acc));
+  return acc;
+}
+
+function findPerson(n: OrgPerson, id: string): OrgPerson | null {
+  if (n.id === id) return n;
+  for (const c of n.children ?? []) { const f = findPerson(c, id); if (f) return f; }
+  return null;
+}
+
+function findParent(n: OrgPerson, id: string): OrgPerson | null {
+  for (const c of n.children ?? []) {
+    if (c.id === id) return n;
+    const f = findParent(c, id);
+    if (f) return f;
+  }
+  return null;
+}
+
+/* ─── Component ──────────────────────────────────────────────────────────── */
+
+export function OrgTree() {
+  const [expanded, setExpanded] = useState<Set<string>>(new Set(["ceo"]));
+  const [selected, setSelected] = useState<string | null>(null);
+  const [search, setSearch]     = useState("");
+  const [zoom, setZoom]         = useState(1);
+  const [filterDept, setFilterDept] = useState<string | null>(null);
+
+  const root    = useMemo(() => layout(ORG, 0, 0, expanded), [expanded]);
+  const nodes   = useMemo(() => allNodes(root), [root]);
+  const edges   = useMemo(() => allEdges(root), [root]);
+  const svgW    = root.sw + PAD * 2;
+  const maxY    = Math.max(...nodes.map(n => n.y)) + CH + PAD;
+  const depts   = useMemo(() => collectByDept(ORG), []);
+  const total   = useMemo(() => countAll(ORG), []);
+  const selectedPerson = selected ? findPerson(ORG, selected) : null;
+  const parentPerson   = selected ? findParent(ORG, selected) : null;
+
+  function toggle(id: string) {
+    setExpanded(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+  function expandAll() {
+    const ids = new Set<string>();
+    function walk(n: OrgPerson) { if (n.children?.length) { ids.add(n.id); n.children.forEach(walk); } }
+    walk(ORG);
+    setExpanded(ids);
+  }
+  function collapseAll() { setExpanded(new Set(["ceo"])); }
+
+  const matchesSearch = (n: OrgPerson) =>
+    !search || n.name.toLowerCase().includes(search.toLowerCase()) ||
+    n.role.toLowerCase().includes(search.toLowerCase()) ||
+    n.dept.toLowerCase().includes(search.toLowerCase());
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <div className="w-52 bg-white border-r flex flex-col shrink-0">
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-500 rounded-xl flex items-center justify-center shadow">
+              <Users className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <span className="font-bold text-sm block leading-tight">HRM Portal</span>
+              <span className="text-[10px] text-muted-foreground">Acme Corp</span>
+            </div>
+          </div>
+        </div>
+
+        <nav className="p-3 space-y-0.5 border-b">
+          {[
+            { icon: <Home className="w-4 h-4" />,       label: "Dashboard" },
+            { icon: <Users className="w-4 h-4" />,      label: "Employees" },
+            { icon: <Network className="w-4 h-4" />,    label: "Org Tree", active: true },
+            { icon: <Calendar className="w-4 h-4" />,   label: "Leave" },
+            { icon: <Clock className="w-4 h-4" />,      label: "Attendance" },
+            { icon: <RefreshCw className="w-4 h-4" />,  label: "Shifts" },
+            { icon: <Briefcase className="w-4 h-4" />,  label: "Recruitment" },
+            { icon: <DollarSign className="w-4 h-4" />, label: "Payroll" },
+            { icon: <Target className="w-4 h-4" />,     label: "Performance" },
+            { icon: <Settings className="w-4 h-4" />,   label: "Settings" },
+          ].map(item => (
+            <button key={item.label} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${"active" in item && item.active ? "bg-violet-50 text-violet-700 font-semibold" : "text-gray-600 hover:bg-gray-50"}`}>
+              {item.icon}{item.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Dept filter */}
+        <div className="p-3 flex-1 overflow-auto">
+          <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-2 px-1">Departments</p>
+          <button
+            onClick={() => setFilterDept(null)}
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs mb-0.5 transition-colors ${filterDept === null ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}
+          >
+            <div className="w-2 h-2 rounded-full bg-gray-400" />
+            <span className="flex-1 text-left">All</span>
+            <span className="text-muted-foreground font-bold">{total}</span>
+          </button>
+          {Object.entries(depts).map(([dept, cnt]) => {
+            const s = DEPT_STYLE[dept] ?? DEPT_STYLE.Executive;
+            return (
+              <button
+                key={dept}
+                onClick={() => setFilterDept(dept === filterDept ? null : dept)}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs mb-0.5 transition-colors ${filterDept === dept ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"}`}
+              >
+                <div className={`w-2 h-2 rounded-full ${s.dot}`} />
+                <span className="flex-1 text-left truncate">{dept}</span>
+                <span className="text-muted-foreground font-bold">{cnt}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Org stats */}
+        <div className="p-3 border-t space-y-2">
+          <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide px-1">Org Stats</p>
+          {[
+            { label: "Total Employees",  value: total },
+            { label: "Departments",      value: Object.keys(depts).length },
+            { label: "Hierarchy Levels", value: 4 },
+            { label: "Avg Span of Ctrl", value: "3.5" },
+          ].map(s => (
+            <div key={s.label} className="flex justify-between px-1">
+              <span className="text-xs text-muted-foreground">{s.label}</span>
+              <span className="text-xs font-bold">{s.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        {/* Top bar */}
+        <div className="bg-white border-b px-5 py-3 flex items-center gap-3">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-base font-bold">Organization Chart</h1>
+            <p className="text-xs text-muted-foreground">Acme Corp · {total} employees · Last updated Mar 30, 2026</p>
+          </div>
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input className="h-7 pl-8 text-xs w-44" placeholder="Search people…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+          <div className="flex items-center gap-1 border rounded-lg p-0.5 bg-white">
+            <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={expandAll}>Expand all</Button>
+            <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={collapseAll}>Collapse</Button>
+          </div>
+          <div className="flex items-center gap-1 border rounded-lg p-0.5 bg-white">
+            <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setZoom(z => Math.min(1.5, z + 0.1))}><ZoomIn className="w-3.5 h-3.5" /></Button>
+            <span className="text-xs font-semibold w-9 text-center">{Math.round(zoom * 100)}%</span>
+            <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setZoom(z => Math.max(0.4, z - 0.1))}><ZoomOut className="w-3.5 h-3.5" /></Button>
+          </div>
+          <Button variant="outline" size="sm" className="h-7 text-xs gap-1"><Download className="w-3.5 h-3.5" />Export</Button>
+          <Button size="sm" className="h-7 text-xs gap-1 bg-violet-600 hover:bg-violet-700 text-white"><UserPlus className="w-3.5 h-3.5" />Add Person</Button>
+        </div>
+
+        <div className="flex flex-1 overflow-hidden">
+          {/* Chart canvas */}
+          <div className="flex-1 overflow-auto bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px]">
+            <div style={{ transform: `scale(${zoom})`, transformOrigin: "top center", width: svgW, minHeight: maxY }}>
+              <svg
+                width={svgW}
+                height={maxY}
+                style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
+              >
+                {edges.map((e, i) => {
+                  const midY = (e.y1 + e.y2) / 2;
+                  return (
+                    <path
+                      key={i}
+                      d={`M ${e.x1} ${e.y1} V ${midY} H ${e.x2} V ${e.y2}`}
+                      fill="none"
+                      stroke="#d1d5db"
+                      strokeWidth="1.5"
+                      strokeDasharray="4 2"
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Node cards */}
+              <div style={{ position: "relative", width: svgW, height: maxY }}>
+                {nodes.map(node => {
+                  const s = DEPT_STYLE[node.dept] ?? DEPT_STYLE.Executive;
+                  const isSelected = selected === node.id;
+                  const hasKids = (node.children?.length ?? 0) > 0;
+                  const isOpen = expanded.has(node.id);
+                  const highlight = search && matchesSearch(node);
+                  const dimmed = (filterDept && node.dept !== filterDept) || (search && !matchesSearch(node));
+                  return (
+                    <div
+                      key={node.id}
+                      style={{
+                        position: "absolute",
+                        left: node.x - CW / 2,
+                        top: node.y,
+                        width: CW,
+                        height: CH,
+                        opacity: dimmed ? 0.25 : 1,
+                        transition: "opacity 0.2s",
+                      }}
+                    >
+                      <div
+                        onClick={() => setSelected(isSelected ? null : node.id)}
+                        className={`w-full h-full rounded-xl border-2 cursor-pointer transition-all select-none flex flex-col justify-center px-3 gap-0.5 shadow-sm hover:shadow-md ${isSelected ? "shadow-lg ring-2 ring-offset-1" : ""}`}
+                        style={{
+                          borderColor: isSelected ? s.stroke : highlight ? s.stroke : "#e5e7eb",
+                          backgroundColor: isSelected ? s.fill : "#ffffff",
+                          ringColor: s.stroke,
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${s.avatar}`}>{node.avatar}</div>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-bold leading-tight truncate">{node.name}</p>
+                            <p className="text-[10px] text-muted-foreground truncate leading-tight">{node.role}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between mt-0.5">
+                          <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${s.badge}`}>{node.dept}</span>
+                          {hasKids && (
+                            <button
+                              onClickCapture={e => { e.stopPropagation(); toggle(node.id); }}
+                              className="w-4 h-4 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center flex-shrink-0 transition-colors"
+                            >
+                              {isOpen
+                                ? <ChevronUp className="w-2.5 h-2.5 text-gray-500" />
+                                : <ChevronDown className="w-2.5 h-2.5 text-gray-500" />}
+                            </button>
+                          )}
+                          {!hasKids && <div className="w-4 h-4 rounded-full border border-gray-200 flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-gray-300" /></div>}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Detail panel */}
+          {selectedPerson && (
+            <div className="w-64 bg-white border-l flex flex-col shrink-0 overflow-auto">
+              {/* Header */}
+              <div className="h-20 bg-gradient-to-br from-violet-600 to-indigo-500 flex items-end px-4 pb-3 relative">
+                <button
+                  onClick={() => setSelected(null)}
+                  className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+                <div className="flex items-end gap-3">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold shadow-md ${DEPT_STYLE[selectedPerson.dept]?.avatar ?? "bg-gray-100"}`}>{selectedPerson.avatar}</div>
+                  <div>
+                    <p className="text-white font-bold text-sm leading-tight">{selectedPerson.name}</p>
+                    <p className="text-white/75 text-xs">{selectedPerson.role}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 space-y-4">
+                {/* Dept badge */}
+                <div className="flex justify-between items-center">
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${DEPT_STYLE[selectedPerson.dept]?.badge}`}>{selectedPerson.dept}</span>
+                  <span className="text-xs text-muted-foreground">Since {selectedPerson.joined}</span>
+                </div>
+
+                {/* Contact info */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Contact</p>
+                  {[
+                    { icon: <Mail className="w-3.5 h-3.5 text-muted-foreground" />, val: selectedPerson.email },
+                    { icon: <Phone className="w-3.5 h-3.5 text-muted-foreground" />, val: selectedPerson.phone },
+                    { icon: <MapPin className="w-3.5 h-3.5 text-muted-foreground" />, val: selectedPerson.location },
+                  ].map((r, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      {r.icon}<span className="text-xs truncate">{r.val}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator />
+
+                {/* Reports to */}
+                {parentPerson && (
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">Reports To</p>
+                    <div
+                      className="flex items-center gap-2.5 p-2.5 rounded-xl bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                      onClick={() => setSelected(parentPerson.id)}
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${DEPT_STYLE[parentPerson.dept]?.avatar}`}>{parentPerson.avatar}</div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold truncate">{parentPerson.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{parentPerson.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Direct reports */}
+                {(selectedPerson.children?.length ?? 0) > 0 && (
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">Direct Reports ({selectedPerson.children!.length})</p>
+                    <div className="space-y-1.5">
+                      {selectedPerson.children!.map(c => (
+                        <div
+                          key={c.id}
+                          className="flex items-center gap-2 p-2 rounded-xl bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors"
+                          onClick={() => setSelected(c.id)}
+                        >
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold ${DEPT_STYLE[c.dept]?.avatar}`}>{c.avatar}</div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold truncate">{c.name}</p>
+                            <p className="text-[10px] text-muted-foreground truncate">{c.role}</p>
+                          </div>
+                          <ChevronRight className="w-3 h-3 text-muted-foreground ml-auto flex-shrink-0" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <Separator />
+
+                {/* Quick actions */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Actions</p>
+                  <Button variant="outline" size="sm" className="w-full text-xs h-7 gap-1.5 justify-start">
+                    <Mail className="w-3.5 h-3.5" />Send Message
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full text-xs h-7 gap-1.5 justify-start">
+                    <FileText className="w-3.5 h-3.5" />View Profile
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full text-xs h-7 gap-1.5 justify-start">
+                    <Layers className="w-3.5 h-3.5" />See Team
+                  </Button>
+                  <Button size="sm" className="w-full text-xs h-7 gap-1.5 justify-start bg-violet-600 hover:bg-violet-700 text-white">
+                    <Target className="w-3.5 h-3.5" />View Reviews
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
