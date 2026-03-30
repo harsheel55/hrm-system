@@ -12,7 +12,7 @@ import Payroll from './pages/dashboard/Payroll';
 import Recruitment from './pages/dashboard/Recruitment';
 import { ShiftPlanner as Shift } from './pages/dashboard/Shift';
 import Documents from './pages/dashboard/Documents';
-import Leave from './pages/dashboard/Leave';
+import { LeaveManagement as Leave } from './pages/dashboard/Leave';
 import Timesheet from './pages/dashboard/Timesheet';
 import Analytics from './pages/dashboard/Analytics';
 import OrganizationTree from './pages/dashboard/OrganizationTree';
