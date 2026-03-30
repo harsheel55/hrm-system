@@ -1,5 +1,7 @@
 // API Configuration
-export const API_BASE_URL = 'http://localhost:5244/api'; // Backend URL from launchSettings.json
+export const API_BASE_URL =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() ||
+  'http://localhost:5139/api';
 
 // Storage Keys
 export const STORAGE_KEYS = {
@@ -61,5 +63,10 @@ export const ENDPOINTS = {
     BASE: '/blogtag',
     BY_ID: (id: string) => `/blogtag/${id}`,
     BY_SLUG: (slug: string) => `/blogtag/slug/${slug}`,
+  },
+  // Leaves
+  LEAVE: {
+    DASHBOARD: '/leave/dashboard',
+    REQUESTS: '/leave/requests',
   },
 };

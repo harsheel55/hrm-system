@@ -141,6 +141,10 @@ const DashboardLayout = () => {
                                     sideOffset={4}
                                 >
                                     <DropdownMenuItem>
+                                        <User2 className="mr-2 h-4 w-4" />
+                                        <span>Profile</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
                                         <Settings className="mr-2 h-4 w-4" />
                                         <span>Settings</span>
                                     </DropdownMenuItem>
@@ -176,13 +180,6 @@ const DashboardLayout = () => {
                             <Bell size={20} className="group-hover:animate-pulse" />
                             <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse ring-2 ring-white"></span>
                         </button>
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-[2px] hover:scale-110 transition-transform cursor-pointer hover-glow">
-                            <img
-                                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=100&h=100&q=80"
-                                alt="User"
-                                className="rounded-full w-full h-full object-cover border-2 border-white"
-                            />
-                        </div>
                     </div>
                 </header>
 

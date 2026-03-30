@@ -23,7 +23,7 @@
       "type": "shell",
       "command": "dotnet run",
       "options": {
-        "cwd": "${workspaceFolder}/Backend/HRM-Backend"
+        "cwd": "${workspaceFolder}/Backend"
       },
       "isBackground": true,
       "problemMatcher": [],
