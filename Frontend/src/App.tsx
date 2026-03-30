@@ -10,7 +10,7 @@ import Employees from './pages/dashboard/Employees';
 import Attendance from './pages/dashboard/Attendance';
 import Payroll from './pages/dashboard/Payroll';
 import Recruitment from './pages/dashboard/Recruitment';
-import Shift from './pages/dashboard/Shift';
+import { ShiftPlanner as Shift } from './pages/dashboard/Shift';
 import Documents from './pages/dashboard/Documents';
 import Leave from './pages/dashboard/Leave';
 import Timesheet from './pages/dashboard/Timesheet';

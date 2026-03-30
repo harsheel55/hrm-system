@@ -8,7 +8,7 @@ class ApiClient {
   }
 
   private getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const token = this.getToken();
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
@@ -18,6 +18,10 @@ class ApiClient {
     }
 
     return headers;
+  }
+
+  private getToken(): string | null {
+    return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) || localStorage.getItem('hrm_token');
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
@@ -51,7 +55,7 @@ class ApiClient {
   }
 
   async postFormData<T>(endpoint: string, formData: FormData): Promise<T> {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const token = this.getToken();
     const headers: HeadersInit = {};
     
     if (token) {
@@ -78,7 +82,7 @@ class ApiClient {
   }
 
   async putFormData<T>(endpoint: string, formData: FormData): Promise<T> {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const token = this.getToken();
     const headers: HeadersInit = {};
     
     if (token) {

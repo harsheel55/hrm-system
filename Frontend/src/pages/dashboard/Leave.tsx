@@ -1,21 +1,20 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     Calendar as CalendarIcon,
     CheckCircle,
+    Bell,
     Clock,
     Plus,
-    History,
-    PieChart,
-    ArrowUpRight,
+    Users,
+    UserRound,
+    XCircle,
     Send,
-    HeartPulse
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -29,11 +28,21 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
+import { leaveService, type LeaveBalance, type LeaveRequest } from '@/services/leave.service';
 
 const Leave = () => {
+    type LeaveTab = 'overview' | 'requests' | 'balances' | 'calendar';
+
     const [showLeaveModal, setShowLeaveModal] = useState(false);
     const [startDate, setStartDate] = useState<Date>();
     const [endDate, setEndDate] = useState<Date>();
+    const [activeTab, setActiveTab] = useState<LeaveTab>('overview');
+    const [calendarDate, setCalendarDate] = useState<Date | undefined>(new Date());
+    const [leaveBalance, setLeaveBalance] = useState<LeaveBalance[]>([]);
+    const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [serverError, setServerError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         leaveType: 'Annual Leave',
         startDate: '',
@@ -41,6 +50,15 @@ const Leave = () => {
         reason: '',
         emergencyContact: ''
     });
+
+    const totalEmployees = 48;
+    const totalDepartments = 8;
+
+    const leaveToday = [
+        { initials: 'MC', name: 'Michael', type: 'Sick', days: '2d' },
+        { initials: 'AP', name: 'Aisha', type: 'Maternity', days: '90d' },
+        { initials: 'DP', name: 'David', type: 'Sick', days: '1d' },
+    ];
 
     // Helper to calculate business days (simplified for UI feedback)
     const calculatedDays = useMemo(() => {
@@ -52,160 +70,390 @@ const Leave = () => {
         return diffDays > 0 ? diffDays : 0;
     }, [formData.startDate, formData.endDate]);
 
-    const leaveBalance = [
-        { type: 'Annual Leave', total: 21, used: 5, remaining: 16, theme: 'indigo' },
-        { type: 'Sick Leave', total: 10, used: 2, remaining: 8, theme: 'emerald' },
-        { type: 'Personal Leave', total: 5, used: 1, remaining: 4, theme: 'purple' },
-        { type: 'Paternity', total: 90, used: 0, remaining: 90, theme: 'amber' },
+    useEffect(() => {
+        const loadDashboard = async () => {
+            try {
+                setServerError(null);
+                setIsLoading(true);
+                const response = await leaveService.getDashboard();
+                setLeaveBalance(response.data.balances);
+                setLeaveRequests(response.data.requests);
+            } catch (error) {
+                setServerError(error instanceof Error ? error.message : 'Failed to load leave data.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadDashboard();
+    }, []);
+
+    const getTheme = (leaveType: string) => {
+        const normalized = leaveType.toLowerCase();
+        if (normalized.includes('annual')) return 'indigo';
+        if (normalized.includes('sick')) return 'emerald';
+        if (normalized.includes('personal')) return 'purple';
+        if (normalized.includes('paternity')) return 'amber';
+        return 'indigo';
+    };
+
+    const resetForm = () => {
+        setFormData({
+            leaveType: 'Annual Leave',
+            startDate: '',
+            endDate: '',
+            reason: '',
+            emergencyContact: ''
+        });
+        setStartDate(undefined);
+        setEndDate(undefined);
+    };
+
+    const handleSubmitRequest = async () => {
+        if (!formData.startDate || !formData.endDate || !formData.reason.trim()) {
+            setServerError('Please select dates and enter a reason.');
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            setServerError(null);
+
+            await leaveService.createRequest({
+                leaveType: formData.leaveType,
+                startDate: formData.startDate,
+                endDate: formData.endDate,
+                reason: formData.reason,
+                emergencyContact: formData.emergencyContact
+            });
+
+            const dashboard = await leaveService.getDashboard();
+            setLeaveBalance(dashboard.data.balances);
+            setLeaveRequests(dashboard.data.requests);
+            resetForm();
+            setShowLeaveModal(false);
+        } catch (error) {
+            setServerError(error instanceof Error ? error.message : 'Failed to submit leave request.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const pendingCount = useMemo(
+        () => leaveRequests.filter((request) => request.status === 'pending').length,
+        [leaveRequests]
+    );
+
+    const approvedThisMonth = useMemo(() => {
+        const now = new Date();
+        return leaveRequests.filter((request) => {
+            if (request.status !== 'approved') return false;
+            const created = new Date(request.createdAt);
+            return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+        }).length;
+    }, [leaveRequests]);
+
+    const onLeaveTodayCount = useMemo(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return leaveRequests.filter((request) => {
+            if (request.status !== 'approved') return false;
+            const start = new Date(request.startDate);
+            const end = new Date(request.endDate);
+            start.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+            return today >= start && today <= end;
+        }).length;
+    }, [leaveRequests]);
+
+    const topStats = [
+        {
+            label: 'Pending Requests',
+            value: pendingCount,
+            sub: 'Awaiting review',
+            icon: Clock,
+            accent: 'text-amber-600 bg-amber-50',
+        },
+        {
+            label: 'Approved This Month',
+            value: approvedThisMonth,
+            sub: format(new Date(), 'MMMM yyyy'),
+            icon: CheckCircle,
+            accent: 'text-emerald-600 bg-emerald-50',
+        },
+        {
+            label: 'On Leave Today',
+            value: onLeaveTodayCount,
+            sub: `Out of ${totalEmployees} employees`,
+            icon: UserRound,
+            accent: 'text-violet-600 bg-violet-50',
+        },
+        {
+            label: 'Total Employees',
+            value: totalEmployees,
+            sub: `${totalDepartments} departments`,
+            icon: Users,
+            accent: 'text-sky-600 bg-sky-50',
+        },
     ];
 
-    const leaveRequests = [
-        { type: 'Annual', startDate: 'Jun 15', endDate: 'Jun 17', days: 3, status: 'pending', reason: 'Family vacation' },
-        { type: 'Sick', startDate: 'May 20', endDate: 'May 20', days: 1, status: 'approved', reason: 'Medical appointment' },
-        { type: 'Personal', startDate: 'Apr 10', endDate: 'Apr 10', days: 1, status: 'approved', reason: 'Personal work' },
+    const statusClass = (status: LeaveRequest['status']) => {
+        if (status === 'approved') return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        if (status === 'rejected') return 'bg-rose-50 text-rose-700 border-rose-200';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
+    };
+
+    const leaveTypeClass = (leaveType: string) => {
+        const normalized = leaveType.toLowerCase();
+        if (normalized.includes('annual')) return 'bg-violet-50 text-violet-700';
+        if (normalized.includes('sick')) return 'bg-sky-50 text-sky-700';
+        if (normalized.includes('personal')) return 'bg-emerald-50 text-emerald-700';
+        return 'bg-slate-100 text-slate-700';
+    };
+
+    const tabs: Array<{ key: LeaveTab; label: string }> = [
+        { key: 'overview', label: 'Overview' },
+        { key: 'requests', label: `Requests ${leaveRequests.length}` },
+        { key: 'balances', label: 'Leave Balances' },
+        { key: 'calendar', label: 'Calendar' },
     ];
 
     return (
-        <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 pb-12 transition-colors">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-
-                {/* --- Header --- */}
-                <div className="flex flex-col sm:flex-row justify-between items-end sm:items-center mb-10 gap-4">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Time Off</span>
-                        </div>
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Leave Management</h1>
-                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Track, plan, and apply for your time off.</p>
-                    </div>
-                    <Button
-                        onClick={() => setShowLeaveModal(true)}
-                        className="bg-slate-900 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 transition-all shadow-xl font-bold text-sm rounded-2xl px-8 py-6"
-                    >
-                        <Plus size={18} className="mr-2" />
-                        Apply for Leave
-                    </Button>
-                </div>
-
-                {/* --- Balance Grid --- */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    {leaveBalance.map((leave, i) => {
-                        const percentUsed = (Number(leave.used) / Number(leave.total)) * 100;
-                        const colorMap: { [key: string]: string } = {
-                            indigo: 'bg-indigo-600 text-indigo-600 border-indigo-100',
-                            emerald: 'bg-emerald-600 text-emerald-600 border-emerald-100',
-                            purple: 'bg-purple-600 text-purple-600 border-purple-100',
-                            amber: 'bg-amber-500 text-amber-500 border-amber-100',
-                        };
-                        return (
-                            <div key={i} className="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 transition-all group">
-                                <div className="flex justify-between items-start mb-8">
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-slate-50 dark:bg-slate-700/50 group-hover:scale-110 transition-transform`}>
-                                        <PieChart size={22} className="text-slate-400 group-hover:text-blue-600" />
-                                    </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Quotas</span>
-                                </div>
-
-                                <h4 className="font-bold text-slate-900 dark:text-white mb-1">{leave.type}</h4>
-                                <div className="flex items-baseline gap-1 mb-6">
-                                    <span className="text-3xl font-black text-slate-900 dark:text-white">{leave.remaining}</span>
-                                    <span className="text-xs font-bold text-slate-400">/ {leave.total} Days Left</span>
-                                </div>
-
-                                <div className="relative w-full h-2.5 bg-slate-50 dark:bg-slate-700 rounded-full overflow-hidden border border-slate-100 dark:border-slate-700">
-                                    <div
-                                        className={`absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ${colorMap[leave.theme as keyof typeof colorMap].split(' ')[0]}`}
-                                        style={{ width: `${100 - percentUsed}%` }}
-                                    ></div>
-                                </div>
+        <div className="min-h-screen bg-slate-100/70 dark:bg-slate-950 pb-8 transition-colors">
+            <div className="w-full px-4 sm:px-6 lg:px-8 pt-4">
+                    <div className="p-0 sm:p-0 mb-4">
+                        <div className="flex items-center justify-between gap-4">
+                            <div>
+                                <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Leave Management</h1>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Manage leave requests and balances</p>
                             </div>
-                        );
-                    })}
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                    {/* --- Leave History --- */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 p-8">
-                            <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                                    <div className="p-2 bg-slate-900 text-white rounded-xl"><History size={20} /></div>
-                                    Recent Requests
-                                </h3>
-                                <Button variant="link" className="text-sm font-bold text-blue-600 hover:underline h-fit p-0">Full History</Button>
-                            </div>
-
-                            <div className="space-y-4">
-                                {leaveRequests.map((request, i) => (
-                                    <div key={i} className="group flex flex-col sm:flex-row sm:items-center justify-between p-6 rounded-3xl border border-slate-50 dark:border-slate-700 hover:border-blue-100 dark:hover:border-blue-900 hover:bg-blue-50/20 dark:hover:bg-blue-900/10 transition-all">
-                                        <div className="flex items-center gap-5">
-                                            <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center font-bold ${request.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
-                                                }`}>
-                                                <span className="text-[10px] uppercase">{request.startDate.split(' ')[0]}</span>
-                                                <span className="text-lg">{request.startDate.split(' ')[1]}</span>
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <h4 className="font-bold text-slate-900 dark:text-white">{request.type} Leave</h4>
-                                                    <span className="text-[10px] bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-500 dark:text-slate-300 px-2 py-0.5 rounded-lg font-black uppercase">{request.days} Days</span>
-                                                </div>
-                                                <p className="text-xs font-medium text-slate-400 mt-1">{request.reason}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className={`mt-4 sm:mt-0 flex items-center gap-2 px-4 py-2 rounded-2xl font-bold text-xs border ${request.status === 'pending'
-                                            ? 'bg-amber-50 text-amber-700 border-amber-100'
-                                            : 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                                            }`}>
-                                            {request.status === 'pending' ? <Clock size={14} /> : <CheckCircle size={14} />}
-                                            {request.status.toUpperCase()}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* --- Sidebar --- */}
-                    <div className="space-y-6">
-                        <div className="bg-indigo-600 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-xl shadow-indigo-100">
-                            <div className="relative z-10">
-                                <HeartPulse className="mb-4 text-indigo-200" size={32} />
-                                <h4 className="text-xl font-bold mb-2">Leave Health</h4>
-                                <p className="text-indigo-100 text-xs leading-relaxed mb-6">
-                                    You've used 12% of your annual quota. We recommend planning your Q3 break soon to avoid burn-out!
-                                </p>
-                                <Button className="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-2xl border border-white/10">
-                                    Planning Tool
+                            <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+                                    <Bell size={16} />
+                                    <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-violet-500" />
+                                </Button>
+                                <Button
+                                    onClick={() => setShowLeaveModal(true)}
+                                    className="h-8 rounded-md bg-violet-600 hover:bg-violet-700 px-3 text-xs"
+                                >
+                                    <Plus size={14} className="mr-1" />
+                                    Apply for Leave
                                 </Button>
                             </div>
-                            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
-                        </div>
-
-                        <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-700 p-8">
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                                <Calendar size={18} className="text-orange-500" />
-                                Public Holidays
-                            </h3>
-                            <div className="space-y-4">
-                                {[
-                                    { name: 'Native American Day', date: 'June 2' },
-                                    { name: 'Juneteenth', date: 'June 19' },
-                                    { name: 'Independence Day', date: 'July 4' },
-                                ].map((h, i) => (
-                                    <div key={i} className="flex justify-between items-center group cursor-default">
-                                        <div>
-                                            <p className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{h.name}</p>
-                                            <p className="text-[10px] font-bold text-slate-400">{h.date}</p>
-                                        </div>
-                                        <ArrowUpRight size={14} className="text-slate-200 group-hover:text-blue-600 transition-all" />
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                     </div>
-                </div>
+
+                    <div>
+                        {serverError && (
+                            <Alert className="mb-4 border-red-200 bg-red-50 text-red-700">
+                                <AlertDescription>{serverError}</AlertDescription>
+                            </Alert>
+                        )}
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
+                            {topStats.map((item) => (
+                                <Card key={item.label} className="border border-slate-200 dark:border-slate-800 shadow-none">
+                                    <CardContent className="p-3">
+                                        <div className="flex items-start justify-between mb-2">
+                                            <p className="text-[11px] text-slate-500">{item.label}</p>
+                                            <div className={`h-5 w-5 rounded-full grid place-items-center ${item.accent}`}>
+                                                <item.icon size={11} />
+                                            </div>
+                                        </div>
+                                        <p className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{item.value}</p>
+                                        <p className="text-[10px] text-slate-400 mt-2">{item.sub}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+
+                        <div className="inline-flex items-center rounded-md border border-slate-200 dark:border-slate-700 p-1 text-[11px] mb-4 gap-1">
+                            {tabs.map((tab) => (
+                                <Button
+                                    key={tab.key}
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setActiveTab(tab.key)}
+                                    className={`h-7 px-2.5 text-[11px] ${activeTab === tab.key
+                                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold'
+                                        : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-200'
+                                        }`}
+                                >
+                                    {tab.label}
+                                </Button>
+                            ))}
+                        </div>
+
+                        {activeTab === 'overview' && (
+                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
+                                <Card className="xl:col-span-2 border border-slate-200 dark:border-slate-800 shadow-none">
+                                    <CardHeader className="p-3 pb-2 flex-row items-center justify-between space-y-0">
+                                        <CardTitle className="text-sm font-semibold">Recent Requests</CardTitle>
+                                        <Button variant="link" className="h-auto p-0 text-xs text-violet-600" onClick={() => setActiveTab('requests')}>View all</Button>
+                                    </CardHeader>
+                                    <CardContent className="p-3 pt-1 space-y-2">
+                                        {isLoading && <p className="text-xs text-slate-400">Loading requests...</p>}
+                                        {!isLoading && leaveRequests.length === 0 && (
+                                            <p className="text-xs text-slate-400">No requests yet.</p>
+                                        )}
+                                        {leaveRequests.slice(0, 4).map((request) => (
+                                            <div key={request.id} className="rounded-lg border border-slate-100 dark:border-slate-800 px-2.5 py-2 flex items-center justify-between gap-3">
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">{request.reason}</p>
+                                                    <p className="text-[10px] text-slate-500">
+                                                        {format(new Date(request.startDate), 'yyyy-MM-dd')} - {format(new Date(request.endDate), 'yyyy-MM-dd')} • {request.days}d
+                                                    </p>
+                                                </div>
+
+                                                <div className="flex items-center gap-1.5 shrink-0">
+                                                    <Badge className={`text-[10px] rounded-full px-2 h-5 border-0 ${leaveTypeClass(request.leaveType)}`}>
+                                                        {request.leaveType.replace(' Leave', '')}
+                                                    </Badge>
+                                                    <Badge className={`text-[10px] rounded-full px-2 h-5 border ${statusClass(request.status)}`}>
+                                                        {request.status[0].toUpperCase() + request.status.slice(1)}
+                                                    </Badge>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-emerald-600" aria-label="Approve">
+                                                        <CheckCircle size={14} />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6 text-rose-600" aria-label="Reject">
+                                                        <XCircle size={14} />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </CardContent>
+                                </Card>
+
+                                <div className="space-y-3">
+                                    <Card className="border border-slate-200 dark:border-slate-800 shadow-none">
+                                        <CardHeader className="p-3 pb-2">
+                                            <CardTitle className="text-sm font-semibold">Your Balance</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-1 space-y-2.5">
+                                            {leaveBalance.map((leave) => {
+                                                const percent = leave.total === 0 ? 0 : (leave.remaining / leave.total) * 100;
+                                                const theme = getTheme(leave.leaveType);
+                                                const barColor: Record<string, string> = {
+                                                    indigo: 'bg-violet-500',
+                                                    emerald: 'bg-emerald-500',
+                                                    purple: 'bg-cyan-500',
+                                                    amber: 'bg-amber-500',
+                                                };
+
+                                                return (
+                                                    <div key={leave.leaveType}>
+                                                        <div className="flex items-center justify-between text-[11px] mb-1">
+                                                            <span className="text-slate-600 dark:text-slate-300">{leave.leaveType}</span>
+                                                            <span className="text-slate-500">{leave.remaining} left</span>
+                                                        </div>
+                                                        <div className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                                            <div className={`h-full ${barColor[theme] ?? 'bg-violet-500'}`} style={{ width: `${percent}%` }} />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </CardContent>
+                                    </Card>
+
+                                    <Card className="border border-slate-200 dark:border-slate-800 shadow-none">
+                                        <CardHeader className="p-3 pb-2">
+                                            <CardTitle className="text-sm font-semibold">On Leave Today</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-1 space-y-2">
+                                            {leaveToday.map((person) => (
+                                                <div key={person.name} className="flex items-center gap-2">
+                                                    <div className="h-6 w-6 rounded-full bg-slate-100 text-[10px] grid place-items-center font-semibold text-slate-600">
+                                                        {person.initials}
+                                                    </div>
+                                                    <div className="leading-tight">
+                                                        <p className="text-xs font-medium text-slate-800 dark:text-slate-100">{person.name}</p>
+                                                        <p className="text-[10px] text-slate-500">{person.type} • {person.days}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'requests' && (
+                            <Card className="border border-slate-200 dark:border-slate-800 shadow-none">
+                                <CardHeader className="p-4 pb-3">
+                                    <CardTitle className="text-sm font-semibold">All Leave Requests</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-4 pt-0 space-y-2">
+                                    {isLoading && <p className="text-xs text-slate-400">Loading requests...</p>}
+                                    {!isLoading && leaveRequests.length === 0 && <p className="text-xs text-slate-400">No requests found.</p>}
+                                    {leaveRequests.map((request) => (
+                                        <div key={request.id} className="rounded-lg border border-slate-100 dark:border-slate-800 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                            <div>
+                                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{request.reason}</p>
+                                                <p className="text-xs text-slate-500 mt-0.5">
+                                                    {format(new Date(request.startDate), 'dd MMM yyyy')} - {format(new Date(request.endDate), 'dd MMM yyyy')} • {request.days} day(s)
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Badge className={`text-[10px] rounded-full px-2 h-5 border-0 ${leaveTypeClass(request.leaveType)}`}>
+                                                    {request.leaveType}
+                                                </Badge>
+                                                <Badge className={`text-[10px] rounded-full px-2 h-5 border ${statusClass(request.status)}`}>
+                                                    {request.status[0].toUpperCase() + request.status.slice(1)}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {activeTab === 'balances' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {leaveBalance.map((leave) => {
+                                    const percentUsed = leave.total === 0 ? 0 : (leave.used / leave.total) * 100;
+                                    const theme = getTheme(leave.leaveType);
+                                    const barColor: Record<string, string> = {
+                                        indigo: 'bg-violet-500',
+                                        emerald: 'bg-emerald-500',
+                                        purple: 'bg-cyan-500',
+                                        amber: 'bg-amber-500',
+                                    };
+                                    return (
+                                        <Card key={leave.leaveType} className="border border-slate-200 dark:border-slate-800 shadow-none">
+                                            <CardContent className="p-4">
+                                                <div className="flex items-start justify-between mb-3">
+                                                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{leave.leaveType}</p>
+                                                    <Badge variant="outline" className="text-[10px]">{leave.remaining} left</Badge>
+                                                </div>
+                                                <div className="h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden mb-2">
+                                                    <div className={`h-full ${barColor[theme] ?? 'bg-violet-500'}`} style={{ width: `${100 - percentUsed}%` }} />
+                                                </div>
+                                                <p className="text-xs text-slate-500">Used {leave.used} of {leave.total}</p>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {activeTab === 'calendar' && (
+                            <Card className="border border-slate-200 dark:border-slate-800 shadow-none">
+                                <CardHeader className="p-4 pb-3">
+                                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                        <CalendarIcon size={15} className="text-violet-600" />
+                                        Leave Calendar
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-4 pt-0">
+                                    <div className="w-full overflow-x-auto">
+                                        <Calendar mode="single" selected={calendarDate} onSelect={setCalendarDate} className="rounded-lg border w-fit" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
             </div>
 
             {/* --- Application Dialog --- */}
@@ -219,6 +467,12 @@ const Leave = () => {
                     </DialogHeader>
 
                     <form className="space-y-6">
+                        {serverError && (
+                            <Alert className="bg-red-50 border-red-200 text-red-700">
+                                <AlertDescription>{serverError}</AlertDescription>
+                            </Alert>
+                        )}
+
                         {/* Type Selector */}
                         <div className="space-y-3">
                             <Label className="text-xs font-bold uppercase tracking-wider">
@@ -339,14 +593,14 @@ const Leave = () => {
                         </Button>
                         <Button
                             type="submit"
+                            disabled={isSubmitting || isLoading}
                             onClick={(e) => {
                                 e.preventDefault();
-                                console.log('Leave request:', formData);
-                                setShowLeaveModal(false);
+                                void handleSubmitRequest();
                             }}
                             className="bg-blue-600 hover:bg-blue-700"
                         >
-                            Confirm & Submit
+                            {isSubmitting ? 'Submitting...' : 'Confirm & Submit'}
                             <Send size={16} className="ml-2" />
                         </Button>
                     </DialogFooter>

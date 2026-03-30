@@ -1,6 +1,7 @@
 using System.Text;
 using Backend.Data;
 using Backend.Models;
+using Backend.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<ILeaveService, LeaveService>();
 
 // CORS � allow the Vite dev server
 builder.Services.AddCors(options =>
