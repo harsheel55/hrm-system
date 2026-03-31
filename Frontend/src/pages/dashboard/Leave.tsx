@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,8 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import {
-  Calendar,
-  Clock,
   CheckCircle2,
   XCircle,
   AlertCircle,
@@ -22,9 +19,6 @@ import {
   ChevronRight,
   TrendingUp,
   Users,
-  FileText,
-  Home,
-  Settings,
   Bell,
 } from "lucide-react";
 

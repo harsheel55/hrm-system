@@ -8,15 +8,10 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import {
-  Users,
   AlertCircle,
   CheckCircle2,
   XCircle,
   Calendar,
-  Home,
-  FileText,
-  Settings,
-  Clock,
   Bell,
   ChevronLeft,
   ChevronRight,

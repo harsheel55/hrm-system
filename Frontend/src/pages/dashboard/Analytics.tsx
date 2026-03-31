@@ -9,22 +9,13 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
-  Users,
-  Home,
-  Calendar,
-  Clock,
-  DollarSign,
-  Briefcase,
   FileText,
-  Settings,
   Bell,
   Star,
   TrendingUp,
   TrendingDown,
   CheckCircle2,
   AlertCircle,
-  ChevronRight,
-  RefreshCw,
   Target,
   Award,
   MessageSquare,
@@ -32,14 +23,10 @@ import {
   Edit3,
   Plus,
   Search,
-  ArrowUpRight,
   Flag,
   Zap,
   BarChart2,
-  UserCheck,
-  X,
   Check,
-  ChevronDown,
 } from "lucide-react";
 
 type ReviewStatus = "completed" | "in-progress" | "pending" | "overdue";
@@ -374,8 +361,6 @@ export function PerformanceManagement() {
   });
 
   const completedCount   = employees.filter(e => e.reviewStatus === "completed").length;
-  const inProgressCount  = employees.filter(e => e.reviewStatus === "in-progress").length;
-  const pendingCount     = employees.filter(e => e.reviewStatus === "pending").length;
   const overdueCount     = employees.filter(e => e.reviewStatus === "overdue").length;
   const avgRating        = (employees.reduce((s, e) => s + e.overallRating, 0) / employees.length).toFixed(1);
   const goalsOnTrack     = goals.filter(g => g.status === "on-track" || g.status === "completed").length;
