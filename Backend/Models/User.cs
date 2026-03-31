@@ -8,6 +8,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Models
 {
@@ -134,5 +135,12 @@ namespace Backend.Models
         /// Default: Current UTC time
         /// </summary>
         public DateTime dtUpdatedOn { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Navigation property to UserRole - Lazy loading support
+        /// Allows access to the user's assigned role details
+        /// </summary>
+        [ForeignKey("strRoleGUID")]
+        public virtual UserRole? UserRole { get; set; }
     }
 }

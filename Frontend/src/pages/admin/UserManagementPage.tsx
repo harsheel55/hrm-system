@@ -62,8 +62,22 @@ export default function UserManagementPage() {
       setUsers(usersResponse.data);
       setFilteredUsers(usersResponse.data);
       setRoles(rolesResponse.data);
+      console.log('Loaded users:', usersResponse.data);
+      console.log('Loaded roles:', rolesResponse.data);
     } catch (error: any) {
       console.error('Failed to load data:', error);
+      console.error('Error message:', error.message);
+      console.error('Error details:', error);
+      // Still show users even if roles fail to load
+      try {
+        const usersResponse = await userService.getAllUsers();
+        setUsers(usersResponse.data);
+        setFilteredUsers(usersResponse.data);
+        console.log('Loaded users after error:', usersResponse.data);
+      } catch (userError: any) {
+        console.error('Failed to load users:', userError);
+        console.error('User error details:', userError);
+      }
     } finally {
       setIsLoading(false);
     }

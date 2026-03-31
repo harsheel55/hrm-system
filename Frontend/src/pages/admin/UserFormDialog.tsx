@@ -95,6 +95,8 @@ export default function UserFormDialog({
         strEmail: '',
         strPassword: '',
         strPhoneNo: '',
+        dDob: '',
+        strRoleGUID: '',
         strPreferredLanguage: 'en',
         bolIsActive: true,
       });
@@ -142,7 +144,9 @@ export default function UserFormDialog({
 
       onSuccess();
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      console.error('Form submission error:', err);
+      const errorMessage = err?.response?.data?.message || err.message || 'An error occurred';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -243,33 +247,40 @@ export default function UserFormDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="strRoleGUID">Role</Label>
-              <Select
-                value={selectedRole}
-                onValueChange={(value) => setValue('strRoleGUID', value)}
-                disabled={isSubmitting}
-              >
-                <SelectTrigger id="strRoleGUID">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {roles.map((role) => (
-                    <SelectItem key={role.strUserRoleGUID} value={role.strUserRoleGUID}>
-                      {role.strRoleName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {roles && roles.length > 0 ? (
+                <Select
+                  value={selectedRole || 'none'}
+                  onValueChange={(value) => setValue('strRoleGUID', value === 'none' ? '' : value)}
+                  disabled={isSubmitting}
+                >
+                  <SelectTrigger id="strRoleGUID">
+                    <SelectValue placeholder="Select a role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Role</SelectItem>
+                    {roles.map((role) => (
+                      <SelectItem key={role.strUserRoleGUID} value={role.strUserRoleGUID}>
+                        {role.strRoleName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="w-full p-2 border rounded bg-gray-50 text-gray-500 text-sm">
+                  No roles available. Create roles in Role Management first.
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="strPreferredLanguage">Preferred Language</Label>
               <Select
-                value={watch('strPreferredLanguage')}
+                value={watch('strPreferredLanguage') || 'en'}
                 onValueChange={(value) => setValue('strPreferredLanguage', value)}
                 disabled={isSubmitting}
               >
                 <SelectTrigger id="strPreferredLanguage">
-                  <SelectValue />
+                  <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="en">English</SelectItem>
