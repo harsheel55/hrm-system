@@ -42,11 +42,11 @@ namespace Backend.Services
             {
                 strUserRoleGUID = role.strUserRoleGUID,
                 strRoleName = role.strRoleName,
-                strDesc = role.strDesc,
+                strDescription = role.strDesc,
                 bolIsActive = role.bolIsActive,
                 bolSystemCreated = role.bolSystemCreated,
-                dtCreatedOn = role.dtCreatedOn,
-                dtUpdatedOn = role.dtUpdatedOn
+                dtCreatedDate = role.dtCreatedOn.ToString("o"),
+                dtModifiedDate = role.dtUpdatedOn.ToString("o")
             };
         }
 
@@ -67,11 +67,11 @@ namespace Backend.Services
             {
                 strUserRoleGUID = role.strUserRoleGUID,
                 strRoleName = role.strRoleName,
-                strDesc = role.strDesc,
+                strDescription = role.strDesc,
                 bolIsActive = role.bolIsActive,
                 bolSystemCreated = role.bolSystemCreated,
-                dtCreatedOn = role.dtCreatedOn,
-                dtUpdatedOn = role.dtUpdatedOn
+                dtCreatedDate = role.dtCreatedOn.ToString("o"),
+                dtModifiedDate = role.dtUpdatedOn.ToString("o")
             };
         }
 
@@ -81,19 +81,21 @@ namespace Backend.Services
         /// </summary>
         public async Task<IEnumerable<UserRoleResponseDto>> GetAllRolesAsync()
         {
-            // Get all roles from database
-            var roles = await _context.UserRoles.ToListAsync();
+            // Get all ACTIVE roles from database (filter out inactive roles)
+            var roles = await _context.UserRoles
+                .Where(r => r.bolIsActive)
+                .ToListAsync();
             
             // Convert each role to response format and return the list
             return roles.Select(role => new UserRoleResponseDto
             {
                 strUserRoleGUID = role.strUserRoleGUID,
                 strRoleName = role.strRoleName,
-                strDesc = role.strDesc,
+                strDescription = role.strDesc,
                 bolIsActive = role.bolIsActive,
                 bolSystemCreated = role.bolSystemCreated,
-                dtCreatedOn = role.dtCreatedOn,
-                dtUpdatedOn = role.dtUpdatedOn
+                dtCreatedDate = role.dtCreatedOn.ToString("o"),
+                dtModifiedDate = role.dtUpdatedOn.ToString("o")
             });
         }
 
@@ -118,8 +120,8 @@ namespace Backend.Services
             {
                 strUserRoleGUID = Guid.NewGuid(),              // Generate unique ID automatically
                 strRoleName = createRoleDto.strRoleName,        // Role name (e.g., "Admin")
-                strDesc = createRoleDto.strDesc,                // Description (e.g., "System Administrator")
-                bolIsActive = true,                             // New roles are active by default
+                strDesc = createRoleDto.strDescription ?? string.Empty,  // Description (e.g., "System Administrator")
+                bolIsActive = createRoleDto.bolIsActive,        // Use provided active status
                 bolSystemCreated = false,                       // User-created roles (not system roles)
                 strCreatedByGUID = auditCreatedBy,              // Who created this role (default to system)
                 dtCreatedOn = DateTime.UtcNow,                  // Timestamp: when created
@@ -136,11 +138,11 @@ namespace Backend.Services
             {
                 strUserRoleGUID = role.strUserRoleGUID,
                 strRoleName = role.strRoleName,
-                strDesc = role.strDesc,
+                strDescription = role.strDesc,
                 bolIsActive = role.bolIsActive,
                 bolSystemCreated = role.bolSystemCreated,
-                dtCreatedOn = role.dtCreatedOn,
-                dtUpdatedOn = role.dtUpdatedOn
+                dtCreatedDate = role.dtCreatedOn.ToString("o"),
+                dtModifiedDate = role.dtUpdatedOn.ToString("o")
             };
         }
 
@@ -175,12 +177,11 @@ namespace Backend.Services
             }
 
             // UPDATE DESCRIPTION (if provided)
-            if (!string.IsNullOrEmpty(updateRoleDto.strDesc))
-                role.strDesc = updateRoleDto.strDesc;
+            if (!string.IsNullOrEmpty(updateRoleDto.strDescription))
+                role.strDesc = updateRoleDto.strDescription;
 
-            // UPDATE ACTIVE STATUS (if provided)
-            if (updateRoleDto.bolIsActive.HasValue)
-                role.bolIsActive = updateRoleDto.bolIsActive.Value;
+            // UPDATE ACTIVE STATUS
+            role.bolIsActive = updateRoleDto.bolIsActive;
 
             // UPDATE METADATA: Who updated it and when
             role.strUpdatedByGUID = auditUpdatedBy;
@@ -194,11 +195,11 @@ namespace Backend.Services
             {
                 strUserRoleGUID = role.strUserRoleGUID,
                 strRoleName = role.strRoleName,
-                strDesc = role.strDesc,
+                strDescription = role.strDesc,
                 bolIsActive = role.bolIsActive,
                 bolSystemCreated = role.bolSystemCreated,
-                dtCreatedOn = role.dtCreatedOn,
-                dtUpdatedOn = role.dtUpdatedOn
+                dtCreatedDate = role.dtCreatedOn.ToString("o"),
+                dtModifiedDate = role.dtUpdatedOn.ToString("o")
             };
         }
 

@@ -21,45 +21,39 @@ export const userService = {
   },
 
   async createUser(data: CreateUserDto): Promise<ApiResponse<UserResponseDto>> {
-    if (data.strProfileImage) {
-      const formData = new FormData();
-      formData.append('strUserName', data.strUserName);
-      formData.append('strEmail', data.strEmail);
-      formData.append('strPassword', data.strPassword);
-      if (data.strPhoneNo) formData.append('strPhoneNo', data.strPhoneNo);
-      if (data.dDob) formData.append('dDob', data.dDob);
-      if (data.strRoleGUID) formData.append('strRoleGUID', data.strRoleGUID);
-      if (data.strPreferredLanguage) formData.append('strPreferredLanguage', data.strPreferredLanguage);
-      formData.append('strProfileImage', data.strProfileImage);
-      
-      return apiClient.postFormData<ApiResponse<UserResponseDto>>(
-        ENDPOINTS.USERS.BASE,
-        formData
-      );
-    }
-    
-    return apiClient.post<ApiResponse<UserResponseDto>>(ENDPOINTS.USERS.BASE, data);
+    // Always use FormData for consistency with backend [FromForm] attribute
+    const formData = new FormData();
+    formData.append('strUserName', data.strUserName);
+    formData.append('strEmail', data.strEmail);
+    formData.append('strPassword', data.strPassword);
+    if (data.strPhoneNo) formData.append('strPhoneNo', data.strPhoneNo);
+    if (data.dDob) formData.append('dDob', data.dDob);
+    if (data.strRoleGUID) formData.append('strRoleGUID', data.strRoleGUID);
+    if (data.strPreferredLanguage) formData.append('strPreferredLanguage', data.strPreferredLanguage);
+    if (data.strProfileImage) formData.append('strProfileImage', data.strProfileImage);
+
+    return apiClient.postFormData<ApiResponse<UserResponseDto>>(
+      ENDPOINTS.USERS.BASE,
+      formData
+    );
   },
 
   async updateUser(id: string, data: UpdateUserDto): Promise<ApiResponse<UserResponseDto>> {
-    if (data.strProfileImage) {
-      const formData = new FormData();
-      formData.append('strUserName', data.strUserName);
-      formData.append('strEmail', data.strEmail);
-      if (data.strPhoneNo) formData.append('strPhoneNo', data.strPhoneNo);
-      if (data.dDob) formData.append('dDob', data.dDob);
-      if (data.strRoleGUID) formData.append('strRoleGUID', data.strRoleGUID);
-      if (data.strPreferredLanguage) formData.append('strPreferredLanguage', data.strPreferredLanguage);
-      formData.append('bolIsActive', String(data.bolIsActive));
-      formData.append('strProfileImage', data.strProfileImage);
-      
-      return apiClient.putFormData<ApiResponse<UserResponseDto>>(
-        ENDPOINTS.USERS.BY_ID(id),
-        formData
-      );
-    }
-    
-    return apiClient.put<ApiResponse<UserResponseDto>>(ENDPOINTS.USERS.BY_ID(id), data);
+    // Always use FormData for consistency with backend [FromForm] attribute
+    const formData = new FormData();
+    formData.append('strUserName', data.strUserName);
+    formData.append('strEmail', data.strEmail);
+    if (data.strPhoneNo) formData.append('strPhoneNo', data.strPhoneNo);
+    if (data.dDob) formData.append('dDob', data.dDob);
+    if (data.strRoleGUID) formData.append('strRoleGUID', data.strRoleGUID);
+    if (data.strPreferredLanguage) formData.append('strPreferredLanguage', data.strPreferredLanguage);
+    formData.append('bolIsActive', String(data.bolIsActive));
+    if (data.strProfileImage) formData.append('strProfileImage', data.strProfileImage);
+
+    return apiClient.putFormData<ApiResponse<UserResponseDto>>(
+      ENDPOINTS.USERS.BY_ID(id),
+      formData
+    );
   },
 
   async deleteUser(id: string): Promise<ApiResponse<any>> {

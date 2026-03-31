@@ -12,7 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ILeaveService, LeaveService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IBlogCategoryService, BlogCategoryService>();
+builder.Services.AddScoped<IBlogService, BlogService>();
+builder.Services.AddScoped<IBlogTagService, BlogTagService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<ILeaveService, LeaveService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRightsService, UserRightsService>();
+builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 
 // CORS � allow the Vite dev server
 builder.Services.AddCors(options =>
@@ -116,6 +126,72 @@ using (var scope = app.Services.CreateScope())
     const string defaultAdminPassword = "Admin@123";
     try
     {
+        // Seed default roles
+        if (!useInMemoryDatabase)
+        {
+            try
+            {
+                var roles = new[]
+                {
+                    new UserRole
+                    {
+                        strUserRoleGUID = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                        strRoleName = "Super Admin",
+                        strDesc = "System Administrator with full access",
+                        bolIsActive = true,
+                        bolSystemCreated = true,
+                        dtCreatedOn = DateTime.UtcNow,
+                        dtUpdatedOn = DateTime.UtcNow
+                    },
+                    new UserRole
+                    {
+                        strUserRoleGUID = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+                        strRoleName = "Administrator",
+                        strDesc = "Administrator with management permissions",
+                        bolIsActive = true,
+                        bolSystemCreated = true,
+                        dtCreatedOn = DateTime.UtcNow,
+                        dtUpdatedOn = DateTime.UtcNow
+                    },
+                    new UserRole
+                    {
+                        strUserRoleGUID = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+                        strRoleName = "Manager",
+                        strDesc = "Manager with department control and reporting rights",
+                        bolIsActive = true,
+                        bolSystemCreated = true,
+                        dtCreatedOn = DateTime.UtcNow,
+                        dtUpdatedOn = DateTime.UtcNow
+                    },
+                    new UserRole
+                    {
+                        strUserRoleGUID = Guid.Parse("00000000-0000-0000-0000-000000000004"),
+                        strRoleName = "Employee",
+                        strDesc = "Standard employee with basic access",
+                        bolIsActive = true,
+                        bolSystemCreated = true,
+                        dtCreatedOn = DateTime.UtcNow,
+                        dtUpdatedOn = DateTime.UtcNow
+                    }
+                };
+
+                foreach (var role in roles)
+                {
+                    var roleExists = db.UserRoles.Any(r => r.strUserRoleGUID == role.strUserRoleGUID);
+                    if (!roleExists)
+                    {
+                        db.UserRoles.Add(role);
+                    }
+                }
+                db.SaveChanges();
+                logger.LogInformation("Seeded default user roles");
+            }
+            catch (Exception roleEx)
+            {
+                logger.LogWarning(roleEx, "Could not seed user roles.");
+            }
+        }
+
         // Seed admin in Login table used by AuthController login endpoints.
         if (!useInMemoryDatabase)
         {

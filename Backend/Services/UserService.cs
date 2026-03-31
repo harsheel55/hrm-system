@@ -35,8 +35,10 @@ namespace Backend.Services
         /// </summary>
         public async Task<UserResponseDto?> GetUserByIdAsync(Guid userId)
         {
-            // Search database for user with this ID
-            var user = await _context.Users.FindAsync(userId);
+            // Search database for user with this ID and include role information
+            var user = await _context.Users
+                .Include(u => u.UserRole)
+                .FirstOrDefaultAsync(u => u.strUserGUID == userId);
             
             // If not found, return null. Otherwise, convert to safe response format (without password)
             return user == null ? null : MapToResponseDto(user);
@@ -49,8 +51,10 @@ namespace Backend.Services
         /// </summary>
         public async Task<UserResponseDto?> GetUserByEmailAsync(string email)
         {
-            // Search database for user with this email
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.strEmail == email);
+            // Search database for user with this email and include role information
+            var user = await _context.Users
+                .Include(u => u.UserRole)
+                .FirstOrDefaultAsync(u => u.strEmail == email);
             
             // If not found, return null. Otherwise, convert to safe response format
             return user == null ? null : MapToResponseDto(user);
@@ -62,8 +66,10 @@ namespace Backend.Services
         /// </summary>
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
         {
-            // Get all users from database
-            var users = await _context.Users.ToListAsync();
+            // Get all users from database with role information
+            var users = await _context.Users
+                .Include(u => u.UserRole)
+                .ToListAsync();
             
             // Convert each user to response format (safe format without passwords) and return
             return users.Select(MapToResponseDto);
@@ -286,15 +292,13 @@ namespace Backend.Services
                 dDob = user.dDob,                                          // Date of birth
                 bolIsActive = user.bolIsActive,                            // Is account active?
                 bolSystemCreated = user.bolSystemCreated,                  // Is this a system-created account?
-                strRoleGUID = user.strRoleGUID,                            // User's role (Admin, User, etc.)
+                strRoleGUID = user.strRoleGUID,                            // User's role GUID
+                strRoleName = user.UserRole?.strRoleName,                  // User's role name (from navigation property)
                 strPreferredLanguage = user.strPreferredLanguage,          // Language preference
-                strProfileImg = user.strProfileImg,                        // Profile picture URL
+                strProfileImageUrl = user.strProfileImg,                   // Profile picture URL
                 dtLastLogin = user.dtLastLogin,                            // Last login timestamp
-                dtCreatedOn = user.dtCreatedOn,                            // Account creation date
-                dtUpdatedOn = user.dtUpdatedOn                             // Last update date
-                // NOTE: strPassword is intentionally NOT included (security)
-                // NOTE: strOTP and strOTPExpiry not included (sensitive for 2FA)
-                // NOTE: Audit fields like strCreatedByGUID/strUpdatedByGUID not included (internal only)
+                dtCreatedDate = user.dtCreatedOn,                          // Account creation date
+                dtModifiedDate = user.dtUpdatedOn                          // Account modification date
             };
         }
     }

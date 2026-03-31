@@ -22,6 +22,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<object>>> GetAllRoles()
         {
             var roles = await _userRoleService.GetAllRolesAsync();
