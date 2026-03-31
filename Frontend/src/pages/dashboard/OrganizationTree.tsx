@@ -1,14 +1,11 @@
-import { useState, useMemo, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
-  Users, Home, Calendar, Clock, DollarSign, Briefcase,
-  FileText, Settings, RefreshCw, Target, Search, ChevronDown, ChevronUp,
-  ZoomIn, ZoomOut, Maximize2, Mail, Phone, MapPin, UserPlus,
-  Download, List, Network, ChevronRight, Layers,
+  FileText, Target, Search, ChevronDown, ChevronUp,
+  ZoomIn, ZoomOut, Mail, Phone, MapPin, UserPlus,
+  Download, ChevronRight, Layers,
 } from "lucide-react";
 
 /* ─── Data ────────────────────────────────────────────────────────────────── */
@@ -126,12 +123,6 @@ function countAll(n: OrgPerson): number {
   return 1 + (n.children ?? []).reduce((s, c) => s + countAll(c), 0);
 }
 
-function collectByDept(n: OrgPerson, acc: Record<string, number> = {}): Record<string, number> {
-  acc[n.dept] = (acc[n.dept] ?? 0) + 1;
-  (n.children ?? []).forEach(c => collectByDept(c, acc));
-  return acc;
-}
-
 function findPerson(n: OrgPerson, id: string): OrgPerson | null {
   if (n.id === id) return n;
   for (const c of n.children ?? []) { const f = findPerson(c, id); if (f) return f; }
@@ -154,14 +145,13 @@ export function OrgTree() {
   const [selected, setSelected] = useState<string | null>(null);
   const [search, setSearch]     = useState("");
   const [zoom, setZoom]         = useState(1);
-  const [filterDept, setFilterDept] = useState<string | null>(null);
+  const [filterDept] = useState<string | null>(null);
 
   const root    = useMemo(() => layout(ORG, 0, 0, expanded), [expanded]);
   const nodes   = useMemo(() => allNodes(root), [root]);
   const edges   = useMemo(() => allEdges(root), [root]);
   const svgW    = root.sw + PAD * 2;
   const maxY    = Math.max(...nodes.map(n => n.y)) + CH + PAD;
-  const depts   = useMemo(() => collectByDept(ORG), []);
   const total   = useMemo(() => countAll(ORG), []);
   const selectedPerson = selected ? findPerson(ORG, selected) : null;
   const parentPerson   = selected ? findParent(ORG, selected) : null;

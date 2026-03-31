@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -14,11 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   Briefcase,
   Users,
-  Home,
   Calendar,
-  Clock,
-  FileText,
-  Settings,
   Bell,
   Plus,
   Search,
@@ -32,7 +27,6 @@ import {
   Clock3,
   Eye,
   TrendingUp,
-  RefreshCw,
   UserCheck,
   Send,
   LayoutGrid,
@@ -347,7 +341,7 @@ function JobViewDialog({ job }: { job: Job }) {
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Candidate Pipeline</p>
             <div className="flex items-end gap-2">
-              {stagesDisplay.map((stage, i) => {
+              {stagesDisplay.map((stage) => {
                 const count = job.pipeline[stage];
                 const pct = Math.max((count / total) * 100, 4);
                 const cfg = stageConfig[stage];
@@ -442,7 +436,6 @@ function JobCandidatesDialog({ job, allCandidates }: { job: Job; allCandidates: 
             </div>
           )}
           {shown.map(c => {
-            const cfg = stageConfig[c.stage];
             return (
               <div key={c.id} className="flex items-center gap-3 p-3 rounded-xl border bg-white hover:shadow-sm transition-shadow dark:bg-gray-950 dark:border-gray-800 dark:hover:shadow-violet-500/10">
                 <Avatar className="w-10 h-10 flex-shrink-0">
@@ -765,7 +758,6 @@ export default function Recruitment() {
                 {/* Right: detail panel */}
                 {selectedCandidate && (() => {
                   const c = selectedCandidate;
-                  const cfg = stageConfig[c.stage];
                   const stageIdx = stageOrder.indexOf(c.stage);
                   return (
                     <div className="w-72 flex-shrink-0 space-y-3 sticky top-0">

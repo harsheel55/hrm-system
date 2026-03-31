@@ -10,7 +10,7 @@ import {
     Briefcase,
     LogOut,
     Bell,
-    Search,
+    Download ,   Search,
     Home,
     Settings,
     Grid,
@@ -180,10 +180,13 @@ const DashboardLayout = () => {
                             <Bell size={20} className="group-hover:animate-pulse" />
                             <span className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse ring-2 ring-white"></span>
                         </button>
+                        <button className="p-2.5 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-all rounded-xl hover:bg-blue-50 dark:hover:bg-slate-800 group">
+                            <Download size={20} className="group-hover:animate-bounce" />
+                        </button>
                     </div>
                 </header>
 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 custom-scrollbar">
+                <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 bg-slate-50/50 dark:bg-slate-950/50 transition-colors">
                     <Outlet />
                 </main>
             </SidebarInset>
