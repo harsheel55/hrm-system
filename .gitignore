@@ -37,3 +37,9 @@ yarn-error.log*
 
 # OS
 Thumbs.db
+# .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
