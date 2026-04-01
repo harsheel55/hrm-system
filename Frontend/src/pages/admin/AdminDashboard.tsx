@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import {
   Users,
   Shield,
-  FileText,
-  Menu as MenuIcon,
+
   TrendingUp,
   Activity,
 } from 'lucide-react';
@@ -27,20 +26,7 @@ export default function AdminDashboard() {
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-50',
     },
-    {
-      title: 'Total Blogs',
-      value: '0',
-      icon: FileText,
-      color: 'from-green-500 to-green-600',
-      bgColor: 'bg-green-50',
-    },
-    {
-      title: 'Menu Items',
-      value: '0',
-      icon: MenuIcon,
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'bg-orange-50',
-    },
+
   ];
 
   return (
@@ -122,19 +108,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-green-600" />
-              Latest Blogs
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-500">
-              No blogs created yet
-            </p>
-          </CardContent>
-        </Card>
+
       </div>
     </div>
   );
