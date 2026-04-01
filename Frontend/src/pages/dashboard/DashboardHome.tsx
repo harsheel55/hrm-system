@@ -60,7 +60,7 @@ const DashboardHome = () => {
         }
     });
 
-    const tabs = ['Activities', 'Feeds', 'Career History', 'Profile', 'Approvals', 'Attendance', 'Leave', 'Time Logs', 'Feedback', 'Cases', 'Related Data'];
+    const tabs = ['Activities', 'Feeds', 'Career History', 'Profile', 'Approvals', 'Attendance', 'Leave', 'Feedback', 'Cases', 'Related Data'];
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -347,14 +347,6 @@ const DashboardHome = () => {
     function ActivitiesContent() {
         const activityFeed = [
             {
-                type: 'timesheet',
-                title: 'ZY198 - Christine Spalding',
-                desc: 'has made a request for Timesheet',
-                metaLabel: 'Raised on',
-                metaValue: '23-May-2024 04:14 PM',
-                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=96&h=96&q=80'
-            },
-            {
                 type: 'reminder',
                 title: 'Check-out reminder',
                 desc: 'Your shift has already ended',
@@ -376,27 +368,13 @@ const DashboardHome = () => {
                     {activityFeed.map((item, i) => (
                         <div key={i} className="bg-card rounded-2xl border border-border shadow-sm p-5">
                             <div className="flex items-center gap-4">
-                                {item.type === 'timesheet' ? (
-                                    <div className="w-11 h-11 rounded-full overflow-hidden bg-muted">
-                                        <img src={item.avatar} alt={item.title} className="w-full h-full object-cover" />
-                                    </div>
-                                ) : (
-                                    <div className="w-11 h-11 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
-                                        <Clock size={20} className="text-red-500" />
-                                    </div>
-                                )}
+                                <div className="w-11 h-11 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+                                    <Clock size={20} className="text-red-500" />
+                                </div>
 
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-bold text-foreground truncate">{item.title}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {item.type === 'timesheet' ? (
-                                            <>
-                                                has made a request for <span className="font-semibold">Timesheet</span>
-                                            </>
-                                        ) : (
-                                            item.desc
-                                        )}
-                                    </p>
+                                    <p className="text-sm text-muted-foreground">{item.desc}</p>
                                 </div>
 
                                 <div className="text-right">
@@ -859,7 +837,6 @@ const DashboardHome = () => {
         const approvals = [
             { type: 'leave', title: 'Annual Leave Request', employee: 'John Doe', days: '3 days', status: 'pending', date: 'Jun 15-17, 2024' },
             { type: 'expense', title: 'Travel Reimbursement', employee: 'Sarah Smith', amount: '$1,250', status: 'pending', date: 'Submitted 2 days ago' },
-            { type: 'timesheet', title: 'Overtime Approval', employee: 'Mike Johnson', hours: '12 hours', status: 'pending', date: 'May 28, 2024' },
             { type: 'leave', title: 'Medical Leave', employee: 'Emily Brown', days: '2 days', status: 'approved', date: 'Jun 10-11, 2024' },
         ];
 
