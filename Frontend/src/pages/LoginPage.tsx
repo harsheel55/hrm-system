@@ -61,7 +61,7 @@ export default function LoginPage() {
         return;
       }
 
-      navigate("/dashboard");
+      navigate("/employee");
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Something went wrong.");
     }
