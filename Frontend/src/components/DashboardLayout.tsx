@@ -45,6 +45,7 @@ const DashboardLayout = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+    const isEmployeeSection = location.pathname.startsWith('/employee');
 
     const handleSignOut = () => {
         logout();
@@ -52,7 +53,7 @@ const DashboardLayout = () => {
     };
 
     // Main Navigation (Sidebar Icons)
-    const apps = [
+    const dashboardApps = [
         { name: 'Home', href: '/dashboard', icon: Home },
         { name: 'Attendance', href: '/dashboard/attendance', icon: Clock },
         { name: 'Leave', href: '/dashboard/leave', icon: Calendar },
@@ -65,6 +66,16 @@ const DashboardLayout = () => {
         { name: 'Organization', href: '/dashboard/organization', icon: Users },
     ];
 
+    const employeeApps = [
+        { name: 'Overview', href: '/employee', icon: Home },
+        { name: 'My Profile', href: '/employee/profile', icon: User2 },
+        { name: 'My Attendance', href: '/employee/attendance', icon: Clock },
+        { name: 'My Leave', href: '/employee/leave', icon: Calendar },
+    ];
+
+    const apps = isEmployeeSection ? employeeApps : dashboardApps;
+    const rootPath = isEmployeeSection ? '/employee' : '/dashboard';
+
     return (
         <SidebarProvider>
             <Sidebar collapsible="icon">
@@ -72,7 +83,7 @@ const DashboardLayout = () => {
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <SidebarMenuButton size="lg" asChild>
-                                <Link to="/dashboard">
+                                <Link to={rootPath}>
                                     <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30">
                                         <Grid className="size-4" />
                                     </div>
