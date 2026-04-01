@@ -13,13 +13,13 @@ import Recruitment from './pages/dashboard/Recruitment';
 import { ShiftPlanner as Shift } from './pages/dashboard/Shift';
 import Documents from './pages/dashboard/Documents';
 import { LeaveManagement as Leave } from './pages/dashboard/Leave';
-import Timesheet from './pages/dashboard/Timesheet';
 import Analytics from './pages/dashboard/Analytics';
 import OrganizationTree from './pages/dashboard/OrganizationTree';
 import EmployeeOverview from './pages/employee/EmployeeOverview';
 import EmployeeProfile from './pages/employee/EmployeeProfile';
 import EmployeeAttendancePage from './pages/employee/EmployeeAttendancePage';
 import EmployeeLeavePage from './pages/employee/EmployeeLeavePage';
+import NotFound from './pages/NotFound';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 // Super Admin Imports
@@ -55,7 +55,6 @@ function App() {
               <Route path="shift" element={<Shift />} />
               <Route path="documents" element={<Documents />} />
               <Route path="leave" element={<Leave />} />
-              <Route path="timesheet" element={<Timesheet />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="organization" element={<OrganizationTree />} />
             </Route>
@@ -85,6 +84,8 @@ function App() {
               <Route path="blog-tags" element={<BlogTagPage />} />
             </Route>
           </Route>
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

@@ -71,7 +71,6 @@ const HRMDashboard = () => {
     { icon: Home, label: 'Home', active: true },
     { icon: CalendarCheck, label: 'Attendance' },
     { icon: Palmtree, label: 'Leave' },
-    { icon: Clock, label: 'Timesheet' },
     { icon: Target, label: 'Performance' },
     { icon: Book, label: 'LMS' },
     { icon: Folder, label: 'Cases' },
@@ -86,20 +85,22 @@ const HRMDashboard = () => {
 
   const tabs = [
     'Activities', 'Feeds', 'Career History', 'Profile', 'Approvals',
-    'Attendance', 'Leave', 'Time Logs', 'Feedback', 'Cases', 'Related Data', '...'
+    'Attendance', 'Leave', 'Feedback', 'Cases', 'Related Data', '...'
   ];
 
-  const activities = [
+  type ActivityItem = {
+    id: number;
+    type: string;
+    title: string;
+    description: string;
+    time: string;
+    icon: typeof Clock;
+    avatar?: string;
+  };
+
+  const activities: ActivityItem[] = [
     {
       id: 1,
-      type: 'timesheet',
-      title: 'ZY198 - Christine Spalding',
-      description: 'has made a request for Timesheet',
-      time: '23-May-2024 04:14 PM',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60'
-    },
-    {
-      id: 2,
       type: 'reminder',
       title: 'Check-out reminder',
       description: 'Your shift has already ended',
@@ -107,7 +108,7 @@ const HRMDashboard = () => {
       icon: Clock
     },
     {
-      id: 3,
+      id: 2,
       type: 'reminder',
       title: 'Check-out reminder',
       description: 'Your shift has already ended',
@@ -388,16 +389,8 @@ const HRMDashboard = () => {
                     )}
                     <div className="flex-1">
                       <p className="font-medium text-gray-900 dark:text-white">{activity.title}</p>
-                      <p className="text-sm text-gray-600 dark:text-slate-400">
-                        {activity.description.includes('Timesheet') ? (
-                          <>has made a request for <span className="font-semibold">Timesheet</span></>
-                        ) : (
-                          activity.description
-                        )}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">
-                        {activity.type === 'timesheet' ? 'Raised on' : 'Total Hours'}
-                      </p>
+                      <p className="text-sm text-gray-600 dark:text-slate-400">{activity.description}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">Total Hours</p>
                       <p className="text-sm font-medium text-gray-700 dark:text-slate-300">{activity.time}</p>
                     </div>
                   </div>
