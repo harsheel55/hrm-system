@@ -61,6 +61,18 @@ public sealed class AttendanceClockDto
     public string Status { get; set; } = "absent";
 }
 
+public sealed class AttendanceMonthlySummaryDto
+{
+    public int DaysPresent { get; set; }
+    public int WorkingDays { get; set; }
+    public int DaysLate { get; set; }
+    public decimal LatePercentage { get; set; }
+    public decimal TotalHours { get; set; }
+    public decimal AvgHoursPerDay { get; set; }
+    public decimal OvertimeHours { get; set; }
+    public int OvertimeDays { get; set; }
+}
+
 public sealed class AttendanceDashboardDto
 {
     public AttendanceSummaryDto Summary { get; set; } = new();
@@ -69,6 +81,7 @@ public sealed class AttendanceDashboardDto
     public List<AttendanceWeekDayDto> MyWeek { get; set; } = new();
     public List<AttendanceWeeklyBarDto> WeeklyBars { get; set; } = new();
     public List<DepartmentAttendanceDto> DepartmentAttendance { get; set; } = new();
+    public AttendanceMonthlySummaryDto MonthlySummary { get; set; } = new();
 }
 
 public sealed class AttendanceQueryDto

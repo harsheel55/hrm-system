@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -33,16 +33,6 @@ namespace Backend.Migrations
                 {
                     table.PrimaryKey("PK_LeaveRecords", x => x.Id);
                 });
-
-            migrationBuilder.InsertData(
-                table: "UserRoles",
-                columns: new[] { "strUserRoleGUID", "bolIsActive", "bolSystemCreated", "dtCreatedOn", "dtUpdatedOn", "strCreatedByGUID", "strDesc", "strRoleName", "strUpdatedByGUID" },
-                values: new object[,]
-                {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), true, true, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "System Administrator with full access", "Super Admin", null },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), true, true, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Human Resources with management access", "HR", null },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), true, true, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Standard employee access", "Employee", null }
-                });
         }
 
         /// <inheritdoc />
@@ -50,21 +40,6 @@ namespace Backend.Migrations
         {
             migrationBuilder.DropTable(
                 name: "LeaveRecords");
-
-            migrationBuilder.DeleteData(
-                table: "UserRoles",
-                keyColumn: "strUserRoleGUID",
-                keyValue: new Guid("11111111-1111-1111-1111-111111111111"));
-
-            migrationBuilder.DeleteData(
-                table: "UserRoles",
-                keyColumn: "strUserRoleGUID",
-                keyValue: new Guid("22222222-2222-2222-2222-222222222222"));
-
-            migrationBuilder.DeleteData(
-                table: "UserRoles",
-                keyColumn: "strUserRoleGUID",
-                keyValue: new Guid("33333333-3333-3333-3333-333333333333"));
         }
     }
 }

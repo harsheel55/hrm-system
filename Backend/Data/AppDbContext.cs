@@ -15,6 +15,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<BlogCategory> BlogCategories => Set<BlogCategory>();
     public DbSet<BlogTag> BlogTags => Set<BlogTag>();
     public DbSet<LeaveRecord> LeaveRecords => Set<LeaveRecord>();
+    public DbSet<Attendance> Attendances => Set<Attendance>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,6 +43,15 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         {
             entity.ToTable("Users");
             entity.HasKey(e => e.strUserGUID);
+        });
+
+        modelBuilder.Entity<Attendance>(entity =>
+        {
+            entity.ToTable("Attendances");
+            entity.HasKey(e => e.strAttendanceGUID);
+            entity.Property(e => e.strAttendanceGUID).HasDefaultValueSql("NEWID()");
+            entity.Property(e => e.dtCreatedOn).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.dtUpdatedOn).HasDefaultValueSql("GETUTCDATE()");
         });
 
         modelBuilder.Entity<UserRole>(entity =>
