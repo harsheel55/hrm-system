@@ -14,6 +14,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<Blog> Blogs => Set<Blog>();
     public DbSet<BlogCategory> BlogCategories => Set<BlogCategory>();
     public DbSet<BlogTag> BlogTags => Set<BlogTag>();
+    public DbSet<LeaveRecord> LeaveRecords => Set<LeaveRecord>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

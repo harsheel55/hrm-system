@@ -1,8 +1,11 @@
+using Backend.Data;
 using Backend.DTOs;
+using Backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services;
 
-public sealed class LeaveService : ILeaveService
+public sealed class LeaveService(AppDbContext context) : ILeaveService
 {
     private static readonly Dictionary<string, int> LeaveQuota = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -12,49 +15,41 @@ public sealed class LeaveService : ILeaveService
         ["Paternity"] = 90
     };
 
-    private readonly List<LeaveRecord> _requests = new();
-    private readonly object _lock = new();
-
-    public LeaveDashboardDto GetDashboard(string email)
+    public async Task<LeaveDashboardDto> GetDashboardAsync(string email)
     {
-        lock (_lock)
-        {
-            EnsureSeedData(email);
+        var userRequests = await context.LeaveRecords
+            .Where(r => r.Email == email)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
 
-            var userRequests = _requests
-                .Where(r => string.Equals(r.Email, email, StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(r => r.CreatedAt)
-                .ToList();
+        var approvedByType = userRequests
+            .Where(r => string.Equals(r.Status, "approved", StringComparison.OrdinalIgnoreCase))
+            .GroupBy(r => r.LeaveType)
+            .ToDictionary(g => g.Key, g => g.Sum(x => x.Days), StringComparer.OrdinalIgnoreCase);
 
-            var approvedByType = userRequests
-                .Where(r => string.Equals(r.Status, "approved", StringComparison.OrdinalIgnoreCase))
-                .GroupBy(r => r.LeaveType)
-                .ToDictionary(g => g.Key, g => g.Sum(x => x.Days), StringComparer.OrdinalIgnoreCase);
-
-            var balances = LeaveQuota
-                .Select(quota =>
-                {
-                    var used = approvedByType.TryGetValue(quota.Key, out var sum) ? sum : 0;
-                    var remaining = Math.Max(0, quota.Value - used);
-                    return new LeaveBalanceDto
-                    {
-                        LeaveType = quota.Key,
-                        Total = quota.Value,
-                        Used = used,
-                        Remaining = remaining
-                    };
-                })
-                .ToList();
-
-            return new LeaveDashboardDto
+        var balances = LeaveQuota
+            .Select(quota =>
             {
-                Balances = balances,
-                Requests = userRequests.Select(MapRequest).ToList()
-            };
-        }
+                var used = approvedByType.TryGetValue(quota.Key, out var sum) ? sum : 0;
+                var remaining = Math.Max(0, quota.Value - used);
+                return new LeaveBalanceDto
+                {
+                    LeaveType = quota.Key,
+                    Total = quota.Value,
+                    Used = used,
+                    Remaining = remaining
+                };
+            })
+            .ToList();
+
+        return new LeaveDashboardDto
+        {
+            Balances = balances,
+            Requests = userRequests.Select(MapRequest).ToList()
+        };
     }
 
-    public LeaveRequestDto CreateRequest(string email, CreateLeaveRequestDto dto)
+    public async Task<LeaveRequestDto> CreateRequestAsync(string email, CreateLeaveRequestDto dto)
     {
         var start = dto.StartDate.Date;
         var end = dto.EndDate.Date;
@@ -76,69 +71,39 @@ public sealed class LeaveService : ILeaveService
             EndDate = end,
             Days = days,
             Status = "pending",
-            Reason = dto.Reason.Trim(),
-            EmergencyContact = dto.EmergencyContact.Trim(),
+            Reason = dto.Reason?.Trim() ?? string.Empty,
+            EmergencyContact = dto.EmergencyContact?.Trim() ?? string.Empty,
             CreatedAt = DateTime.UtcNow
         };
 
-        lock (_lock)
-        {
-            _requests.Add(request);
-        }
+        await context.LeaveRecords.AddAsync(request);
+        await context.SaveChangesAsync();
 
         return MapRequest(request);
     }
 
-    private void EnsureSeedData(string email)
+    public async Task<IEnumerable<LeaveRequestDto>> GetAllRequestsAsync()
     {
-        var hasData = _requests.Any(r => string.Equals(r.Email, email, StringComparison.OrdinalIgnoreCase));
-        if (hasData)
+        var requests = await context.LeaveRecords
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        return requests.Select(MapRequest).ToList();
+    }
+
+    public async Task<LeaveRequestDto> UpdateStatusAsync(Guid id, string status)
+    {
+        var request = await context.LeaveRecords.FirstOrDefaultAsync(r => r.Id == id);
+        if (request == null)
         {
-            return;
+            throw new InvalidOperationException("Leave request not found");
         }
 
-        _requests.AddRange(new[]
-        {
-            new LeaveRecord
-            {
-                Id = Guid.NewGuid(),
-                Email = email,
-                LeaveType = "Annual Leave",
-                StartDate = DateTime.UtcNow.Date.AddDays(14),
-                EndDate = DateTime.UtcNow.Date.AddDays(16),
-                Days = 3,
-                Status = "pending",
-                Reason = "Family vacation",
-                EmergencyContact = string.Empty,
-                CreatedAt = DateTime.UtcNow.AddDays(-2)
-            },
-            new LeaveRecord
-            {
-                Id = Guid.NewGuid(),
-                Email = email,
-                LeaveType = "Sick Leave",
-                StartDate = DateTime.UtcNow.Date.AddDays(-10),
-                EndDate = DateTime.UtcNow.Date.AddDays(-10),
-                Days = 1,
-                Status = "approved",
-                Reason = "Medical appointment",
-                EmergencyContact = string.Empty,
-                CreatedAt = DateTime.UtcNow.AddDays(-10)
-            },
-            new LeaveRecord
-            {
-                Id = Guid.NewGuid(),
-                Email = email,
-                LeaveType = "Personal",
-                StartDate = DateTime.UtcNow.Date.AddDays(-25),
-                EndDate = DateTime.UtcNow.Date.AddDays(-25),
-                Days = 1,
-                Status = "approved",
-                Reason = "Personal work",
-                EmergencyContact = string.Empty,
-                CreatedAt = DateTime.UtcNow.AddDays(-25)
-            }
-        });
+        request.Status = status;
+        request.UpdatedAt = DateTime.UtcNow;
+        await context.SaveChangesAsync();
+
+        return MapRequest(request);
     }
 
     private static string NormalizeType(string leaveType)
@@ -152,6 +117,7 @@ public sealed class LeaveService : ILeaveService
         return new LeaveRequestDto
         {
             Id = record.Id,
+            Email = record.Email,
             LeaveType = record.LeaveType,
             StartDate = record.StartDate,
             EndDate = record.EndDate,
@@ -160,19 +126,5 @@ public sealed class LeaveService : ILeaveService
             Reason = record.Reason,
             CreatedAt = record.CreatedAt
         };
-    }
-
-    private sealed class LeaveRecord
-    {
-        public Guid Id { get; set; }
-        public string Email { get; set; } = string.Empty;
-        public string LeaveType { get; set; } = string.Empty;
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public int Days { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public string Reason { get; set; } = string.Empty;
-        public string EmergencyContact { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
     }
 }

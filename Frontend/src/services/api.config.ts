@@ -68,5 +68,8 @@ export const ENDPOINTS = {
   LEAVE: {
     DASHBOARD: '/leave/dashboard',
     REQUESTS: '/leave/requests',
+    ALL_REQUESTS: '/leave/requests/all',
+    APPROVE: (id: string) => `/leave/requests/${id}/approve`,
+    REJECT: (id: string) => `/leave/requests/${id}/reject`,
   },
 };

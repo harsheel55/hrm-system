@@ -11,6 +11,7 @@ export interface LeaveBalance {
 
 export interface LeaveRequest {
   id: string;
+  email?: string;
   leaveType: string;
   startDate: string;
   endDate: string;
@@ -40,5 +41,17 @@ export const leaveService = {
 
   async createRequest(payload: CreateLeaveRequestPayload): Promise<ApiResponse<LeaveRequest>> {
     return apiClient.post<ApiResponse<LeaveRequest>>(ENDPOINTS.LEAVE.REQUESTS, payload);
+  },
+
+  async getAllRequests(): Promise<ApiResponse<LeaveRequest[]>> {
+    return apiClient.get<ApiResponse<LeaveRequest[]>>(ENDPOINTS.LEAVE.ALL_REQUESTS);
+  },
+
+  async approveRequest(id: string): Promise<ApiResponse<LeaveRequest>> {
+    return apiClient.put<ApiResponse<LeaveRequest>>(ENDPOINTS.LEAVE.APPROVE(id), {});
+  },
+
+  async rejectRequest(id: string): Promise<ApiResponse<LeaveRequest>> {
+    return apiClient.put<ApiResponse<LeaveRequest>>(ENDPOINTS.LEAVE.REJECT(id), {});
   },
 };
