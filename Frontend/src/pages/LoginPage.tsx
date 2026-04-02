@@ -56,8 +56,13 @@ export default function LoginPage() {
       const mode = normalizedEmail === adminEmail ? "admin" : "user";
       const authUser = await login({ email: data.email, password: data.password }, mode);
 
-      if (authUser.role === "Admin") {
+      if (authUser.roleName === "Super Admin" || authUser.role === "Admin") {
         navigate("/admin/dashboard");
+        return;
+      }
+
+      if (authUser.roleName === "HR") {
+        navigate("/dashboard");
         return;
       }
 

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { adminLoginApi, loginApi } from '../api/authApi';
+import { adminLoginApi } from '../api/authApi';
 import { authStore, type AuthUser } from '../store/authStore';
 
 interface AuthContextType {
@@ -32,14 +32,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     credentials: { email: string; password: string },
     mode: 'user' | 'admin' = 'user'
   ): Promise<AuthUser> => {
-    const response = mode === 'admin'
-      ? await adminLoginApi(credentials)
-      : await loginApi(credentials);
+    let response;
+    
+    if (mode === 'admin') {
+      response = await adminLoginApi(credentials);
+    } else {
+      // Import and call userLoginApi
+      const { userLoginApi } = await import('../api/authApi');
+      response = await userLoginApi(credentials);
+    }
 
     const authUser: AuthUser = {
       email: response.email,
       role: response.role === 'Admin' ? 'Admin' : 'User',
       name: response.email.split('@')[0],
+      roleName: response.roleName,
     };
 
     authStore.saveSession(response.token, authUser);

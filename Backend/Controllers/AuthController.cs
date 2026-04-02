@@ -15,6 +15,44 @@ namespace Backend.Controllers;
 [Route("api/auth")]
 public sealed class AuthController(AppDbContext dbContext, IConfiguration configuration) : ControllerBase
 {
+    // POST api/auth/user/login
+    // Authenticates a user created via User Management (Users table) and returns their role
+    [HttpPost("user/login")]
+    public async Task<IActionResult> UserLogin([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    {
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
+        var user = await dbContext.Users
+            .Include(u => u.UserRole)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.strEmail == normalizedEmail, cancellationToken);
+
+        if (user is null || !user.bolIsActive)
+        {
+            return Unauthorized(new { message = "Invalid email or password." });
+        }
+
+        // Verify SHA-256 hashed password (same algorithm used in UserService)
+        bool passwordValid = VerifySha256Password(request.Password, user.strPassword);
+        if (!passwordValid)
+        {
+            return Unauthorized(new { message = "Invalid email or password." });
+        }
+
+        var roleName = user.UserRole?.strRoleName ?? "User";
+        var token = GenerateToken(configuration, user.strEmail, roleName);
+
+        return Ok(new
+        {
+            email = user.strEmail,
+            name = user.strUserName,
+            token,
+            role = roleName,
+            roleName,
+            userId = user.strUserGUID
+        });
+    }
+
     // POST api/auth/register
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
@@ -137,6 +175,20 @@ public sealed class AuthController(AppDbContext dbContext, IConfiguration config
 
         var token = GenerateToken(configuration, adminUser.Email, "Admin");
         return Ok(new LoginResponse { Email = adminUser.Email, Token = token, Role = "Admin" });
+    }
+
+    // SHA-256 password verification — used for users in the Users table
+    private static bool VerifySha256Password(string plainPassword, string storedHash)
+    {
+        if (string.IsNullOrWhiteSpace(storedHash)) return false;
+
+        using var sha256 = SHA256.Create();
+        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(plainPassword));
+        var builder = new StringBuilder(hashedBytes.Length * 2);
+        foreach (var b in hashedBytes)
+            builder.Append(b.ToString("x2"));
+
+        return string.Equals(builder.ToString(), storedHash, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool VerifyPassword(string plainPassword, string storedHash)

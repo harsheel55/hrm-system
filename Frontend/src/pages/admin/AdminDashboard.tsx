@@ -1,32 +1,62 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import {
   Users,
   Shield,
-
   TrendingUp,
   Activity,
 } from 'lucide-react';
+import { userService } from '../../services/user.service';
+import { roleService } from '../../services/role.service';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [activeRoles, setActiveRoles] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        const [usersRes, rolesRes] = await Promise.all([
+          userService.getAllUsers(),
+          roleService.getAllRoles()
+        ]);
+        
+        if (usersRes?.data) {
+          setTotalUsers(usersRes.data.length);
+        }
+        
+        if (rolesRes?.data) {
+          setActiveRoles(rolesRes.data.length);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const stats = [
     {
       title: 'Total Users',
-      value: '0',
+      value: isLoading ? '...' : totalUsers.toString(),
       icon: Users,
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-blue-50',
     },
     {
       title: 'Active Roles',
-      value: '0',
+      value: isLoading ? '...' : activeRoles.toString(),
       icon: Shield,
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-50',
     },
-
   ];
 
   return (
