@@ -84,7 +84,7 @@ export default function UserRightsPage() {
             menuGUID: right.strMenuGUID,
             menuName: right.strMenuName || '',
             canView: right.bolCanView,
-            canCreate: right.bolCanCreate,
+            canCreate: right.bolCanSave || false, // Mapping to bolCanSave backend
             canEdit: right.bolCanEdit,
             canDelete: right.bolCanDelete,
             existingRightGUID: right.strUserRightGUID,
@@ -143,7 +143,7 @@ export default function UserRightsPage() {
               // Update existing right
               await rightsService.updateRight(perm.existingRightGUID, {
                 bolCanView: perm.canView,
-                bolCanCreate: perm.canCreate,
+                bolCanSave: perm.canCreate,
                 bolCanEdit: perm.canEdit,
                 bolCanDelete: perm.canDelete,
               });
@@ -153,7 +153,7 @@ export default function UserRightsPage() {
                 strUserRoleGUID: selectedRoleId,
                 strMenuGUID: perm.menuGUID,
                 bolCanView: perm.canView,
-                bolCanCreate: perm.canCreate,
+                bolCanSave: perm.canCreate,
                 bolCanEdit: perm.canEdit,
                 bolCanDelete: perm.canDelete,
               });

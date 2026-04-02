@@ -13,6 +13,7 @@ public sealed class LeaveBalanceDto
 public sealed class LeaveRequestDto
 {
     public Guid Id { get; set; }
+    public string Email { get; set; } = string.Empty;
     public string LeaveType { get; set; } = string.Empty;
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }

@@ -138,9 +138,13 @@ export interface UserRightResponseDto {
   strMenuGUID: string;
   strMenuName?: string;
   bolCanView: boolean;
-  bolCanCreate: boolean;
+  bolCanSave: boolean;
   bolCanEdit: boolean;
   bolCanDelete: boolean;
+  bolCanPrint?: boolean;
+  bolCanExport?: boolean;
+  bolCanImport?: boolean;
+  bolCanApprove?: boolean;
   dtCreatedDate: string;
   dtModifiedDate: string;
 }
@@ -149,16 +153,24 @@ export interface CreateUserRightDto {
   strUserRoleGUID: string;
   strMenuGUID: string;
   bolCanView: boolean;
-  bolCanCreate: boolean;
+  bolCanSave: boolean;
   bolCanEdit: boolean;
   bolCanDelete: boolean;
+  bolCanPrint?: boolean;
+  bolCanExport?: boolean;
+  bolCanImport?: boolean;
+  bolCanApprove?: boolean;
 }
 
 export interface UpdateUserRightDto {
   bolCanView: boolean;
-  bolCanCreate: boolean;
+  bolCanSave: boolean;
   bolCanEdit: boolean;
   bolCanDelete: boolean;
+  bolCanPrint?: boolean;
+  bolCanExport?: boolean;
+  bolCanImport?: boolean;
+  bolCanApprove?: boolean;
 }
 
 // Blog Types

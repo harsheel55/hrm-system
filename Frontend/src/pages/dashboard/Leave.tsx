@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -20,13 +20,17 @@ import {
   TrendingUp,
   Users,
   Bell,
+  Loader2,
 } from "lucide-react";
 
-type LeaveStatus = "pending" | "approved" | "rejected";
-type LeaveType = "Annual" | "Sick" | "Personal" | "Maternity" | "Unpaid";
+import { leaveService, type LeaveRequest as ApiLeaveRequest } from "@/services/leave.service";
+import { userService } from "@/services/user.service";
 
-interface LeaveRequest {
-  id: number;
+type LeaveStatus = "pending" | "approved" | "rejected";
+type LeaveType = "Annual" | "Sick" | "Personal" | "Maternity" | "Unpaid" | "Annual Leave" | "Sick Leave" | "Paternity";
+
+interface UILeaveRequest {
+  id: string;
   employee: string;
   department: string;
   avatar: string;
@@ -38,15 +42,6 @@ interface LeaveRequest {
   status: LeaveStatus;
   appliedOn: string;
 }
-
-const leaveRequests: LeaveRequest[] = [
-  { id: 1, employee: "Sarah Johnson", department: "Engineering", avatar: "SJ", type: "Annual", startDate: "2026-04-07", endDate: "2026-04-11", days: 5, reason: "Family vacation", status: "pending", appliedOn: "Mar 22" },
-  { id: 2, employee: "Michael Chen", department: "Design", avatar: "MC", type: "Sick", startDate: "2026-03-27", endDate: "2026-03-28", days: 2, reason: "Medical appointment and recovery", status: "approved", appliedOn: "Mar 25" },
-  { id: 3, employee: "Emily Rodriguez", department: "Marketing", avatar: "ER", type: "Personal", startDate: "2026-04-03", endDate: "2026-04-03", days: 1, reason: "Personal errands", status: "pending", appliedOn: "Mar 24" },
-  { id: 4, employee: "James Kim", department: "Sales", avatar: "JK", type: "Annual", startDate: "2026-04-14", endDate: "2026-04-18", days: 5, reason: "Spring break with kids", status: "rejected", appliedOn: "Mar 20" },
-  { id: 5, employee: "Aisha Patel", department: "HR", avatar: "AP", type: "Maternity", startDate: "2026-04-01", endDate: "2026-06-30", days: 90, reason: "Maternity leave", status: "approved", appliedOn: "Mar 10" },
-  { id: 6, employee: "David Park", department: "Engineering", avatar: "DP", type: "Sick", startDate: "2026-03-26", endDate: "2026-03-26", days: 1, reason: "Fever", status: "approved", appliedOn: "Mar 26" },
-];
 
 const leaveBalances = [
   { type: "Annual Leave", used: 8, total: 20, color: "bg-violet-500", light: "bg-violet-100", text: "text-violet-700" },
@@ -67,11 +62,14 @@ const statusConfig: Record<LeaveStatus, { label: string; color: string; icon: Re
   rejected: { label: "Rejected", color: "bg-red-100 text-red-700 border-red-200", icon: <XCircle className="w-3.5 h-3.5" /> },
 };
 
-const typeColors: Record<LeaveType, string> = {
+const typeColors: Record<string, string> = {
+  "Annual Leave": "bg-violet-100 text-violet-700",
   Annual: "bg-violet-100 text-violet-700",
+  "Sick Leave": "bg-blue-100 text-blue-700",
   Sick: "bg-blue-100 text-blue-700",
   Personal: "bg-emerald-100 text-emerald-700",
   Maternity: "bg-rose-100 text-rose-700",
+  Paternity: "bg-rose-100 text-rose-700",
   Unpaid: "bg-gray-100 text-gray-700",
 };
 
@@ -93,7 +91,7 @@ function StatCard({ title, value, subtitle, icon, trend }: { title: string; valu
   );
 }
 
-function LeaveRequestRow({ req, onApprove, onReject }: { req: LeaveRequest; onApprove?: (id: number) => void; onReject?: (id: number) => void }) {
+function LeaveRequestRow({ req, onApprove, onReject }: { req: UILeaveRequest; onApprove?: (id: string) => void; onReject?: (id: string) => void }) {
   const status = statusConfig[req.status];
   return (
     <div className="flex items-center gap-3 py-3 border-b last:border-0 dark:border-gray-700 hover:bg-muted/30 px-2 rounded-lg transition-colors">
@@ -107,9 +105,9 @@ function LeaveRequestRow({ req, onApprove, onReject }: { req: LeaveRequest; onAp
         </div>
         <p className="text-xs text-muted-foreground">{req.startDate} → {req.endDate} · {req.days}d</p>
       </div>
-      <span className={`hidden md:flex text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[req.type]}`}>{req.type}</span>
-      <span className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border font-medium ${status.color}`}>
-        {status.icon}{status.label}
+      <span className={`hidden md:flex text-xs px-2 py-0.5 rounded-full font-medium ${typeColors[req.type] || "bg-gray-100 text-gray-700"}`}>{req.type}</span>
+      <span className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border font-medium ${status?.color || "bg-gray-100"}`}>
+        {status?.icon}{status?.label || req.status}
       </span>
       {req.status === "pending" && onApprove && onReject && (
         <div className="flex gap-1.5">
@@ -125,8 +123,58 @@ function LeaveRequestRow({ req, onApprove, onReject }: { req: LeaveRequest; onAp
   );
 }
 
+function mapApiToUI(apiObj: ApiLeaveRequest, usersList: any[] = []): UILeaveRequest {
+  const userMatch = usersList.find(u => u.strEmail?.toLowerCase() === apiObj.email?.toLowerCase());
+  const fullName = userMatch?.strUserName || (apiObj.email ? apiObj.email.split("@")[0] : "Employee");
+  const avatar = fullName.substring(0, 2).toUpperCase();
+  
+  return {
+    id: apiObj.id,
+    employee: userMatch?.strUserName || (fullName.charAt(0).toUpperCase() + fullName.slice(1)),
+    department: "Organization",
+    avatar,
+    type: apiObj.leaveType as LeaveType,
+    startDate: new Date(apiObj.startDate).toLocaleDateString(),
+    endDate: new Date(apiObj.endDate).toLocaleDateString(),
+    days: apiObj.days,
+    reason: apiObj.reason,
+    status: apiObj.status as LeaveStatus,
+    appliedOn: new Date(apiObj.createdAt).toLocaleDateString()
+  };
+}
+
 function ApplyLeaveDialog({ onSubmit }: { onSubmit: () => void }) {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [type, setType] = useState('Annual Leave');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [reason, setReason] = useState('');
+
+  const handleSubmit = async () => {
+    if (!startDate || !endDate || !reason) return;
+    setIsSubmitting(true);
+    try {
+      await leaveService.createRequest({
+        leaveType: type,
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+        reason,
+      });
+      setOpen(false);
+      onSubmit();
+      setType('Annual Leave');
+      setStartDate('');
+      setEndDate('');
+      setReason('');
+    } catch (error) {
+      console.error('Failed to submit leave', error);
+      alert('Failed to submit leave request');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -141,34 +189,36 @@ function ApplyLeaveDialog({ onSubmit }: { onSubmit: () => void }) {
         <div className="space-y-4 pt-2">
           <div className="grid gap-1.5">
             <Label>Leave Type</Label>
-            <Select>
+            <Select value={type} onValueChange={setType}>
               <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="annual">Annual Leave</SelectItem>
-                <SelectItem value="sick">Sick Leave</SelectItem>
-                <SelectItem value="personal">Personal Leave</SelectItem>
-                <SelectItem value="maternity">Maternity Leave</SelectItem>
-                <SelectItem value="unpaid">Unpaid Leave</SelectItem>
+                <SelectItem value="Annual Leave">Annual Leave</SelectItem>
+                <SelectItem value="Sick Leave">Sick Leave</SelectItem>
+                <SelectItem value="Personal">Personal Leave</SelectItem>
+                <SelectItem value="Maternity">Maternity Leave</SelectItem>
+                <SelectItem value="Unpaid">Unpaid Leave</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
               <Label>Start Date</Label>
-              <Input type="date" />
+              <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
             </div>
             <div className="grid gap-1.5">
               <Label>End Date</Label>
-              <Input type="date" />
+              <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
             </div>
           </div>
           <div className="grid gap-1.5">
             <Label>Reason</Label>
-            <Textarea placeholder="Briefly describe the reason..." className="resize-none" rows={3} />
+            <Textarea placeholder="Briefly describe the reason..." className="resize-none" rows={3} value={reason} onChange={e => setReason(e.target.value)} />
           </div>
           <div className="flex gap-2 pt-1">
-            <Button variant="outline" className="flex-1" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button className="flex-1 bg-violet-600 hover:bg-violet-700 text-white" onClick={() => { onSubmit(); setOpen(false); }}>Submit Request</Button>
+            <Button variant="outline" className="flex-1" onClick={() => setOpen(false)} disabled={isSubmitting}>Cancel</Button>
+            <Button className="flex-1 bg-violet-600 hover:bg-violet-700 text-white" onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Submit Request</Button>
           </div>
         </div>
       </DialogContent>
@@ -177,21 +227,60 @@ function ApplyLeaveDialog({ onSubmit }: { onSubmit: () => void }) {
 }
 
 export function LeaveManagement() {
-  const [requests, setRequests] = useState<LeaveRequest[]>(leaveRequests);
+  const [requests, setRequests] = useState<UILeaveRequest[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [month] = useState("April 2026");
+  const [totalEmployees, setTotalEmployees] = useState(0);
+
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      const [leaveRes, userRes] = await Promise.all([
+        leaveService.getAllRequests(),
+        userService.getAllUsers()
+      ]);
+      
+      const usersList = userRes.data || [];
+      if (userRes.data) {
+        setTotalEmployees(userRes.data.length);
+      }
+      
+      if (leaveRes.data) {
+        setRequests(leaveRes.data.map((req: ApiLeaveRequest) => mapApiToUI(req, usersList)));
+      }
+    } catch(err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const pending = requests.filter(r => r.status === "pending").length;
   const approved = requests.filter(r => r.status === "approved").length;
-  const onLeaveToday = 2;
+  const onLeaveToday = requests.filter(r => r.status === "approved" && new Date(r.startDate) <= new Date() && new Date(r.endDate) >= new Date()).length;
 
-  const handleApprove = (id: number) => {
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: "approved" } : r));
+  const handleApprove = async (id: string) => {
+    try {
+      await leaveService.approveRequest(id);
+      loadData();
+    } catch(err) {
+      console.error("Failed to approve", err);
+    }
   };
 
-  const handleReject = (id: number) => {
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: "rejected" } : r));
+  const handleReject = async (id: string) => {
+    try {
+      await leaveService.rejectRequest(id);
+      loadData();
+    } catch(err) {
+      console.error("Failed to reject", err);
+    }
   };
 
   const filtered = filterStatus === "all" ? requests : requests.filter(r => r.status === filterStatus);
@@ -200,9 +289,16 @@ export function LeaveManagement() {
   const aprilDays = Array.from({ length: 30 }, (_, i) => i + 1);
   const firstDayOffset = 3; // April 1, 2026 is Wednesday
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-    
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -217,7 +313,7 @@ export function LeaveManagement() {
               <Bell className="w-4 h-4" />
               {pending > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-violet-600 rounded-full"></span>}
             </Button>
-            <ApplyLeaveDialog onSubmit={() => {}} />
+            <ApplyLeaveDialog onSubmit={loadData} />
           </div>
         </div>
 
@@ -227,8 +323,8 @@ export function LeaveManagement() {
           <div className="grid grid-cols-4 gap-4">
             <StatCard title="Pending Requests" value={pending} subtitle="Awaiting review" icon={<AlertCircle className="w-4 h-4 text-amber-500" />} />
             <StatCard title="Approved This Month" value={approved} subtitle="March 2026" icon={<CheckCircle2 className="w-4 h-4 text-emerald-500" />} trend="2 more than last month" />
-            <StatCard title="On Leave Today" value={onLeaveToday} subtitle="Out of 48 employees" icon={<User className="w-4 h-4 text-violet-500" />} />
-            <StatCard title="Total Employees" value={48} subtitle="8 departments" icon={<Users className="w-4 h-4 text-blue-500" />} />
+            <StatCard title="On Leave Today" value={onLeaveToday} subtitle={`Out of ${totalEmployees} employees`} icon={<User className="w-4 h-4 text-violet-500" />} />
+            <StatCard title="Total Employees" value={totalEmployees} subtitle="System registered users" icon={<Users className="w-4 h-4 text-blue-500" />} />
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>

@@ -12,7 +12,7 @@ namespace Backend.Controllers;
 public sealed class LeaveController(ILeaveService leaveService) : ControllerBase
 {
     [HttpGet("dashboard")]
-    public ActionResult<ApiResponse<LeaveDashboardDto>> GetDashboard()
+    public async Task<ActionResult<ApiResponse<LeaveDashboardDto>>> GetDashboard()
     {
         var email = ResolveEmail();
         if (string.IsNullOrWhiteSpace(email))
@@ -25,7 +25,7 @@ public sealed class LeaveController(ILeaveService leaveService) : ControllerBase
             });
         }
 
-        var dashboard = leaveService.GetDashboard(email);
+        var dashboard = await leaveService.GetDashboardAsync(email);
         return Ok(new ApiResponse<LeaveDashboardDto>
         {
             statusCode = 200,
@@ -35,7 +35,7 @@ public sealed class LeaveController(ILeaveService leaveService) : ControllerBase
     }
 
     [HttpPost("requests")]
-    public ActionResult<ApiResponse<LeaveRequestDto>> CreateRequest([FromBody] CreateLeaveRequestDto dto)
+    public async Task<ActionResult<ApiResponse<LeaveRequestDto>>> CreateRequest([FromBody] CreateLeaveRequestDto dto)
     {
         var email = ResolveEmail();
         if (string.IsNullOrWhiteSpace(email))
@@ -50,11 +50,71 @@ public sealed class LeaveController(ILeaveService leaveService) : ControllerBase
 
         try
         {
-            var request = leaveService.CreateRequest(email, dto);
+            var request = await leaveService.CreateRequestAsync(email, dto);
             return Ok(new ApiResponse<LeaveRequestDto>
             {
                 statusCode = 200,
                 message = "Leave request submitted successfully",
+                data = request
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ApiResponse<LeaveRequestDto>
+            {
+                statusCode = 400,
+                message = ex.Message,
+                data = null
+            });
+        }
+    }
+
+    [HttpGet("requests/all")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<LeaveRequestDto>>>> GetAllRequests()
+    {
+        var requests = await leaveService.GetAllRequestsAsync();
+        return Ok(new ApiResponse<IEnumerable<LeaveRequestDto>>
+        {
+            statusCode = 200,
+            message = "All leave requests fetched successfully",
+            data = requests
+        });
+    }
+
+    [HttpPut("requests/{id}/approve")]
+    public async Task<ActionResult<ApiResponse<LeaveRequestDto>>> ApproveRequest(Guid id)
+    {
+        try
+        {
+            var request = await leaveService.UpdateStatusAsync(id, "approved");
+            return Ok(new ApiResponse<LeaveRequestDto>
+            {
+                statusCode = 200,
+                message = "Leave approved successfully",
+                data = request
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new ApiResponse<LeaveRequestDto>
+            {
+                statusCode = 400,
+                message = ex.Message,
+                data = null
+            });
+        }
+    }
+
+    [HttpPut("requests/{id}/reject")]
+    public async Task<ActionResult<ApiResponse<LeaveRequestDto>>> RejectRequest(Guid id)
+    {
+        try
+        {
+            var request = await leaveService.UpdateStatusAsync(id, "rejected");
+            return Ok(new ApiResponse<LeaveRequestDto>
+            {
+                statusCode = 200,
+                message = "Leave rejected successfully",
                 data = request
             });
         }
