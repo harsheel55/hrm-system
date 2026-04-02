@@ -5,6 +5,7 @@ export interface AuthUser {
   email: string;
   role: "Admin" | "User";
   name?: string;
+  roleName?: string;
 }
 
 export const authStore = {

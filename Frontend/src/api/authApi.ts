@@ -25,6 +25,7 @@ export interface LoginResponse {
   email: string;
   token: string;
   role: string;
+  roleName?: string;
 }
 
 async function handleResponse<T>(res: Response): Promise<T> {
@@ -80,4 +81,10 @@ export async function adminLoginApi(
   payload: LoginPayload
 ): Promise<LoginResponse> {
   return postJson<LoginResponse>(`${BASE_URL}/admin/login`, payload);
+}
+
+export async function userLoginApi(
+  payload: LoginPayload
+): Promise<LoginResponse> {
+  return postJson<LoginResponse>(`${BASE_URL}/user/login`, payload);
 }

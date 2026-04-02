@@ -27,10 +27,7 @@ import {
   LayoutDashboard,
   Users,
   Shield,
-  Menu as MenuIcon,
-  FileText,
-  Tags,
-  FolderOpen,
+
   Lock,
   LogOut,
   Settings,
@@ -45,10 +42,7 @@ const adminApps = [
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Roles', href: '/admin/roles', icon: Shield },
   { name: 'User Rights', href: '/admin/rights', icon: Lock },
-  { name: 'Menus', href: '/admin/menus', icon: MenuIcon },
-  { name: 'Blogs', href: '/admin/blogs', icon: FileText },
-  { name: 'Blog Categories', href: '/admin/blog-categories', icon: FolderOpen },
-  { name: 'Blog Tags', href: '/admin/blog-tags', icon: Tags },
+
 ];
 
 const AdminLayout = () => {

@@ -28,10 +28,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import RoleManagementPage from './pages/admin/RoleManagementPage';
 import UserRightsPage from './pages/admin/UserRightsPage';
-import MenuManagementPage from './pages/admin/MenuManagementPage';
-import BlogManagementPage from './pages/admin/BlogManagementPage';
-import BlogCategoryPage from './pages/admin/BlogCategoryPage';
-import BlogTagPage from './pages/admin/BlogTagPage';
+
 
 function App() {
   return (
@@ -78,10 +75,7 @@ function App() {
               <Route path="users" element={<UserManagementPage />} />
               <Route path="roles" element={<RoleManagementPage />} />
               <Route path="rights" element={<UserRightsPage />} />
-              <Route path="menus" element={<MenuManagementPage />} />
-              <Route path="blogs" element={<BlogManagementPage />} />
-              <Route path="blog-categories" element={<BlogCategoryPage />} />
-              <Route path="blog-tags" element={<BlogTagPage />} />
+
             </Route>
           </Route>
 
