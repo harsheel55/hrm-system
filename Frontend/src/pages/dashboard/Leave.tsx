@@ -268,7 +268,7 @@ export function LeaveManagement() {
   const handleApprove = async (id: string) => {
     try {
       await leaveService.approveRequest(id);
-      loadRequests();
+      loadData();
     } catch(err) {
       console.error("Failed to approve", err);
     }
@@ -277,7 +277,7 @@ export function LeaveManagement() {
   const handleReject = async (id: string) => {
     try {
       await leaveService.rejectRequest(id);
-      loadRequests();
+      loadData();
     } catch(err) {
       console.error("Failed to reject", err);
     }
