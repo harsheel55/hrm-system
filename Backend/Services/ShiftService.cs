@@ -144,6 +144,8 @@ namespace Backend.Services
             }
 
             await _context.SaveChangesAsync();
+        }
+
         public async Task<int> CopyWeekAsync(DateTime targetStartDate)
         {
             var targetStart = DateOnly.FromDateTime(targetStartDate);

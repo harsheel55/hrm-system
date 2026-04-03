@@ -18,6 +18,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<Attendance> Attendances => Set<Attendance>();
     public DbSet<Shift> Shifts => Set<Shift>();
     public DbSet<EmployeeShift> EmployeeShifts => Set<EmployeeShift>();
+    public DbSet<RecruitmentJob> RecruitmentJobs => Set<RecruitmentJob>();
+    public DbSet<RecruitmentCandidate> RecruitmentCandidates => Set<RecruitmentCandidate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,6 +99,43 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.HasKey(e => e.strEmployeeShiftGUID);
             entity.Property(e => e.strEmployeeShiftGUID).HasDefaultValueSql("NEWID()");
             entity.Property(e => e.dtCreatedOn).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        modelBuilder.Entity<RecruitmentJob>(entity =>
+        {
+            entity.ToTable("RecruitmentJobs");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Department).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Location).HasMaxLength(120).IsRequired();
+            entity.Property(e => e.JobType).HasMaxLength(40).IsRequired();
+            entity.Property(e => e.Priority).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.HiringManager).HasMaxLength(120).IsRequired();
+            entity.Property(e => e.Salary).HasMaxLength(120);
+            entity.Property(e => e.SkillsCsv).HasMaxLength(2000);
+            entity.Property(e => e.ResponsibilitiesCsv).HasMaxLength(4000);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        modelBuilder.Entity<RecruitmentCandidate>(entity =>
+        {
+            entity.ToTable("RecruitmentCandidates");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(120).IsRequired();
+            entity.Property(e => e.Email).HasMaxLength(256).IsRequired();
+            entity.Property(e => e.Phone).HasMaxLength(60);
+            entity.Property(e => e.Location).HasMaxLength(120);
+            entity.Property(e => e.Stage).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Experience).HasMaxLength(60);
+            entity.Property(e => e.Source).HasMaxLength(60);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+            entity.HasOne(e => e.Job)
+                .WithMany(j => j.Candidates)
+                .HasForeignKey(e => e.JobId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<UserRole>(entity =>

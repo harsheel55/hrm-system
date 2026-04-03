@@ -1,5 +1,7 @@
 const TOKEN_KEY = "hrm_token";
 const USER_KEY = "hrm_user";
+const LEGACY_ACCESS_TOKEN_KEY = "accessToken";
+const LEGACY_REFRESH_TOKEN_KEY = "refreshToken";
 
 export interface AuthUser {
   email: string;
@@ -12,11 +14,17 @@ export const authStore = {
   saveSession(token: string, user: AuthUser): void {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(USER_KEY, JSON.stringify(user));
+
+    // Keep only one active token source to avoid stale-token authorization errors.
+    localStorage.removeItem(LEGACY_ACCESS_TOKEN_KEY);
+    localStorage.removeItem(LEGACY_REFRESH_TOKEN_KEY);
   },
 
   clearSession(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(LEGACY_ACCESS_TOKEN_KEY);
+    localStorage.removeItem(LEGACY_REFRESH_TOKEN_KEY);
   },
 
   getToken(): string | null {

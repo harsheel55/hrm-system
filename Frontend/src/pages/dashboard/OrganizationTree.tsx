@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { userService } from "@/services/user.service";
+import type { UserResponseDto } from "@/types/api.types";
 import {
   FileText, Target, Search, ChevronDown, ChevronUp,
   ZoomIn, ZoomOut, Mail, Phone, MapPin, UserPlus,
-  Download, ChevronRight, Layers,
+  Download, ChevronRight, Layers, Loader2,
 } from "lucide-react";
 
 /* ─── Data ────────────────────────────────────────────────────────────────── */
@@ -17,62 +19,97 @@ interface OrgPerson {
   children?: OrgPerson[];
 }
 
-const ORG: OrgPerson = {
-  id: "ceo", name: "Jennifer Walsh",    role: "CEO",            dept: "Executive",   avatar: "JW", email: "j.walsh@acme.com",     phone: "+1 415-000-0001", location: "San Francisco", joined: "Jan 2018",  reports: 6,
-  children: [
-    {
-      id: "cto", name: "Priya Sharma",  role: "CTO",            dept: "Engineering", avatar: "PS", email: "p.sharma@acme.com",     phone: "+1 415-000-0010", location: "San Francisco", joined: "Mar 2019",  reports: 2,
-      children: [
-        {
-          id: "em", name: "Kevin Lee",  role: "Eng Manager",    dept: "Engineering", avatar: "KL", email: "k.lee@acme.com",         phone: "+1 415-000-0020", location: "San Francisco", joined: "Jun 2020",  reports: 3,
-          children: [
-            { id: "sj", name: "Sarah Johnson",  role: "Senior Dev",      dept: "Engineering", avatar: "SJ", email: "s.johnson@acme.com", phone: "+1 415-000-0030", location: "Remote",         joined: "Aug 2021",  reports: 0 },
-            { id: "dp", name: "David Park",     role: "Backend Dev",     dept: "Engineering", avatar: "DP", email: "d.park@acme.com",    phone: "+1 415-000-0031", location: "San Francisco", joined: "Oct 2021",  reports: 0 },
-            { id: "yt", name: "Yuki Tanaka",    role: "Sr Frontend",     dept: "Engineering", avatar: "YT", email: "y.tanaka@acme.com",  phone: "+1 415-000-0032", location: "Remote",         joined: "Jan 2026",  reports: 0 },
-          ],
-        },
-        { id: "ms", name: "Marco Santos",  role: "DevOps Lead",     dept: "Engineering", avatar: "MS", email: "m.santos@acme.com",     phone: "+1 415-000-0021", location: "Austin",           joined: "Sep 2020",  reports: 0 },
-      ],
-    },
-    {
-      id: "vps", name: "Robert Chen",    role: "VP Sales",       dept: "Sales",       avatar: "RC", email: "r.chen@acme.com",       phone: "+1 212-000-0010", location: "New York",         joined: "Feb 2019",  reports: 1,
-      children: [
-        {
-          id: "th", name: "Tom Harris",  role: "Sales Lead",     dept: "Sales",       avatar: "TH", email: "t.harris@acme.com",     phone: "+1 212-000-0020", location: "New York",         joined: "Apr 2020",  reports: 2,
-          children: [
-            { id: "jk", name: "James Kim",      role: "Sales Rep",       dept: "Sales",       avatar: "JK", email: "j.kim@acme.com",     phone: "+1 212-000-0030", location: "New York",         joined: "Mar 2022",  reports: 0 },
-            { id: "ng", name: "Nina Gupta",     role: "Sales Rep",       dept: "Sales",       avatar: "NG", email: "n.gupta@acme.com",   phone: "+1 212-000-0031", location: "Chicago",          joined: "Jul 2022",  reports: 0 },
-          ],
-        },
-      ],
-    },
-    {
-      id: "vpm", name: "Clara West",     role: "VP Marketing",   dept: "Marketing",   avatar: "CW", email: "c.west@acme.com",       phone: "+1 415-000-0011", location: "San Francisco", joined: "May 2019",  reports: 1,
-      children: [
-        { id: "er", name: "Emily Rodriguez", role: "Mktg Lead",      dept: "Marketing",   avatar: "ER", email: "e.rodriguez@acme.com",phone: "+1 415-000-0022", location: "San Francisco", joined: "Sep 2020",  reports: 0 },
-      ],
-    },
-    {
-      id: "chro", name: "Aisha Patel",   role: "CHRO",           dept: "HR",          avatar: "AP", email: "a.patel@acme.com",      phone: "+1 415-000-0012", location: "San Francisco", joined: "Jan 2018",  reports: 1,
-      children: [
-        { id: "ln", name: "Lisa Nguyen",     role: "HR Coordinator",  dept: "HR",          avatar: "LN", email: "l.nguyen@acme.com",   phone: "+1 415-000-0023", location: "San Francisco", joined: "Feb 2023",  reports: 0 },
-      ],
-    },
-    {
-      id: "cfo", name: "Sandra Brooks",  role: "CFO",            dept: "Finance",     avatar: "SB", email: "s.brooks@acme.com",     phone: "+1 212-000-0011", location: "New York",         joined: "Aug 2018",  reports: 1,
-      children: [
-        { id: "lw", name: "Lisa Wang",       role: "Finance Analyst", dept: "Finance",     avatar: "LW", email: "l.wang@acme.com",      phone: "+1 212-000-0022", location: "New York",         joined: "Mar 2022",  reports: 0 },
-      ],
-    },
-    {
-      id: "cd", name: "Alex Turner",     role: "Creative Dir.",  dept: "Design",      avatar: "AT", email: "a.turner@acme.com",     phone: "+1 415-000-0013", location: "San Francisco", joined: "Jun 2019",  reports: 2,
-      children: [
-        { id: "mc", name: "Michael Chen",    role: "UI Designer",     dept: "Design",      avatar: "MC", email: "m.chen@acme.com",      phone: "+1 415-000-0024", location: "San Francisco", joined: "Nov 2021",  reports: 0 },
-        { id: "cr", name: "Carlos Romero",   role: "UX Designer",     dept: "Design",      avatar: "CR", email: "c.romero@acme.com",    phone: "+1 415-000-0025", location: "San Francisco", joined: "Mar 2026",  reports: 0 },
-      ],
-    },
-  ],
-};
+const EXECUTIVE_ROLE_HINTS = ["super admin", "admin", "ceo", "cto", "cfo", "coo", "chief", "vp", "head", "director"];
+const MANAGER_ROLE_HINTS = ["manager", "lead", "supervisor", "head", "director", "vp", "chief"];
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "NA";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function inferDepartment(roleName?: string): string {
+  const role = (roleName ?? "").toLowerCase();
+  if (role.includes("engineer") || role.includes("developer") || role.includes("devops") || role.includes("cto")) return "Engineering";
+  if (role.includes("sales")) return "Sales";
+  if (role.includes("market")) return "Marketing";
+  if (role.includes("hr") || role.includes("human")) return "HR";
+  if (role.includes("finance") || role.includes("account") || role.includes("cfo")) return "Finance";
+  if (role.includes("design") || role.includes("ux") || role.includes("ui") || role.includes("creative")) return "Design";
+  if (EXECUTIVE_ROLE_HINTS.some(k => role.includes(k))) return "Executive";
+  return "Executive";
+}
+
+function toOrgPerson(user: UserResponseDto): OrgPerson {
+  const joinedDate = user.dtCreatedDate ? new Date(user.dtCreatedDate) : null;
+  const joined = joinedDate && !Number.isNaN(joinedDate.getTime())
+    ? joinedDate.toLocaleDateString(undefined, { month: "short", year: "numeric" })
+    : "N/A";
+
+  return {
+    id: user.strUserGUID,
+    name: user.strUserName,
+    role: user.strRoleName || "Employee",
+    dept: inferDepartment(user.strRoleName),
+    avatar: initials(user.strUserName),
+    email: user.strEmail,
+    phone: user.strPhoneNo || "N/A",
+    location: "N/A",
+    joined,
+    reports: 0,
+    children: [],
+  };
+}
+
+function withReportCounts(node: OrgPerson): OrgPerson {
+  const children = (node.children ?? []).map(withReportCounts);
+  return {
+    ...node,
+    reports: children.length,
+    children,
+  };
+}
+
+function buildOrgFromUsers(users: UserResponseDto[]): OrgPerson | null {
+  const activeUsers = users.filter(u => u.bolIsActive);
+  if (activeUsers.length === 0) return null;
+
+  const people = activeUsers.map(toOrgPerson);
+  const byId = new Map(people.map(p => [p.id, p]));
+
+  const executive = people.find(p => EXECUTIVE_ROLE_HINTS.some(k => p.role.toLowerCase().includes(k)));
+  const root = executive ?? people[0];
+
+  const managers = people.filter(
+    p => p.id !== root.id && MANAGER_ROLE_HINTS.some(k => p.role.toLowerCase().includes(k))
+  );
+
+  const individualContributors = people.filter(
+    p => p.id !== root.id && !managers.some(m => m.id === p.id)
+  );
+
+  const rootNode = byId.get(root.id)!;
+  rootNode.children = [];
+
+  for (const manager of managers) {
+    const managerNode = byId.get(manager.id)!;
+    managerNode.children = [];
+    rootNode.children.push(managerNode);
+  }
+
+  if (rootNode.children.length === 0) {
+    rootNode.children = individualContributors.map(ic => byId.get(ic.id)!);
+  } else {
+    individualContributors.forEach((ic, index) => {
+      const manager = rootNode.children![index % rootNode.children!.length];
+      manager.children = manager.children ?? [];
+      manager.children.push(byId.get(ic.id)!);
+    });
+  }
+
+  return withReportCounts(rootNode);
+}
 
 /* ─── Colors ──────────────────────────────────────────────────────────────── */
 
@@ -141,20 +178,50 @@ function findParent(n: OrgPerson, id: string): OrgPerson | null {
 /* ─── Component ──────────────────────────────────────────────────────────── */
 
 export function OrgTree() {
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(["ceo"]));
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<string | null>(null);
   const [search, setSearch]     = useState("");
   const [zoom, setZoom]         = useState(1);
   const [filterDept] = useState<string | null>(null);
+  const [orgData, setOrgData] = useState<OrgPerson | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const root    = useMemo(() => layout(ORG, 0, 0, expanded), [expanded]);
-  const nodes   = useMemo(() => allNodes(root), [root]);
-  const edges   = useMemo(() => allEdges(root), [root]);
-  const svgW    = root.sw + PAD * 2;
-  const maxY    = Math.max(...nodes.map(n => n.y)) + CH + PAD;
-  const total   = useMemo(() => countAll(ORG), []);
-  const selectedPerson = selected ? findPerson(ORG, selected) : null;
-  const parentPerson   = selected ? findParent(ORG, selected) : null;
+  useEffect(() => {
+    const loadOrgData = async () => {
+      setIsLoading(true);
+      setErrorMessage(null);
+      try {
+        const response = await userService.getAllUsers();
+        const rootNode = buildOrgFromUsers(response.data ?? []);
+        if (!rootNode) {
+          setOrgData(null);
+          setExpanded(new Set());
+          setSelected(null);
+          return;
+        }
+        setOrgData(rootNode);
+        setExpanded(new Set([rootNode.id]));
+        setSelected(null);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to load organization chart.";
+        setErrorMessage(message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadOrgData();
+  }, []);
+
+  const root = useMemo(() => (orgData ? layout(orgData, 0, 0, expanded) : null), [expanded, orgData]);
+  const nodes = useMemo(() => (root ? allNodes(root) : []), [root]);
+  const edges = useMemo(() => (root ? allEdges(root) : []), [root]);
+  const svgW = root ? root.sw + PAD * 2 : 0;
+  const maxY = nodes.length > 0 ? Math.max(...nodes.map(n => n.y)) + CH + PAD : 0;
+  const total = useMemo(() => (orgData ? countAll(orgData) : 0), [orgData]);
+  const selectedPerson = selected && orgData ? findPerson(orgData, selected) : null;
+  const parentPerson = selected && orgData ? findParent(orgData, selected) : null;
 
   function toggle(id: string) {
     setExpanded(prev => {
@@ -164,17 +231,54 @@ export function OrgTree() {
     });
   }
   function expandAll() {
+    if (!orgData) return;
     const ids = new Set<string>();
     function walk(n: OrgPerson) { if (n.children?.length) { ids.add(n.id); n.children.forEach(walk); } }
-    walk(ORG);
+    walk(orgData);
     setExpanded(ids);
   }
-  function collapseAll() { setExpanded(new Set(["ceo"])); }
+  function collapseAll() {
+    if (!orgData) return;
+    setExpanded(new Set([orgData.id]));
+  }
 
   const matchesSearch = (n: OrgPerson) =>
     !search || n.name.toLowerCase().includes(search.toLowerCase()) ||
     n.role.toLowerCase().includes(search.toLowerCase()) ||
     n.dept.toLowerCase().includes(search.toLowerCase());
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading organization chart...
+        </div>
+      </div>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex items-center justify-center p-6">
+        <div className="max-w-lg w-full rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <p className="font-semibold">Failed to load organization chart</p>
+          <p className="mt-1 text-sm">{errorMessage}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!orgData || !root) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex items-center justify-center p-6">
+        <div className="max-w-lg w-full rounded-lg border bg-white dark:bg-slate-900 p-4">
+          <p className="font-semibold">No active users found</p>
+          <p className="mt-1 text-sm text-muted-foreground">Create or activate users to render the organization chart.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-foreground flex">
@@ -186,7 +290,7 @@ export function OrgTree() {
         <div className="bg-white dark:bg-slate-900 border-b dark:border-slate-800 px-5 py-3 flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold">Organization Chart</h1>
-            <p className="text-xs text-muted-foreground">Acme Corp · {total} employees · Last updated Mar 30, 2026</p>
+            <p className="text-xs text-muted-foreground">Acme Corp · {total} employees · Last updated {new Date().toLocaleDateString()}</p>
           </div>
           <div className="relative">
             <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />

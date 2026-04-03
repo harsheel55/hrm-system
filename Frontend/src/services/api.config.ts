@@ -72,4 +72,10 @@ export const ENDPOINTS = {
     APPROVE: (id: string) => `/leave/requests/${id}/approve`,
     REJECT: (id: string) => `/leave/requests/${id}/reject`,
   },
+  // Recruitment
+  RECRUITMENT: {
+    JOBS: '/recruitment/jobs',
+    CANDIDATES: '/recruitment/candidates',
+    CANDIDATE_STAGE: (id: string) => `/recruitment/candidates/${id}/stage`,
+  },
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -14,7 +14,6 @@ import {
   Briefcase,
   Users,
   Calendar,
-  Bell,
   Plus,
   Search,
   ChevronRight,
@@ -39,13 +38,15 @@ import {
   ThumbsDown,
   CalendarCheck,
   DollarSign,
+  Loader2,
 } from "lucide-react";
+import { recruitmentService, type CreateRecruitmentJobPayload } from "@/services/recruitment.service";
 
 type Stage = "applied" | "screening" | "interview" | "offer" | "hired" | "rejected";
 type Priority = "high" | "medium" | "low";
 
 interface Job {
-  id: number;
+  id: string | number;
   title: string;
   department: string;
   location: string;
@@ -65,7 +66,7 @@ interface Job {
 }
 
 interface Candidate {
-  id: number;
+  id: string | number;
   name: string;
   avatar: string;
   role: string;
@@ -138,16 +139,16 @@ const jobs: Job[] = [
 ];
 
 const candidates: Candidate[] = [
-  { id: 1,  name: "Lena Fischer",    avatar: "LF", role: "Senior Frontend Engineer", appliedFor: "Senior Frontend Engineer", email: "lena@email.com",    phone: "+1 212 555 0101", location: "Berlin, DE",    stage: "interview",  rating: 5, appliedDate: "Mar 18", experience: "6 years", source: "LinkedIn" },
-  { id: 2,  name: "Carlos Romero",   avatar: "CR", role: "Product Designer",         appliedFor: "Product Designer",         email: "carlos@email.com",  phone: "+1 212 555 0102", location: "Madrid, ES",    stage: "offer",      rating: 5, appliedDate: "Mar 14", experience: "5 years", source: "Referral" },
-  { id: 3,  name: "Priya Sharma",    avatar: "PS", role: "Data Analyst",             appliedFor: "Data Analyst",             email: "priya@email.com",   phone: "+1 212 555 0103", location: "Mumbai, IN",    stage: "screening",  rating: 4, appliedDate: "Mar 20", experience: "4 years", source: "Indeed" },
-  { id: 4,  name: "Jake Thompson",   avatar: "JT", role: "Sales Development Rep",    appliedFor: "Sales Development Rep",    email: "jake@email.com",    phone: "+1 212 555 0104", location: "Austin, TX",    stage: "applied",    rating: 3, appliedDate: "Mar 22", experience: "2 years", source: "LinkedIn" },
-  { id: 5,  name: "Yuki Tanaka",     avatar: "YT", role: "Senior Frontend Engineer", appliedFor: "Senior Frontend Engineer", email: "yuki@email.com",    phone: "+1 212 555 0105", location: "Tokyo, JP",     stage: "hired",      rating: 5, appliedDate: "Mar 10", experience: "7 years", source: "Referral" },
-  { id: 6,  name: "Amara Diallo",    avatar: "AD", role: "Marketing Manager",        appliedFor: "Marketing Manager",        email: "amara@email.com",   phone: "+1 212 555 0106", location: "Paris, FR",     stage: "interview",  rating: 4, appliedDate: "Mar 16", experience: "5 years", source: "Website" },
-  { id: 7,  name: "Ben Kowalski",    avatar: "BK", role: "DevOps Engineer",          appliedFor: "DevOps Engineer",          email: "ben@email.com",     phone: "+1 212 555 0107", location: "Warsaw, PL",    stage: "rejected",   rating: 2, appliedDate: "Mar 19", experience: "3 years", source: "LinkedIn" },
-  { id: 8,  name: "Sofia Martins",   avatar: "SM", role: "Product Designer",         appliedFor: "Product Designer",         email: "sofia@email.com",   phone: "+1 212 555 0108", location: "Lisbon, PT",    stage: "screening",  rating: 4, appliedDate: "Mar 21", experience: "4 years", source: "Dribbble" },
-  { id: 9,  name: "Daniel Okafor",   avatar: "DO", role: "Sales Development Rep",    appliedFor: "Sales Development Rep",    email: "daniel@email.com",  phone: "+1 212 555 0109", location: "Lagos, NG",     stage: "interview",  rating: 4, appliedDate: "Mar 17", experience: "3 years", source: "Indeed" },
-  { id: 10, name: "Hannah Lee",      avatar: "HL", role: "Senior Frontend Engineer", appliedFor: "Senior Frontend Engineer", email: "hannah@email.com",  phone: "+1 212 555 0110", location: "Seoul, KR",     stage: "applied",    rating: 3, appliedDate: "Mar 23", experience: "4 years", source: "GitHub" },
+  { id: "1",  name: "Lena Fischer",    avatar: "LF", role: "Senior Frontend Engineer", appliedFor: "Senior Frontend Engineer", email: "lena@email.com",    phone: "+1 212 555 0101", location: "Berlin, DE",    stage: "interview",  rating: 5, appliedDate: "Mar 18", experience: "6 years", source: "LinkedIn" },
+  { id: "2",  name: "Carlos Romero",   avatar: "CR", role: "Product Designer",         appliedFor: "Product Designer",         email: "carlos@email.com",  phone: "+1 212 555 0102", location: "Madrid, ES",    stage: "offer",      rating: 5, appliedDate: "Mar 14", experience: "5 years", source: "Referral" },
+  { id: "3",  name: "Priya Sharma",    avatar: "PS", role: "Data Analyst",             appliedFor: "Data Analyst",             email: "priya@email.com",   phone: "+1 212 555 0103", location: "Mumbai, IN",    stage: "screening",  rating: 4, appliedDate: "Mar 20", experience: "4 years", source: "Indeed" },
+  { id: "4",  name: "Jake Thompson",   avatar: "JT", role: "Sales Development Rep",    appliedFor: "Sales Development Rep",    email: "jake@email.com",    phone: "+1 212 555 0104", location: "Austin, TX",    stage: "applied",    rating: 3, appliedDate: "Mar 22", experience: "2 years", source: "LinkedIn" },
+  { id: "5",  name: "Yuki Tanaka",     avatar: "YT", role: "Senior Frontend Engineer", appliedFor: "Senior Frontend Engineer", email: "yuki@email.com",    phone: "+1 212 555 0105", location: "Tokyo, JP",     stage: "hired",      rating: 5, appliedDate: "Mar 10", experience: "7 years", source: "Referral" },
+  { id: "6",  name: "Amara Diallo",    avatar: "AD", role: "Marketing Manager",        appliedFor: "Marketing Manager",        email: "amara@email.com",   phone: "+1 212 555 0106", location: "Paris, FR",     stage: "interview",  rating: 4, appliedDate: "Mar 16", experience: "5 years", source: "Website" },
+  { id: "7",  name: "Ben Kowalski",    avatar: "BK", role: "DevOps Engineer",          appliedFor: "DevOps Engineer",          email: "ben@email.com",     phone: "+1 212 555 0107", location: "Warsaw, PL",    stage: "rejected",   rating: 2, appliedDate: "Mar 19", experience: "3 years", source: "LinkedIn" },
+  { id: "8",  name: "Sofia Martins",   avatar: "SM", role: "Product Designer",         appliedFor: "Product Designer",         email: "sofia@email.com",   phone: "+1 212 555 0108", location: "Lisbon, PT",    stage: "screening",  rating: 4, appliedDate: "Mar 21", experience: "4 years", source: "Dribbble" },
+  { id: "9",  name: "Daniel Okafor",   avatar: "DO", role: "Sales Development Rep",    appliedFor: "Sales Development Rep",    email: "daniel@email.com",  phone: "+1 212 555 0109", location: "Lagos, NG",     stage: "interview",  rating: 4, appliedDate: "Mar 17", experience: "3 years", source: "Indeed" },
+  { id: "10", name: "Hannah Lee",      avatar: "HL", role: "Senior Frontend Engineer", appliedFor: "Senior Frontend Engineer", email: "hannah@email.com",  phone: "+1 212 555 0110", location: "Seoul, KR",     stage: "applied",    rating: 3, appliedDate: "Mar 23", experience: "4 years", source: "GitHub" },
 ];
 
 const stageOrder: Stage[] = ["applied", "screening", "interview", "offer", "hired", "rejected"];
@@ -187,8 +188,40 @@ function StageBadge({ stage }: { stage: Stage }) {
   );
 }
 
-function PostJobDialog() {
+function PostJobDialog({ onSubmit }: { onSubmit: (payload: CreateRecruitmentJobPayload) => Promise<void> }) {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [title, setTitle] = useState("");
+  const [department, setDepartment] = useState("");
+  const [type, setType] = useState<"Full-time" | "Part-time" | "Contract">("Full-time");
+  const [location, setLocation] = useState("");
+  const [priority, setPriority] = useState<Priority>("medium");
+  const [description, setDescription] = useState("");
+
+  const handlePublish = async () => {
+    if (!title.trim() || !department.trim() || !location.trim()) return;
+    setIsSubmitting(true);
+    try {
+      await onSubmit({
+        title: title.trim(),
+        department: department.trim(),
+        type,
+        location: location.trim(),
+        priority,
+        description: description.trim(),
+      });
+      setOpen(false);
+      setTitle("");
+      setDepartment("");
+      setType("Full-time");
+      setLocation("");
+      setPriority("medium");
+      setDescription("");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -201,22 +234,22 @@ function PostJobDialog() {
         <div className="space-y-3 pt-1">
           <div className="grid gap-1.5">
             <Label className="text-xs">Job Title</Label>
-            <Input className="text-sm h-8" placeholder="e.g. Senior Product Manager" />
+            <Input className="text-sm h-8" placeholder="e.g. Senior Product Manager" value={title} onChange={e => setTitle(e.target.value)} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
               <Label className="text-xs">Department</Label>
-              <Select><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
+              <Select value={department} onValueChange={setDepartment}><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
                 <SelectContent>
-                  {["Engineering","Design","Marketing","Sales","Finance","HR"].map(d => <SelectItem key={d} value={d.toLowerCase()}>{d}</SelectItem>)}
+                  {["Engineering","Design","Marketing","Sales","Finance","HR"].map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="grid gap-1.5">
               <Label className="text-xs">Job Type</Label>
-              <Select><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
+              <Select value={type} onValueChange={value => setType(value as "Full-time" | "Part-time" | "Contract")}><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
                 <SelectContent>
-                  {["Full-time","Part-time","Contract","Internship"].map(t => <SelectItem key={t} value={t.toLowerCase()}>{t}</SelectItem>)}
+                  {["Full-time","Part-time","Contract"].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -224,11 +257,11 @@ function PostJobDialog() {
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5">
               <Label className="text-xs">Location</Label>
-              <Input className="text-sm h-8" placeholder="e.g. Remote / NYC" />
+              <Input className="text-sm h-8" placeholder="e.g. Remote / NYC" value={location} onChange={e => setLocation(e.target.value)} />
             </div>
             <div className="grid gap-1.5">
               <Label className="text-xs">Priority</Label>
-              <Select><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
+              <Select value={priority} onValueChange={value => setPriority(value as Priority)}><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
                 <SelectContent>
                   {["High","Medium","Low"].map(p => <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>)}
                 </SelectContent>
@@ -237,11 +270,13 @@ function PostJobDialog() {
           </div>
           <div className="grid gap-1.5">
             <Label className="text-xs">Job Description</Label>
-            <Textarea className="text-sm resize-none" rows={3} placeholder="Describe the role and requirements..." />
+            <Textarea className="text-sm resize-none" rows={3} placeholder="Describe the role and requirements..." value={description} onChange={e => setDescription(e.target.value)} />
           </div>
           <div className="flex gap-2 pt-1">
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button size="sm" className="flex-1 bg-violet-600 hover:bg-violet-700 text-white dark:bg-violet-500 dark:hover:bg-violet-600 dark:text-white" onClick={() => setOpen(false)}>Publish Job</Button>
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => setOpen(false)} disabled={isSubmitting}>Cancel</Button>
+            <Button size="sm" className="flex-1 bg-violet-600 hover:bg-violet-700 text-white dark:bg-violet-500 dark:hover:bg-violet-600 dark:text-white" onClick={handlePublish} disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Publish Job"}
+            </Button>
           </div>
         </div>
       </DialogContent>
@@ -481,12 +516,47 @@ export default function Recruitment() {
   const [activeTab, setActiveTab] = useState("pipeline");
   const [search, setSearch] = useState("");
   const [filterStage, setFilterStage] = useState("all");
+  const [jobsData, setJobsData] = useState<Job[]>(jobs);
   const [candidates_, setCandidates] = useState<Candidate[]>(candidates);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const moveStage = (id: number, stage: Stage) => {
-    setCandidates(prev => prev.map(c => c.id === id ? { ...c, stage } : c));
+  const loadRecruitmentData = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const [jobsRes, candidatesRes] = await Promise.all([
+        recruitmentService.getJobs(),
+        recruitmentService.getCandidates(),
+      ]);
+      setJobsData((jobsRes.data as unknown as Job[]) ?? []);
+      setCandidates((candidatesRes.data as unknown as Candidate[]) ?? []);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load recruitment data.";
+      setErrorMessage(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRecruitmentData();
+  }, []);
+
+  const moveStage = async (id: string | number, stage: Stage) => {
+    try {
+      await recruitmentService.updateCandidateStage(String(id), stage);
+      setCandidates(prev => prev.map(c => c.id === id ? { ...c, stage } : c));
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Failed to update candidate stage.");
+    }
+  };
+
+  const createJob = async (payload: CreateRecruitmentJobPayload) => {
+    await recruitmentService.createJob(payload);
+    await loadRecruitmentData();
   };
 
   const filtered = candidates_.filter(c => {
@@ -495,7 +565,7 @@ export default function Recruitment() {
     return matchSearch && matchStage;
   });
 
-  const totalApplicants = jobs.reduce((s, j) => s + j.applicants, 0);
+  const totalApplicants = jobsData.reduce((s, j) => s + j.applicants, 0);
   const hired = candidates_.filter(c => c.stage === "hired").length;
   const inProgress = candidates_.filter(c => !["hired","rejected"].includes(c.stage)).length;
   const offersPending = candidates_.filter(c => c.stage === "offer").length;
@@ -515,19 +585,28 @@ export default function Recruitment() {
             <p className="text-xs text-muted-foreground">Manage job openings and candidate pipeline</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-violet-600 rounded-full" />
-            </Button>
-            <PostJobDialog />
+            <PostJobDialog onSubmit={createJob} />
           </div>
         </div>
 
         <div className="flex-1 overflow-auto p-6 space-y-4">
+          {errorMessage && (
+            <div className="rounded-lg border border-red-200 bg-red-50 text-red-700 px-3 py-2 text-sm">
+              {errorMessage}
+            </div>
+          )}
+
+          {isLoading && (
+            <div className="rounded-lg border bg-white dark:bg-gray-900 px-3 py-2 text-sm flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading recruitment data...
+            </div>
+          )}
+
           {/* Stats */}
           <div className="grid grid-cols-4 gap-4">
             {[
-              { label: "Open Positions",    value: jobs.length,    sub: "across 5 departments",       icon: <Briefcase className="w-4 h-4 text-violet-600" />, bg: "bg-violet-50 dark:bg-violet-950" },
+              { label: "Open Positions",    value: jobsData.length,    sub: "across 5 departments",       icon: <Briefcase className="w-4 h-4 text-violet-600" />, bg: "bg-violet-50 dark:bg-violet-950" },
               { label: "Total Applicants",  value: totalApplicants, sub: "across all roles",           icon: <Users className="w-4 h-4 text-blue-600" />,    bg: "bg-blue-50 dark:bg-blue-950" },
               { label: "In Pipeline",       value: inProgress,     sub: "active candidates",           icon: <TrendingUp className="w-4 h-4 text-amber-600" />, bg: "bg-amber-50 dark:bg-amber-950" },
               { label: "Offers Pending",    value: offersPending,  sub: `${hired} hired this month`,   icon: <UserCheck className="w-4 h-4 text-emerald-600" />, bg: "bg-emerald-50 dark:bg-emerald-950" },
@@ -865,7 +944,7 @@ export default function Recruitment() {
             {/* JOB OPENINGS */}
             <TabsContent value="jobs" className="mt-4">
               <div className="grid grid-cols-2 gap-4">
-                {jobs.map(j => {
+                {jobsData.map(j => {
                   const pri = priorityConfig[j.priority];
                   return (
                     <Card key={j.id} className="border-0 shadow-sm hover:shadow-md transition-shadow dark:bg-gray-900 dark:border-gray-800">
