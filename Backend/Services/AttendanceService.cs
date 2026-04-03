@@ -1,165 +1,201 @@
+    using Backend.Data;
 using Backend.DTOs;
+using Backend.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 
 namespace Backend.Services;
 
 public sealed class AttendanceService : IAttendanceService
 {
-    private readonly object _lock = new();
-    private readonly Dictionary<string, Dictionary<DateOnly, AttendanceDayRecord>> _userDailyRecords =
-        new(StringComparer.OrdinalIgnoreCase);
+    private readonly AppDbContext _context;
 
-    private static readonly List<AttendanceEmployeeSeed> Employees =
-    [
-        new() { Id = 1, Name = "Sarah Johnson", Avatar = "SJ", Department = "Engineering", Role = "Senior Dev", CheckIn = "09:02", CheckOut = null, Status = "present", HoursWorked = 5.8m, Overtime = 0m },
-        new() { Id = 2, Name = "Michael Chen", Avatar = "MC", Department = "Design", Role = "UI Designer", CheckIn = "09:45", CheckOut = null, Status = "late", HoursWorked = 5.1m, Overtime = 0m },
-        new() { Id = 3, Name = "Emily Rodriguez", Avatar = "ER", Department = "Marketing", Role = "Mktg Lead", CheckIn = null, CheckOut = null, Status = "absent", HoursWorked = 0m, Overtime = 0m },
-        new() { Id = 4, Name = "James Kim", Avatar = "JK", Department = "Sales", Role = "Sales Rep", CheckIn = "08:55", CheckOut = null, Status = "present", HoursWorked = 6.0m, Overtime = 1.0m },
-        new() { Id = 5, Name = "Aisha Patel", Avatar = "AP", Department = "HR", Role = "HR Manager", CheckIn = null, CheckOut = null, Status = "on-leave", HoursWorked = 0m, Overtime = 0m },
-        new() { Id = 6, Name = "David Park", Avatar = "DP", Department = "Engineering", Role = "Backend Dev", CheckIn = "08:30", CheckOut = null, Status = "present", HoursWorked = 7.4m, Overtime = 1.4m },
-        new() { Id = 7, Name = "Lisa Wang", Avatar = "LW", Department = "Finance", Role = "Analyst", CheckIn = "09:10", CheckOut = null, Status = "present", HoursWorked = 5.6m, Overtime = 0m },
-        new() { Id = 8, Name = "Tom Harris", Avatar = "TH", Department = "Sales", Role = "Sales Lead", CheckIn = "10:15", CheckOut = null, Status = "late", HoursWorked = 4.0m, Overtime = 0m },
-        new() { Id = 9, Name = "Nina Gupta", Avatar = "NG", Department = "Engineering", Role = "QA Engineer", CheckIn = "09:00", CheckOut = "13:30", Status = "half-day", HoursWorked = 4.5m, Overtime = 0m },
-        new() { Id = 10, Name = "Carlos Diaz", Avatar = "CD", Department = "Marketing", Role = "Content Writer", CheckIn = "08:58", CheckOut = null, Status = "present", HoursWorked = 6.0m, Overtime = 0m }
-    ];
+    public AttendanceService(AppDbContext context)
+    {
+        _context = context;
+    }
 
     public AttendanceDashboardDto GetDashboard(string email, AttendanceQueryDto query)
     {
-        lock (_lock)
+        var normalizedSearch = (query.Search ?? string.Empty).Trim();
+        var normalizedDepartment = (query.Department ?? "all").Trim();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        // Fetch user data
+        var allUsers = _context.Users.Include(u => u.UserRole).ToList();
+        var allAttendancesToday = _context.Attendances.Where(a => a.dtDate == today).ToList();
+
+        var employees = allUsers.Select(u =>
         {
-            EnsureUserSeed(email);
-
-            var normalizedSearch = (query.Search ?? string.Empty).Trim();
-            var normalizedDepartment = (query.Department ?? "all").Trim();
-
-            var filteredEmployees = Employees
-                .Where(e =>
-                    (string.Equals(normalizedDepartment, "all", StringComparison.OrdinalIgnoreCase) ||
-                     string.Equals(e.Department, normalizedDepartment, StringComparison.OrdinalIgnoreCase)) &&
-                    (string.IsNullOrWhiteSpace(normalizedSearch) ||
-                     e.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
-                     e.Department.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)))
-                .Select(MapEmployee)
-                .ToList();
-
-            var summary = BuildSummary(Employees);
-
-            return new AttendanceDashboardDto
+            var attendance = allAttendancesToday.FirstOrDefault(a => a.strUserGUID == u.strUserGUID);
+            var department = u.UserRole?.strRoleName ?? "General";
+            var checkInStr = attendance?.dtCheckIn?.ToString("HH:mm") ?? "-";
+            var status = attendance?.strStatus?.ToLower() ?? "absent";
+            if (checkInStr == "-") status = "absent";
+            
+            decimal hoursWorked = 0;
+            if (attendance?.dtCheckIn != null && attendance.dtCheckOut != null)
             {
-                Summary = summary,
-                Clock = BuildClock(email, DateTime.Now),
-                Employees = filteredEmployees,
-                MyWeek = BuildMyWeek(email, DateTime.Today),
-                WeeklyBars = BuildWeeklyBars(summary),
-                DepartmentAttendance = BuildDepartmentAttendance(Employees)
+                hoursWorked = Math.Round((decimal)(attendance.dtCheckOut.Value - attendance.dtCheckIn.Value).TotalHours, 1);
+            }
+            else if (attendance?.dtCheckIn != null)
+            {
+                hoursWorked = Math.Round((decimal)(DateTime.UtcNow - attendance.dtCheckIn.Value).TotalHours, 1);
+            }
+
+            return new AttendanceEmployeeDto
+            {
+                Id = u.strUserName.GetHashCode(), // Mock ID for frontend format
+                Name = u.strUserName,
+                Avatar = string.IsNullOrWhiteSpace(u.strUserName) ? "U" : u.strUserName.Substring(0, 1).ToUpper(),
+                Department = department,
+                Role = u.UserRole?.strRoleName ?? "Employee",
+                CheckIn = attendance?.dtCheckIn?.ToString("HH:mm") ?? "-",
+                CheckOut = attendance?.dtCheckOut?.ToString("HH:mm") ?? "-",
+                Status = status,
+                HoursWorked = hoursWorked,
+                Overtime = hoursWorked > 8 ? hoursWorked - 8 : 0
             };
-        }
+        }).ToList();
+
+        var filteredEmployees = employees
+            .Where(e =>
+                (string.Equals(normalizedDepartment, "all", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(e.Department, normalizedDepartment, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrWhiteSpace(normalizedSearch) ||
+                 e.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                 e.Department.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+
+        var present = employees.Count(e => e.Status == "present" || e.Status == "late" || e.Status == "half-day");
+        var absent = employees.Count(e => e.Status == "absent");
+        var late = employees.Count(e => e.Status == "late");
+        var onLeave = employees.Count(e => e.Status == "on-leave");
+
+        var summary = new AttendanceSummaryDto
+        {
+            Present = present,
+            Absent = absent,
+            Late = late,
+            OnLeave = onLeave,
+            AttendanceRate = employees.Count == 0 ? 0 : (int)Math.Round((double)present * 100d / employees.Count)
+        };
+
+        var deptAttendance = employees.GroupBy(e => e.Department).Select(g =>
+        {
+            var deptTotal = g.Count();
+            var deptPresent = g.Count(x => x.Status == "present" || x.Status == "late" || x.Status == "half-day");
+            return new DepartmentAttendanceDto
+            {
+                Department = g.Key,
+                Rate = deptTotal == 0 ? 0 : (int)Math.Round((double)deptPresent * 100d / deptTotal),
+                Count = $"{deptPresent}/{deptTotal} present"
+            };
+        }).ToList();
+
+        var currentUser = _context.Users.FirstOrDefault(u => u.strEmail == email);
+        return new AttendanceDashboardDto
+        {
+            Summary = summary,
+            Clock = GetTodayClock(email),
+            Employees = filteredEmployees,
+            MyWeek = BuildMyWeek(currentUser?.strUserGUID),
+            WeeklyBars = BuildWeeklyBars(summary),
+            DepartmentAttendance = deptAttendance,
+            MonthlySummary = BuildMonthlySummary(currentUser?.strUserGUID)
+        };
     }
 
     public AttendanceClockDto CheckIn(string email)
     {
-        lock (_lock)
+        var user = _context.Users.FirstOrDefault(u => u.strEmail == email);
+        if (user == null) throw new InvalidOperationException("User not found.");
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var attendance = _context.Attendances.FirstOrDefault(a => a.strUserGUID == user.strUserGUID && a.dtDate == today);
+
+        if (attendance != null && attendance.dtCheckIn != null)
         {
-            EnsureUserSeed(email);
-
-            var now = DateTime.Now;
-            var today = DateOnly.FromDateTime(now);
-            var userData = _userDailyRecords[email];
-            userData.TryGetValue(today, out var record);
-
-            if (record is { CheckInAt: not null, CheckOutAt: null })
+            if (attendance.dtCheckOut == null)
             {
                 throw new InvalidOperationException("You are already checked in.");
             }
-
-            record ??= new AttendanceDayRecord();
-            record.CheckInAt = now;
-            record.CheckOutAt = null;
-            userData[today] = record;
-
-            return BuildClock(email, now);
+            throw new InvalidOperationException("You have already completed your shift today.");
         }
+
+        if (attendance == null)
+        {
+            attendance = new Attendance
+            {
+                strUserGUID = user.strUserGUID,
+                dtDate = today,
+                dtCheckIn = DateTime.UtcNow,
+                strStatus = DateTime.UtcNow.TimeOfDay > new TimeSpan(9, 15, 0) ? "Late" : "Present"
+            };
+            _context.Attendances.Add(attendance);
+        }
+        else
+        {
+            attendance.dtCheckIn = DateTime.UtcNow;
+            attendance.strStatus = DateTime.UtcNow.TimeOfDay > new TimeSpan(9, 15, 0) ? "Late" : "Present";
+        }
+
+        _context.SaveChanges();
+        return BuildClock(attendance);
     }
 
     public AttendanceClockDto CheckOut(string email)
     {
-        lock (_lock)
+        var user = _context.Users.FirstOrDefault(u => u.strEmail == email);
+        if (user == null) throw new InvalidOperationException("User not found.");
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var attendance = _context.Attendances.FirstOrDefault(a => a.strUserGUID == user.strUserGUID && a.dtDate == today);
+
+        if (attendance == null || attendance.dtCheckIn == null)
         {
-            EnsureUserSeed(email);
-
-            var now = DateTime.Now;
-            var today = DateOnly.FromDateTime(now);
-            var userData = _userDailyRecords[email];
-
-            if (!userData.TryGetValue(today, out var record) || record.CheckInAt is null)
-            {
-                throw new InvalidOperationException("You must check in before checking out.");
-            }
-
-            if (record.CheckOutAt is not null)
-            {
-                throw new InvalidOperationException("You have already checked out.");
-            }
-
-            record.CheckOutAt = now;
-            userData[today] = record;
-
-            return BuildClock(email, now);
+            throw new InvalidOperationException("You must check in before checking out.");
         }
+
+        if (attendance.dtCheckOut != null)
+        {
+            throw new InvalidOperationException("You have already checked out.");
+        }
+
+        attendance.dtCheckOut = DateTime.UtcNow;
+        _context.SaveChanges();
+        
+        return BuildClock(attendance);
     }
 
     public AttendanceClockDto GetTodayClock(string email)
     {
-        lock (_lock)
-        {
-            EnsureUserSeed(email);
-            return BuildClock(email, DateTime.Now);
-        }
+        var user = _context.Users.FirstOrDefault(u => u.strEmail == email);
+        if (user == null) return new AttendanceClockDto();
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var attendance = _context.Attendances.FirstOrDefault(a => a.strUserGUID == user.strUserGUID && a.dtDate == today);
+
+        return BuildClock(attendance);
     }
 
-    private void EnsureUserSeed(string email)
+    private AttendanceClockDto BuildClock(Attendance? attendance)
     {
-        if (_userDailyRecords.ContainsKey(email))
+        var checkIn = attendance?.dtCheckIn;
+        var checkOut = attendance?.dtCheckOut;
+        var isCheckedIn = checkIn != null && checkOut == null;
+
+        var now = DateTime.UtcNow;
+        TimeSpan elapsed = TimeSpan.Zero;
+        if (checkIn != null)
         {
-            return;
+            elapsed = checkOut != null ? checkOut.Value - checkIn.Value : now - checkIn.Value;
         }
 
-        var today = DateOnly.FromDateTime(DateTime.Today);
-        var seededCheckIn = DateTime.Today.AddHours(9).AddMinutes(3);
-
-        _userDailyRecords[email] = new Dictionary<DateOnly, AttendanceDayRecord>
-        {
-            [today] = new AttendanceDayRecord
-            {
-                CheckInAt = seededCheckIn,
-                CheckOutAt = null
-            }
-        };
-    }
-
-    private AttendanceClockDto BuildClock(string email, DateTime now)
-    {
-        var today = DateOnly.FromDateTime(now);
-        _userDailyRecords[email].TryGetValue(today, out var record);
-
-        var checkIn = record?.CheckInAt;
-        var checkOut = record?.CheckOutAt;
-        var isCheckedIn = checkIn is not null && checkOut is null;
-
-        TimeSpan elapsed;
-        if (checkIn is null)
-        {
-            elapsed = TimeSpan.Zero;
-        }
-        else if (checkOut is null)
-        {
-            elapsed = now - checkIn.Value;
-        }
-        else
-        {
-            elapsed = checkOut.Value - checkIn.Value;
-        }
-
-        var status = checkIn is null ? "absent" : checkOut is null ? "present" : "half-day";
+        var status = attendance?.strStatus?.ToLower() ?? "absent";
+        if (checkIn == null) status = "absent";
+        else if (checkOut != null && elapsed.TotalHours < 4) status = "half-day";
 
         return new AttendanceClockDto
         {
@@ -173,83 +209,61 @@ public sealed class AttendanceService : IAttendanceService
         };
     }
 
-    private static List<AttendanceWeekDayDto> BuildMyWeek(string email, DateTime today)
+    private List<AttendanceWeekDayDto> BuildMyWeek(Guid? userGuid)
     {
-        _ = email;
-
+        var today = DateTime.UtcNow;
         var start = today.Date.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
-        if (today.DayOfWeek == DayOfWeek.Sunday)
+        if (today.DayOfWeek == DayOfWeek.Sunday) start = today.Date.AddDays(-6);
+        
+        var dateOnlyStart = DateOnly.FromDateTime(start);
+        var dateOnlyEnd = DateOnly.FromDateTime(start.AddDays(6));
+
+        var weeklyRecords = new List<Attendance>();
+        if (userGuid.HasValue)
         {
-            start = today.Date.AddDays(-6);
+            weeklyRecords = _context.Attendances
+                .Where(a => a.strUserGUID == userGuid.Value && a.dtDate >= dateOnlyStart && a.dtDate <= dateOnlyEnd)
+                .ToList();
         }
 
         var items = new List<AttendanceWeekDayDto>();
         for (var i = 0; i < 7; i++)
         {
             var current = start.AddDays(i);
+            var currentDateOnly = DateOnly.FromDateTime(current);
             var isToday = current.Date == today.Date;
-            var isWeekend = current.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
+            var isWeekend = current.DayOfWeek == DayOfWeek.Saturday || current.DayOfWeek == DayOfWeek.Sunday;
+
+            var record = weeklyRecords.FirstOrDefault(r => r.dtDate == currentDateOnly);
+            
+            string status = isWeekend ? "weekend" : "absent";
+            if (record != null && record.dtCheckIn != null) status = record.strStatus?.ToLower() ?? "present";
+            
+            decimal hours = 0;
+            if (record != null && record.dtCheckIn != null)
+            {
+                var end = record.dtCheckOut ?? DateTime.UtcNow;
+                hours = Math.Round((decimal)(end - record.dtCheckIn.Value).TotalHours, 1);
+            }
 
             items.Add(new AttendanceWeekDayDto
             {
                 Date = current.ToString("MMM dd"),
                 Day = isToday ? "Today" : current.ToString("ddd"),
-                Status = isWeekend ? "absent" : "present",
-                CheckIn = isWeekend ? "-" : "09:00",
-                CheckOut = isWeekend ? "-" : (isToday ? "-" : "18:00"),
-                Hours = isWeekend ? 0m : (isToday ? 5.8m : 9.0m)
+                Status = status,
+                CheckIn = record?.dtCheckIn?.ToString("HH:mm") ?? "-",
+                CheckOut = record?.dtCheckOut?.ToString("HH:mm") ?? "-",
+                Hours = hours
             });
         }
 
         return items;
     }
 
-    private static AttendanceSummaryDto BuildSummary(IEnumerable<AttendanceEmployeeSeed> employees)
-    {
-        var list = employees.ToList();
-        var present = list.Count(e => string.Equals(e.Status, "present", StringComparison.OrdinalIgnoreCase));
-        var absent = list.Count(e => string.Equals(e.Status, "absent", StringComparison.OrdinalIgnoreCase));
-        var late = list.Count(e => string.Equals(e.Status, "late", StringComparison.OrdinalIgnoreCase));
-        var onLeave = list.Count(e => string.Equals(e.Status, "on-leave", StringComparison.OrdinalIgnoreCase));
-
-        var total = list.Count;
-        var attendanceRate = total == 0 ? 0 : (int)Math.Round((double)present * 100d / total);
-
-        return new AttendanceSummaryDto
-        {
-            Present = present,
-            Absent = absent,
-            Late = late,
-            OnLeave = onLeave,
-            AttendanceRate = attendanceRate
-        };
-    }
-
-    private static List<DepartmentAttendanceDto> BuildDepartmentAttendance(IEnumerable<AttendanceEmployeeSeed> employees)
-    {
-        return employees
-            .GroupBy(e => e.Department)
-            .OrderBy(g => g.Key)
-            .Select(group =>
-            {
-                var total = group.Count();
-                var present = group.Count(x => string.Equals(x.Status, "present", StringComparison.OrdinalIgnoreCase));
-                var rate = total == 0 ? 0 : (int)Math.Round((double)present * 100d / total);
-
-                return new DepartmentAttendanceDto
-                {
-                    Department = group.Key,
-                    Rate = rate,
-                    Count = $"{present}/{total} present"
-                };
-            })
-            .ToList();
-    }
-
     private static List<AttendanceWeeklyBarDto> BuildWeeklyBars(AttendanceSummaryDto summary)
     {
-        return
-        [
+        return new List<AttendanceWeeklyBarDto>
+        {
             new AttendanceWeeklyBarDto { Day = "M", Present = 42, Late = 3, Absent = 3 },
             new AttendanceWeeklyBarDto { Day = "T", Present = 44, Late = 2, Absent = 2 },
             new AttendanceWeeklyBarDto { Day = "W", Present = 40, Late = 5, Absent = 3 },
@@ -257,43 +271,63 @@ public sealed class AttendanceService : IAttendanceService
             new AttendanceWeeklyBarDto { Day = "F", Present = 43, Late = 3, Absent = 2 },
             new AttendanceWeeklyBarDto { Day = "S", Present = 5, Late = 0, Absent = 43 },
             new AttendanceWeeklyBarDto { Day = "S", Present = summary.Present, Late = summary.Late, Absent = summary.Absent + summary.OnLeave }
-        ];
-    }
-
-    private static AttendanceEmployeeDto MapEmployee(AttendanceEmployeeSeed employee)
-    {
-        return new AttendanceEmployeeDto
-        {
-            Id = employee.Id,
-            Name = employee.Name,
-            Avatar = employee.Avatar,
-            Department = employee.Department,
-            Role = employee.Role,
-            CheckIn = employee.CheckIn,
-            CheckOut = employee.CheckOut,
-            Status = employee.Status,
-            HoursWorked = employee.HoursWorked,
-            Overtime = employee.Overtime
         };
     }
 
-    private sealed class AttendanceEmployeeSeed
+    private AttendanceMonthlySummaryDto BuildMonthlySummary(Guid? userGuid)
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Avatar { get; set; } = string.Empty;
-        public string Department { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
-        public string? CheckIn { get; set; }
-        public string? CheckOut { get; set; }
-        public string Status { get; set; } = "absent";
-        public decimal HoursWorked { get; set; }
-        public decimal Overtime { get; set; }
-    }
+        if (userGuid == null) return new AttendanceMonthlySummaryDto();
 
-    private sealed class AttendanceDayRecord
-    {
-        public DateTime? CheckInAt { get; set; }
-        public DateTime? CheckOutAt { get; set; }
+        var today = DateTime.UtcNow;
+        var monthStart = new DateOnly(today.Year, today.Month, 1);
+        var currentDay = DateOnly.FromDateTime(today);
+        
+        var workingDays = 0;
+        for (var day = monthStart; day <= currentDay; day = day.AddDays(1))
+        {
+            var dow = day.DayOfWeek;
+            if (dow != DayOfWeek.Saturday && dow != DayOfWeek.Sunday) workingDays++;
+        }
+
+        var records = _context.Attendances
+            .Where(a => a.strUserGUID == userGuid.Value && a.dtDate >= monthStart && a.dtDate <= currentDay)
+            .ToList();
+
+        var daysPresent = records.Count(r => r.dtCheckIn != null);
+        var daysLate = records.Count(r => r.strStatus != null && r.strStatus.ToLower() == "late");
+        
+        decimal totalHours = 0;
+        int overtimeDays = 0;
+        decimal overtimeHours = 0;
+
+        foreach (var r in records)
+        {
+            if (r.dtCheckIn != null)
+            {
+                var end = r.dtCheckOut ?? DateTime.UtcNow;
+                var hours = (decimal)(end - r.dtCheckIn.Value).TotalHours;
+                totalHours += hours;
+                if (hours > 8m)
+                {
+                    overtimeDays++;
+                    overtimeHours += (hours - 8m);
+                }
+            }
+        }
+
+        var latePercentage = workingDays == 0 ? 0 : Math.Round((decimal)daysLate * 100 / workingDays, 1);
+        var avgHours = daysPresent == 0 ? 0 : Math.Round(totalHours / daysPresent, 1);
+
+        return new AttendanceMonthlySummaryDto
+        {
+            DaysPresent = daysPresent,
+            WorkingDays = workingDays,
+            DaysLate = daysLate,
+            LatePercentage = latePercentage,
+            TotalHours = Math.Round(totalHours, 1),
+            AvgHoursPerDay = avgHours,
+            OvertimeHours = Math.Round(overtimeHours, 1),
+            OvertimeDays = overtimeDays
+        };
     }
 }

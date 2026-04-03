@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,56 +22,16 @@ import {
   Download,
   Wifi,
   Coffee,
+  Loader2
 } from "lucide-react";
+import { attendanceService } from "@/services/attendanceService";
+import type {
+  AttendanceDashboard,
+  AttendanceEmployee,
+  AttendanceClock
+} from "@/services/attendanceService";
 
-type AttendanceStatus = "present" | "absent" | "late" | "half-day" | "on-leave";
-
-interface Employee {
-  id: number;
-  name: string;
-  avatar: string;
-  department: string;
-  role: string;
-  checkIn: string | null;
-  checkOut: string | null;
-  status: AttendanceStatus;
-  hoursWorked: number;
-  overtime: number;
-}
-
-interface WeekDay {
-  date: string;
-  day: string;
-  status: AttendanceStatus;
-  checkIn: string;
-  checkOut: string;
-  hours: number;
-}
-
-const employees: Employee[] = [
-  { id: 1, name: "Sarah Johnson", avatar: "SJ", department: "Engineering", role: "Senior Dev", checkIn: "09:02", checkOut: null, status: "present", hoursWorked: 5.8, overtime: 0 },
-  { id: 2, name: "Michael Chen", avatar: "MC", department: "Design", role: "UI Designer", checkIn: "09:45", checkOut: null, status: "late", hoursWorked: 5.1, overtime: 0 },
-  { id: 3, name: "Emily Rodriguez", avatar: "ER", department: "Marketing", role: "Mktg Lead", checkIn: null, checkOut: null, status: "absent", hoursWorked: 0, overtime: 0 },
-  { id: 4, name: "James Kim", avatar: "JK", department: "Sales", role: "Sales Rep", checkIn: "08:55", checkOut: null, status: "present", hoursWorked: 6.0, overtime: 1.0 },
-  { id: 5, name: "Aisha Patel", avatar: "AP", department: "HR", role: "HR Manager", checkIn: null, checkOut: null, status: "on-leave", hoursWorked: 0, overtime: 0 },
-  { id: 6, name: "David Park", avatar: "DP", department: "Engineering", role: "Backend Dev", checkIn: "08:30", checkOut: null, status: "present", hoursWorked: 7.4, overtime: 1.4 },
-  { id: 7, name: "Lisa Wang", avatar: "LW", department: "Finance", role: "Analyst", checkIn: "09:10", checkOut: null, status: "present", hoursWorked: 5.6, overtime: 0 },
-  { id: 8, name: "Tom Harris", avatar: "TH", department: "Sales", role: "Sales Lead", checkIn: "10:15", checkOut: null, status: "late", hoursWorked: 4.0, overtime: 0 },
-  { id: 9, name: "Nina Gupta", avatar: "NG", department: "Engineering", role: "QA Engineer", checkIn: "09:00", checkOut: "13:30", status: "half-day", hoursWorked: 4.5, overtime: 0 },
-  { id: 10, name: "Carlos Diaz", avatar: "CD", department: "Marketing", role: "Content Writer", checkIn: "08:58", checkOut: null, status: "present", hoursWorked: 6.0, overtime: 0 },
-];
-
-const myWeek: WeekDay[] = [
-  { date: "Mar 19", day: "Mon", status: "present", checkIn: "08:55", checkOut: "18:02", hours: 9.1 },
-  { date: "Mar 20", day: "Tue", status: "present", checkIn: "09:01", checkOut: "18:15", hours: 9.2 },
-  { date: "Mar 21", day: "Wed", status: "late", checkIn: "09:52", checkOut: "18:30", hours: 8.6 },
-  { date: "Mar 22", day: "Thu", status: "present", checkIn: "08:48", checkOut: "17:58", hours: 9.2 },
-  { date: "Mar 23", day: "Fri", status: "present", checkIn: "08:50", checkOut: "17:45", hours: 8.9 },
-  { date: "Mar 24", day: "Sat", status: "absent", checkIn: "-", checkOut: "-", hours: 0 },
-  { date: "Mar 25", day: "Today", status: "present", checkIn: "09:03", checkOut: "-", hours: 5.8 },
-];
-
-const statusConfig: Record<AttendanceStatus, { label: string; color: string; dot: string; icon: React.ReactNode }> = {
+const statusConfig: Record<string, { label: string; color: string; dot: string; icon: React.ReactNode }> = {
   present: { label: "Present", color: "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800", dot: "bg-emerald-500", icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
   absent: { label: "Absent", color: "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/50 dark:text-red-400 dark:border-red-800", dot: "bg-red-500", icon: <XCircle className="w-3.5 h-3.5" /> },
   late: { label: "Late", color: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800", dot: "bg-amber-400", icon: <AlertCircle className="w-3.5 h-3.5" /> },
@@ -96,23 +56,41 @@ function StatCard({ title, value, subtitle, icon, accent }: { title: string; val
   );
 }
 
-function CheckInClock() {
-  const [checkedIn, setCheckedIn] = useState(true);
-  const now = "09:03 AM";
-  const elapsed = "5h 49m";
+function CheckInClock({ clock, onRefresh }: { clock?: AttendanceClock, onRefresh: () => void }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleAction = async () => {
+    try {
+      setLoading(true);
+      if (clock?.isCheckedIn) {
+        await attendanceService.checkOut();
+        alert("Checked out successfully");
+      } else {
+        await attendanceService.checkIn();
+        alert("Checked in successfully");
+      }
+      onRefresh();
+    } catch (e: any) {
+      alert(e.response?.data?.message || "Action failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isCheckedIn = clock?.isCheckedIn || false;
 
   return (
     <Card className="border-0 shadow-sm bg-gradient-to-br from-emerald-600 to-teal-700 text-white dark:from-emerald-700 dark:to-teal-800">
       <CardContent className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-emerald-100 text-sm">Today — Wed, Mar 25</p>
-            <p className="text-2xl font-bold mt-0.5">2:52 PM</p>
+            <p className="text-emerald-100 text-sm">Today — {clock?.dateLabel || "Loading..."}</p>
+            <p className="text-2xl font-bold mt-0.5">{clock?.currentTime || "--:--"}</p>
           </div>
           <div className="text-right">
             <p className="text-emerald-100 text-xs">Time Worked</p>
             <p className="text-xl font-bold flex items-center gap-1.5 justify-end mt-0.5">
-              <Timer className="w-4 h-4" />{elapsed}
+              <Timer className="w-4 h-4" />{clock?.elapsed || "0h 0m"}
             </p>
           </div>
         </div>
@@ -121,33 +99,35 @@ function CheckInClock() {
             <LogIn className="w-3.5 h-3.5 text-emerald-200" />
             <div>
               <p className="text-[10px] text-emerald-200">Check In</p>
-              <p className="text-sm font-bold">{now}</p>
+              <p className="text-sm font-bold">{clock?.checkIn || "--:--"}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5 bg-white/10 rounded-lg px-3 py-1.5 flex-1">
             <LogOut className="w-3.5 h-3.5 text-emerald-200" />
             <div>
               <p className="text-[10px] text-emerald-200">Check Out</p>
-              <p className="text-sm font-bold">—</p>
+              <p className="text-sm font-bold">{clock?.checkOut || "--:--"}</p>
             </div>
           </div>
         </div>
         <Button
-          className={`w-full font-semibold ${checkedIn ? "bg-red-500 hover:bg-red-600 text-white" : "bg-white text-emerald-700 hover:bg-emerald-50 dark:bg-gray-200 dark:text-emerald-800 dark:hover:bg-gray-300"}`}
-          onClick={() => setCheckedIn(!checkedIn)}
+          disabled={loading}
+          className={`w-full font-semibold ${isCheckedIn ? "bg-red-500 hover:bg-red-600 text-white" : "bg-white text-emerald-700 hover:bg-emerald-50 dark:bg-gray-200 dark:text-emerald-800 dark:hover:bg-gray-300"}`}
+          onClick={handleAction}
         >
-          {checkedIn ? <><LogOut className="w-4 h-4 mr-2" />Check Out</> : <><LogIn className="w-4 h-4 mr-2" />Check In</>}
+          {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : 
+           isCheckedIn ? <><LogOut className="w-4 h-4 mr-2" />Check Out</> : <><LogIn className="w-4 h-4 mr-2" />Check In</>}
         </Button>
         <p className="text-[10px] text-emerald-200 text-center mt-2 flex items-center justify-center gap-1">
-          <Wifi className="w-3 h-3" />Office network detected
+          <Wifi className="w-3 h-3" />System network detected
         </p>
       </CardContent>
     </Card>
   );
 }
 
-function EmployeeRow({ emp }: { emp: Employee }) {
-  const s = statusConfig[emp.status];
+function EmployeeRow({ emp }: { emp: AttendanceEmployee }) {
+  const s = statusConfig[emp.status] || statusConfig["absent"];
   return (
     <div className="flex items-center gap-3 py-2.5 border-b dark:border-b-gray-800 last:border-0 hover:bg-muted/30 dark:hover:bg-gray-800/50 px-2 rounded-lg transition-colors">
       <Avatar className="w-8 h-8 flex-shrink-0">
@@ -158,7 +138,7 @@ function EmployeeRow({ emp }: { emp: Employee }) {
         <p className="text-xs text-muted-foreground">{emp.department} · {emp.role}</p>
       </div>
       <div className="text-center hidden sm:block">
-        {emp.checkIn ? (
+        {emp.checkIn && emp.checkIn !== "-" ? (
           <p className="text-xs font-semibold flex items-center gap-1 dark:text-gray-300"><LogIn className="w-3 h-3 text-emerald-500" />{emp.checkIn}</p>
         ) : (
           <p className="text-xs text-muted-foreground">—</p>
@@ -185,30 +165,39 @@ export default function AttendanceManagement() {
   const [activeTab, setActiveTab] = useState("today");
   const [search, setSearch] = useState("");
   const [filterDept, setFilterDept] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<AttendanceDashboard | null>(null);
 
-  const present = employees.filter(e => e.status === "present").length;
-  const absent = employees.filter(e => e.status === "absent").length;
-  const late = employees.filter(e => e.status === "late").length;
-  const onLeave = employees.filter(e => e.status === "on-leave").length;
+  const fetchDashboard = async () => {
+    try {
+      const res = await attendanceService.getDashboard({ search, department: filterDept });
+      setData(res);
+    } catch (e: any) {
+      console.error(e.response?.data?.message || "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filtered = employees.filter(e => {
-    const matchSearch = e.name.toLowerCase().includes(search.toLowerCase()) || e.department.toLowerCase().includes(search.toLowerCase());
-    const matchDept = filterDept === "all" || e.department.toLowerCase() === filterDept;
-    return matchSearch && matchDept;
-  });
+  useEffect(() => {
+    fetchDashboard();
+  }, [search, filterDept]);
 
-  const attendanceRate = Math.round((present / employees.length) * 100);
+  if (loading && !data) {
+    return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-emerald-500" /></div>;
+  }
 
-  const barData = [
-    { day: "M", present: 42, late: 3, absent: 3 },
-    { day: "T", present: 44, late: 2, absent: 2 },
-    { day: "W", present: 40, late: 5, absent: 3 },
-    { day: "T", present: 45, late: 2, absent: 1 },
-    { day: "F", present: 43, late: 3, absent: 2 },
-    { day: "S", present: 5, late: 0, absent: 43 },
-    { day: "S", present: present, late: late, absent: absent + onLeave },
-  ];
-  const maxBar = 48;
+  const { summary, clock, employees, myWeek, weeklyBars, departmentAttendance, monthlySummary } = data || {
+    summary: { present: 0, absent: 0, late: 0, onLeave: 0, attendanceRate: 0 },
+    clock: undefined,
+    employees: [],
+    myWeek: [],
+    weeklyBars: [],
+    departmentAttendance: [],
+    monthlySummary: { daysPresent: 0, workingDays: 0, daysLate: 0, latePercentage: 0, totalHours: 0, avgHoursPerDay: 0, overtimeHours: 0, overtimeDays: 0 }
+  };
+
+  const maxBar = 48; // Max for scaling bars
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
@@ -232,10 +221,10 @@ export default function AttendanceManagement() {
         <div className="flex-1 overflow-auto p-6 space-y-5">
           {/* Stats row */}
           <div className="grid grid-cols-4 gap-4">
-            <StatCard title="Present Today" value={present} subtitle={`${attendanceRate}% attendance rate`} icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />} accent="bg-emerald-50 dark:bg-gray-800" />
-            <StatCard title="Late Arrivals" value={late} subtitle="After 9:15 AM" icon={<AlertCircle className="w-4 h-4 text-amber-500" />} accent="bg-amber-50 dark:bg-gray-800" />
-            <StatCard title="Absent" value={absent} subtitle="Not checked in" icon={<XCircle className="w-4 h-4 text-red-500" />} accent="bg-red-50 dark:bg-gray-800" />
-            <StatCard title="On Leave" value={onLeave} subtitle="Approved leave" icon={<Calendar className="w-4 h-4 text-violet-500" />} accent="bg-violet-50 dark:bg-gray-800" />
+            <StatCard title="Present Today" value={summary.present} subtitle={`${summary.attendanceRate}% attendance rate`} icon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />} accent="bg-emerald-50 dark:bg-gray-800" />
+            <StatCard title="Late Arrivals" value={summary.late} subtitle="After 9:15 AM" icon={<AlertCircle className="w-4 h-4 text-amber-500" />} accent="bg-amber-50 dark:bg-gray-800" />
+            <StatCard title="Absent" value={summary.absent} subtitle="Not checked in" icon={<XCircle className="w-4 h-4 text-red-500" />} accent="bg-red-50 dark:bg-gray-800" />
+            <StatCard title="On Leave" value={summary.onLeave} subtitle="Approved leave" icon={<Calendar className="w-4 h-4 text-violet-500" />} accent="bg-violet-50 dark:bg-gray-800" />
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -253,7 +242,7 @@ export default function AttendanceManagement() {
                   <Card className="border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
                     <CardHeader className="pb-3 pt-4 px-5">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-semibold dark:text-gray-200">All Employees — March 25</CardTitle>
+                        <CardTitle className="text-sm font-semibold dark:text-gray-200">Daily Log — {clock?.dateLabel}</CardTitle>
                         <div className="flex gap-2">
                           <div className="relative">
                             <Search className="w-3.5 h-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -281,20 +270,21 @@ export default function AttendanceManagement() {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="px-5 pb-4">
+                    <CardContent className="px-5 pb-4 max-h-[500px] overflow-y-auto">
                       <div className="flex text-xs text-muted-foreground px-2 mb-1 gap-3">
                         <span className="flex-1">Employee</span>
                         <span className="hidden sm:block">Check In</span>
                         <span className="hidden md:block w-16 text-center">Hours</span>
                         <span className="w-24 text-center">Status</span>
                       </div>
-                      {filtered.map(e => <EmployeeRow key={e.id} emp={e} />)}
+                      {employees.map(e => <EmployeeRow key={e.id} emp={e} />)}
+                      {employees.length === 0 && <p className="text-center text-xs text-muted-foreground mt-4">No records found.</p>}
                     </CardContent>
                   </Card>
                 </div>
 
                 <div className="space-y-4">
-                  <CheckInClock />
+                  <CheckInClock clock={clock} onRefresh={fetchDashboard} />
 
                   <Card className="border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
                     <CardHeader className="pb-2 pt-4 px-4">
@@ -308,25 +298,25 @@ export default function AttendanceManagement() {
                             <circle
                               cx="50" cy="50" r="40" fill="none"
                               stroke="#10b981" strokeWidth="12"
-                              strokeDasharray={`${attendanceRate * 2.51} 251`}
+                              strokeDasharray={`${summary.attendanceRate * 2.51} 251`}
                               strokeLinecap="round"
                             />
                           </svg>
                           <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">{attendanceRate}%</p>
+                            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">{summary.attendanceRate}%</p>
                             <p className="text-[10px] text-muted-foreground">Present</p>
                           </div>
                         </div>
                       </div>
                       <div className="space-y-2 mt-2">
-                        {(["present", "late", "absent", "on-leave"] as AttendanceStatus[]).map(s => {
-                          const count = employees.filter(e => e.status === s).length;
+                        {(["present", "late", "absent", "on-leave"] as const).map(s => {
+                          const count = summary[s === 'on-leave' ? 'onLeave' : s as keyof typeof summary];
                           const cfg = statusConfig[s];
                           return (
                             <div key={s} className="flex items-center gap-2">
                               <div className={`w-2.5 h-2.5 rounded-full ${cfg.dot}`} />
                               <span className="text-xs text-muted-foreground flex-1">{cfg.label}</span>
-                              <span className="text-xs font-semibold dark:text-gray-300">{count}</span>
+                              <span className="text-xs font-semibold dark:text-gray-300">{count as number}</span>
                             </div>
                           );
                         })}
@@ -343,10 +333,10 @@ export default function AttendanceManagement() {
                 <Card className="col-span-2 border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
                   <CardHeader className="pb-3 pt-4 px-5">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold dark:text-gray-200">My Weekly Log — Alex Miller</CardTitle>
+                      <CardTitle className="text-sm font-semibold dark:text-gray-200">My Weekly Log</CardTitle>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Button variant="ghost" size="sm" className="h-6 w-6 p-0 dark:text-gray-400 dark:hover:bg-gray-800"><ChevronLeft className="w-3.5 h-3.5" /></Button>
-                        <span>Mar 19 – 25</span>
+                        <span>This Week</span>
                         <Button variant="ghost" size="sm" className="h-6 w-6 p-0 dark:text-gray-400 dark:hover:bg-gray-800"><ChevronRight className="w-3.5 h-3.5" /></Button>
                       </div>
                     </div>
@@ -354,7 +344,7 @@ export default function AttendanceManagement() {
                   <CardContent className="px-5 pb-4">
                     <div className="space-y-2">
                       {myWeek.map(day => {
-                        const s = statusConfig[day.status];
+                        const s = statusConfig[day.status] || statusConfig["absent"];
                         const isToday = day.day === "Today";
                         return (
                           <div key={day.date} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${isToday ? "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/50 dark:border-emerald-800" : "border-transparent hover:bg-muted/30 dark:hover:bg-gray-800/50"}`}>
@@ -387,16 +377,16 @@ export default function AttendanceManagement() {
                 </Card>
 
                 <div className="space-y-4">
-                  <Card className="border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
+                   <Card className="border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
                     <CardHeader className="pb-2 pt-4 px-4">
                       <CardTitle className="text-sm font-semibold dark:text-gray-200">This Month Summary</CardTitle>
                     </CardHeader>
                     <CardContent className="px-4 pb-4 space-y-3">
                       {[
-                        { label: "Days Present", value: "19", total: "21 working days", color: "text-emerald-600 dark:text-emerald-400" },
-                        { label: "Days Late", value: "2", total: "9.5% of days", color: "text-amber-600 dark:text-amber-400" },
-                        { label: "Total Hours", value: "171h", total: "Avg 9.0h / day", color: "text-blue-600 dark:text-blue-400" },
-                        { label: "Overtime", value: "12h", total: "Across 4 days", color: "text-violet-600 dark:text-violet-400" },
+                        { label: "Days Present", value: `${monthlySummary.daysPresent}`, total: `${monthlySummary.workingDays} working days`, color: "text-emerald-600 dark:text-emerald-400" },
+                        { label: "Days Late", value: `${monthlySummary.daysLate}`, total: `${monthlySummary.latePercentage}% of days`, color: "text-amber-600 dark:text-amber-400" },
+                        { label: "Total Hours", value: `${monthlySummary.totalHours}h`, total: `Avg ${monthlySummary.avgHoursPerDay}h / day`, color: "text-blue-600 dark:text-blue-400" },
+                        { label: "Overtime", value: `${monthlySummary.overtimeHours}h`, total: `Across ${monthlySummary.overtimeDays} days`, color: "text-violet-600 dark:text-violet-400" },
                       ].map(item => (
                         <div key={item.label} className="flex items-center justify-between py-2 border-b dark:border-b-gray-800 last:border-0">
                           <div>
@@ -408,20 +398,6 @@ export default function AttendanceManagement() {
                       ))}
                     </CardContent>
                   </Card>
-
-                  <Card className="border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
-                    <CardHeader className="pb-2 pt-4 px-4">
-                      <CardTitle className="text-sm font-semibold dark:text-gray-200">Avg Arrival Time</CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-4">
-                      <p className="text-3xl font-bold text-center py-3 dark:text-gray-100">09:04</p>
-                      <p className="text-xs text-center text-muted-foreground">Average check-in this month</p>
-                      <div className="mt-3 p-2.5 bg-emerald-50 dark:bg-emerald-900/50 rounded-lg text-center">
-                        <p className="text-xs text-emerald-700 dark:text-emerald-300 font-semibold">4 min before cutoff</p>
-                        <p className="text-[10px] text-emerald-600 dark:text-emerald-400">Office opens at 9:00 AM</p>
-                      </div>
-                    </CardContent>
-                  </Card>
                 </div>
               </div>
             </TabsContent>
@@ -430,20 +406,15 @@ export default function AttendanceManagement() {
             <TabsContent value="weekly" className="mt-4">
               <div className="grid grid-cols-3 gap-4">
                 <Card className="col-span-2 border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
-                  <CardHeader className="pb-3 pt-4 px-5">
+                   <CardHeader className="pb-3 pt-4 px-5">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold dark:text-gray-200">Weekly Overview — Mar 19–25</CardTitle>
-                      <div className="flex items-center gap-3 text-xs dark:text-gray-400">
-                        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />Present</span>
-                        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-amber-400 inline-block" />Late</span>
-                        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-red-400 inline-block" />Absent</span>
-                      </div>
+                      <CardTitle className="text-sm font-semibold dark:text-gray-200">Weekly Overview</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent className="px-5 pb-4">
-                    {/* Bar chart */}
-                    <div className="flex items-end gap-3 h-40 mt-2">
-                      {barData.map((d, i) => (
+                     {/* Bar chart */}
+                     <div className="flex items-end gap-3 h-40 mt-2">
+                      {weeklyBars.map((d, i) => (
                         <div key={i} className="flex-1 flex flex-col items-center gap-1">
                           <div className="w-full flex flex-col-reverse gap-0.5" style={{ height: "120px" }}>
                             <div className="w-full bg-emerald-500 rounded-t-sm" style={{ height: `${(d.present / maxBar) * 120}px` }} />
@@ -451,18 +422,6 @@ export default function AttendanceManagement() {
                             <div className="w-full bg-red-400 rounded-t-sm" style={{ height: `${(d.absent / maxBar) * 120}px` }} />
                           </div>
                           <span className={`text-xs font-semibold ${i === 6 ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}`}>{d.day}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-4 grid grid-cols-3 gap-3">
-                      {[
-                        { label: "Avg Present", value: "43.4", unit: "/48", color: "text-emerald-600 dark:text-emerald-400" },
-                        { label: "Avg Late", value: "2.1", unit: "/day", color: "text-amber-600 dark:text-amber-400" },
-                        { label: "Peak Absence", value: "Sat", unit: "off-day", color: "text-red-500 dark:text-red-400" },
-                      ].map(stat => (
-                        <div key={stat.label} className="text-center p-3 bg-muted/40 dark:bg-gray-800/50 rounded-xl">
-                          <p className="text-xs text-muted-foreground">{stat.label}</p>
-                          <p className={`text-xl font-bold ${stat.color}`}>{stat.value}<span className="text-xs text-muted-foreground ml-1">{stat.unit}</span></p>
                         </div>
                       ))}
                     </div>
@@ -474,17 +433,10 @@ export default function AttendanceManagement() {
                     <CardTitle className="text-sm font-semibold dark:text-gray-200">Department Attendance</CardTitle>
                   </CardHeader>
                   <CardContent className="px-4 pb-4 space-y-3">
-                    {[
-                      { dept: "Engineering", rate: 92, count: "11/12" },
-                      { dept: "Design", rate: 88, count: "7/8" },
-                      { dept: "Marketing", rate: 75, count: "6/8" },
-                      { dept: "Sales", rate: 83, count: "5/6" },
-                      { dept: "HR", rate: 90, count: "9/10" },
-                      { dept: "Finance", rate: 100, count: "4/4" },
-                    ].map(d => (
-                      <div key={d.dept}>
+                    {departmentAttendance.map(d => (
+                      <div key={d.department}>
                         <div className="flex justify-between text-xs mb-1">
-                          <span className="font-semibold dark:text-gray-300">{d.dept}</span>
+                          <span className="font-semibold dark:text-gray-300">{d.department}</span>
                           <span className="text-muted-foreground">{d.count} · <span className="font-semibold text-foreground dark:text-gray-300">{d.rate}%</span></span>
                         </div>
                         <Progress value={d.rate} className="h-1.5" />
@@ -495,15 +447,15 @@ export default function AttendanceManagement() {
               </div>
             </TabsContent>
 
-            {/* OVERTIME TAB */}
-            <TabsContent value="overtime" className="mt-4">
+             {/* OVERTIME TAB */}
+             <TabsContent value="overtime" className="mt-4">
               <div className="grid grid-cols-3 gap-4">
-                <Card className="col-span-2 border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
+                 <Card className="col-span-2 border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
                   <CardHeader className="pb-3 pt-4 px-5">
-                    <CardTitle className="text-sm font-semibold dark:text-gray-200">Overtime Log — March 2026</CardTitle>
+                    <CardTitle className="text-sm font-semibold dark:text-gray-200">Overtime Log</CardTitle>
                   </CardHeader>
                   <CardContent className="px-5 pb-4">
-                    <div className="flex text-xs text-muted-foreground px-2 mb-2 gap-3">
+                     <div className="flex text-xs text-muted-foreground px-2 mb-2 gap-3">
                       <span className="flex-1">Employee</span>
                       <span className="w-24 text-center">OT This Week</span>
                       <span className="w-24 text-center">OT This Month</span>
@@ -514,8 +466,8 @@ export default function AttendanceManagement() {
                       const weekOT = e.overtime;
                       return (
                         <div key={e.id} className="flex items-center gap-3 py-2.5 border-b dark:border-b-gray-800 last:border-0 px-2">
-                          <Avatar className="w-8 h-8 flex-shrink-0">
-                            <AvatarFallback className="text-xs bg-muted dark:bg-gray-700 dark:text-gray-300">{e.avatar}</AvatarFallback>
+                           <Avatar className="w-8 h-8 flex-shrink-0">
+                            <AvatarFallback className="text-xs bg-muted dark:bg-gray-700 dark:text-gray-300">{e.avatar || 'U'}</AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold truncate dark:text-gray-200">{e.name}</p>
@@ -528,52 +480,17 @@ export default function AttendanceManagement() {
                             <p className="text-sm font-bold dark:text-gray-300">{monthOT}h</p>
                           </div>
                           <div className="w-20 text-right">
-                            <Badge variant="outline" className={`text-xs ${monthOT > 10 ? "border-amber-300 text-amber-700 bg-amber-50 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800" : "border-emerald-300 text-emerald-700 bg-emerald-50 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800"}`}>
+                             <Badge variant="outline" className={`text-xs ${monthOT > 10 ? "border-amber-300 text-amber-700 bg-amber-50 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-800" : "border-emerald-300 text-emerald-700 bg-emerald-50 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-800"}`}>
                               {monthOT > 10 ? "High" : "Normal"}
                             </Badge>
                           </div>
                         </div>
                       );
-                    })}
+                     })}
                   </CardContent>
-                </Card>
-
-                <div className="space-y-4">
-                  <Card className="border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
-                    <CardHeader className="pb-2 pt-4 px-4">
-                      <CardTitle className="text-sm font-semibold dark:text-gray-200">Overtime Policy</CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-4 space-y-3">
-                      {[
-                        { label: "Daily limit", value: "2 hours", icon: "⏱" },
-                        { label: "Weekly limit", value: "10 hours", icon: "📅" },
-                        { label: "Monthly limit", value: "20 hours", icon: "📊" },
-                        { label: "Rate multiplier", value: "1.5×", icon: "💰" },
-                      ].map(p => (
-                        <div key={p.label} className="flex items-center justify-between py-2 border-b dark:border-b-gray-800 last:border-0">
-                          <span className="text-xs text-muted-foreground">{p.icon} {p.label}</span>
-                          <span className="text-sm font-bold dark:text-gray-300">{p.value}</span>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                  <Card className="border-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
-                    <CardHeader className="pb-2 pt-4 px-4">
-                      <CardTitle className="text-sm font-semibold dark:text-gray-200">This Month Total</CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-4 space-y-2">
-                      <div className="text-center py-2">
-                        <p className="text-3xl font-bold text-amber-600 dark:text-amber-500">87h</p>
-                        <p className="text-xs text-muted-foreground mt-1">Team overtime hours</p>
-                      </div>
-                      <div className="p-2.5 bg-amber-50 dark:bg-amber-900/50 rounded-lg">
-                        <p className="text-xs text-amber-700 dark:text-amber-300 font-semibold text-center">3 employees nearing limit</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                 </Card>
               </div>
-            </TabsContent>
+             </TabsContent>
           </Tabs>
         </div>
       </div>
