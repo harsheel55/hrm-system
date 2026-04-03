@@ -55,7 +55,9 @@ public sealed class AttendanceService : IAttendanceService
                 CheckOut = attendance?.dtCheckOut?.ToString("HH:mm") ?? "-",
                 Status = status,
                 HoursWorked = hoursWorked,
-                Overtime = hoursWorked > 8 ? hoursWorked - 8 : 0
+                Overtime = hoursWorked > 8 ? hoursWorked - 8 : 0,
+                CheckInIso = attendance?.dtCheckIn,
+                CheckOutIso = attendance?.dtCheckOut
             };
         }).ToList();
 
@@ -101,7 +103,7 @@ public sealed class AttendanceService : IAttendanceService
             Clock = GetTodayClock(email),
             Employees = filteredEmployees,
             MyWeek = BuildMyWeek(currentUser?.strUserGUID),
-            WeeklyBars = BuildWeeklyBars(summary),
+            WeeklyBars = BuildWeeklyBars(),
             DepartmentAttendance = deptAttendance,
             MonthlySummary = BuildMonthlySummary(currentUser?.strUserGUID)
         };
@@ -205,7 +207,9 @@ public sealed class AttendanceService : IAttendanceService
             CheckIn = checkIn?.ToString("HH:mm") ?? "-",
             CheckOut = checkOut?.ToString("HH:mm") ?? "-",
             Elapsed = $"{Math.Max(0, (int)elapsed.TotalHours)}h {Math.Max(0, elapsed.Minutes)}m",
-            Status = status
+            Status = status,
+            CheckInIso = checkIn,
+            CheckOutIso = checkOut
         };
     }
 
@@ -260,18 +264,34 @@ public sealed class AttendanceService : IAttendanceService
         return items;
     }
 
-    private static List<AttendanceWeeklyBarDto> BuildWeeklyBars(AttendanceSummaryDto summary)
+    private List<AttendanceWeeklyBarDto> BuildWeeklyBars()
     {
-        return new List<AttendanceWeeklyBarDto>
+        var today = DateTime.UtcNow.Date;
+        var start = today.AddDays(-6); // Last 7 days including today
+        var dateOnlyStart = DateOnly.FromDateTime(start);
+        var dateOnlyEnd = DateOnly.FromDateTime(today);
+
+        var records = _context.Attendances
+            .Where(a => a.dtDate >= dateOnlyStart && a.dtDate <= dateOnlyEnd)
+            .ToList();
+
+        var bars = new List<AttendanceWeeklyBarDto>();
+        for (var i = 0; i < 7; i++)
         {
-            new AttendanceWeeklyBarDto { Day = "M", Present = 42, Late = 3, Absent = 3 },
-            new AttendanceWeeklyBarDto { Day = "T", Present = 44, Late = 2, Absent = 2 },
-            new AttendanceWeeklyBarDto { Day = "W", Present = 40, Late = 5, Absent = 3 },
-            new AttendanceWeeklyBarDto { Day = "T", Present = 45, Late = 2, Absent = 1 },
-            new AttendanceWeeklyBarDto { Day = "F", Present = 43, Late = 3, Absent = 2 },
-            new AttendanceWeeklyBarDto { Day = "S", Present = 5, Late = 0, Absent = 43 },
-            new AttendanceWeeklyBarDto { Day = "S", Present = summary.Present, Late = summary.Late, Absent = summary.Absent + summary.OnLeave }
-        };
+            var current = start.AddDays(i);
+            var currentDateOnly = DateOnly.FromDateTime(current);
+            var dayRecords = records.Where(r => r.dtDate == currentDateOnly).ToList();
+
+            bars.Add(new AttendanceWeeklyBarDto
+            {
+                Day = current.ToString("ddd").Substring(0, 1).ToUpper(),
+                Present = dayRecords.Count(r => r.strStatus != null && (r.strStatus.ToLower() == "present" || r.strStatus.ToLower() == "half-day")),
+                Late = dayRecords.Count(r => r.strStatus != null && r.strStatus.ToLower() == "late"),
+                Absent = dayRecords.Count(r => r.strStatus != null && r.strStatus.ToLower() == "absent")
+            });
+        }
+
+        return bars;
     }
 
     private AttendanceMonthlySummaryDto BuildMonthlySummary(Guid? userGuid)

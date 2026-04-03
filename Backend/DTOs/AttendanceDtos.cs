@@ -14,6 +14,8 @@ public sealed class AttendanceEmployeeDto
     public string Status { get; set; } = "absent";
     public decimal HoursWorked { get; set; }
     public decimal Overtime { get; set; }
+    public DateTime? CheckInIso { get; set; }
+    public DateTime? CheckOutIso { get; set; }
 }
 
 public sealed class AttendanceWeekDayDto
@@ -59,6 +61,8 @@ public sealed class AttendanceClockDto
     public string CheckOut { get; set; } = "-";
     public string Elapsed { get; set; } = "0h 0m";
     public string Status { get; set; } = "absent";
+    public DateTime? CheckInIso { get; set; }
+    public DateTime? CheckOutIso { get; set; }
 }
 
 public sealed class AttendanceMonthlySummaryDto

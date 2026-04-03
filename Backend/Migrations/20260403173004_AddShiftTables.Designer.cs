@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260403173004_AddShiftTables")]
+    partial class AddShiftTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -525,41 +528,6 @@ namespace Backend.Migrations
                     b.HasKey("strShiftGUID");
 
                     b.ToTable("Shifts", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            strShiftGUID = new Guid("e1a1a1a1-1111-1111-1111-111111111111"),
-                            bolIsActive = true,
-                            dtCreatedOn = new DateTime(2026, 4, 3, 17, 36, 16, 714, DateTimeKind.Utc).AddTicks(6567),
-                            dtUpdatedOn = new DateTime(2026, 4, 3, 17, 36, 16, 714, DateTimeKind.Utc).AddTicks(6569),
-                            strColor = "#fbbf24",
-                            strName = "Morning Shift",
-                            tEndTime = new TimeSpan(0, 16, 0, 0, 0),
-                            tStartTime = new TimeSpan(0, 8, 0, 0, 0)
-                        },
-                        new
-                        {
-                            strShiftGUID = new Guid("e2a2a2a2-2222-2222-2222-222222222222"),
-                            bolIsActive = true,
-                            dtCreatedOn = new DateTime(2026, 4, 3, 17, 36, 16, 714, DateTimeKind.Utc).AddTicks(6589),
-                            dtUpdatedOn = new DateTime(2026, 4, 3, 17, 36, 16, 714, DateTimeKind.Utc).AddTicks(6589),
-                            strColor = "#3b82f6",
-                            strName = "Afternoon Shift",
-                            tEndTime = new TimeSpan(0, 0, 0, 0, 0),
-                            tStartTime = new TimeSpan(0, 16, 0, 0, 0)
-                        },
-                        new
-                        {
-                            strShiftGUID = new Guid("e3a3a3a3-3333-3333-3333-333333333333"),
-                            bolIsActive = true,
-                            dtCreatedOn = new DateTime(2026, 4, 3, 17, 36, 16, 714, DateTimeKind.Utc).AddTicks(6592),
-                            dtUpdatedOn = new DateTime(2026, 4, 3, 17, 36, 16, 714, DateTimeKind.Utc).AddTicks(6593),
-                            strColor = "#8b5cf6",
-                            strName = "Night Shift",
-                            tEndTime = new TimeSpan(0, 8, 0, 0, 0),
-                            tStartTime = new TimeSpan(0, 0, 0, 0, 0)
-                        });
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>

@@ -24,6 +24,7 @@ builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRightsService, UserRightsService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+builder.Services.AddScoped<IShiftService, ShiftService>();
 
 // CORS � allow the Vite dev server
 builder.Services.AddCors(options =>
