@@ -16,6 +16,8 @@ export interface AttendanceClock {
   checkOut: string;
   elapsed: string;
   status: string;
+  checkInIso?: string;
+  checkOutIso?: string;
 }
 
 export interface AttendanceEmployee {
@@ -29,6 +31,8 @@ export interface AttendanceEmployee {
   status: string;
   hoursWorked: number;
   overtime: number;
+  checkInIso?: string;
+  checkOutIso?: string;
 }
 
 export interface AttendanceWeekDay {

@@ -58,6 +58,12 @@ function StatCard({ title, value, subtitle, icon, accent }: { title: string; val
 
 function CheckInClock({ clock, onRefresh }: { clock?: AttendanceClock, onRefresh: () => void }) {
   const [loading, setLoading] = useState(false);
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleAction = async () => {
     try {
@@ -79,18 +85,31 @@ function CheckInClock({ clock, onRefresh }: { clock?: AttendanceClock, onRefresh
 
   const isCheckedIn = clock?.isCheckedIn || false;
 
+  // Calculate live elapsed time
+  const getLiveElapsed = () => {
+    if (!isCheckedIn || !clock?.checkInIso) return clock?.elapsed || "0h 0m";
+    const start = new Date(clock.checkInIso);
+    const diff = Math.max(0, now.getTime() - start.getTime());
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+  };
+
+  const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+
   return (
     <Card className="border-0 shadow-sm bg-gradient-to-br from-emerald-600 to-teal-700 text-white dark:from-emerald-700 dark:to-teal-800">
       <CardContent className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-emerald-100 text-sm">Today — {clock?.dateLabel || "Loading..."}</p>
-            <p className="text-2xl font-bold mt-0.5">{clock?.currentTime || "--:--"}</p>
+            <p className="text-emerald-100 text-sm">Today — {dateStr}</p>
+            <p className="text-2xl font-bold mt-0.5">{timeStr}</p>
           </div>
           <div className="text-right">
             <p className="text-emerald-100 text-xs">Time Worked</p>
             <p className="text-xl font-bold flex items-center gap-1.5 justify-end mt-0.5">
-              <Timer className="w-4 h-4" />{clock?.elapsed || "0h 0m"}
+              <Timer className="w-4 h-4" />{getLiveElapsed()}
             </p>
           </div>
         </div>

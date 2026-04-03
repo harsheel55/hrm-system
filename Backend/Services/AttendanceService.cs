@@ -55,7 +55,9 @@ public sealed class AttendanceService : IAttendanceService
                 CheckOut = attendance?.dtCheckOut?.ToString("HH:mm") ?? "-",
                 Status = status,
                 HoursWorked = hoursWorked,
-                Overtime = hoursWorked > 8 ? hoursWorked - 8 : 0
+                Overtime = hoursWorked > 8 ? hoursWorked - 8 : 0,
+                CheckInIso = attendance?.dtCheckIn,
+                CheckOutIso = attendance?.dtCheckOut
             };
         }).ToList();
 
@@ -205,7 +207,9 @@ public sealed class AttendanceService : IAttendanceService
             CheckIn = checkIn?.ToString("HH:mm") ?? "-",
             CheckOut = checkOut?.ToString("HH:mm") ?? "-",
             Elapsed = $"{Math.Max(0, (int)elapsed.TotalHours)}h {Math.Max(0, elapsed.Minutes)}m",
-            Status = status
+            Status = status,
+            CheckInIso = checkIn,
+            CheckOutIso = checkOut
         };
     }
 
