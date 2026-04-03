@@ -16,9 +16,38 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<BlogTag> BlogTags => Set<BlogTag>();
     public DbSet<LeaveRecord> LeaveRecords => Set<LeaveRecord>();
     public DbSet<Attendance> Attendances => Set<Attendance>();
+    public DbSet<Shift> Shifts => Set<Shift>();
+    public DbSet<EmployeeShift> EmployeeShifts => Set<EmployeeShift>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Shift>().HasData(
+            new Shift
+            {
+                strShiftGUID = Guid.Parse("e1a1a1a1-1111-1111-1111-111111111111"),
+                strName = "Morning Shift",
+                tStartTime = new TimeSpan(8, 0, 0),
+                tEndTime = new TimeSpan(16, 0, 0),
+                strColor = "#fbbf24"
+            },
+            new Shift
+            {
+                strShiftGUID = Guid.Parse("e2a2a2a2-2222-2222-2222-222222222222"),
+                strName = "Afternoon Shift",
+                tStartTime = new TimeSpan(16, 0, 0),
+                tEndTime = new TimeSpan(0, 0, 0),
+                strColor = "#3b82f6"
+            },
+            new Shift
+            {
+                strShiftGUID = Guid.Parse("e3a3a3a3-3333-3333-3333-333333333333"),
+                strName = "Night Shift",
+                tStartTime = new TimeSpan(0, 0, 0),
+                tEndTime = new TimeSpan(8, 0, 0),
+                strColor = "#8b5cf6"
+            }
+        );
+
         modelBuilder.Entity<Login>(entity =>
         {
             entity.ToTable("Login");
@@ -52,6 +81,22 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.Property(e => e.strAttendanceGUID).HasDefaultValueSql("NEWID()");
             entity.Property(e => e.dtCreatedOn).HasDefaultValueSql("GETUTCDATE()");
             entity.Property(e => e.dtUpdatedOn).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        modelBuilder.Entity<Shift>(entity =>
+        {
+            entity.ToTable("Shifts");
+            entity.HasKey(e => e.strShiftGUID);
+            entity.Property(e => e.strShiftGUID).HasDefaultValueSql("NEWID()");
+            entity.Property(e => e.dtCreatedOn).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        modelBuilder.Entity<EmployeeShift>(entity =>
+        {
+            entity.ToTable("EmployeeShifts");
+            entity.HasKey(e => e.strEmployeeShiftGUID);
+            entity.Property(e => e.strEmployeeShiftGUID).HasDefaultValueSql("NEWID()");
+            entity.Property(e => e.dtCreatedOn).HasDefaultValueSql("GETUTCDATE()");
         });
 
         modelBuilder.Entity<UserRole>(entity =>
