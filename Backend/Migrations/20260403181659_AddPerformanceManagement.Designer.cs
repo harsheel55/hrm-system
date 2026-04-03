@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260403181659_AddPerformanceManagement")]
+    partial class AddPerformanceManagement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -447,153 +450,91 @@ namespace Backend.Migrations
                     b.ToTable("Menus");
                 });
 
-            modelBuilder.Entity("Backend.Models.RecruitmentCandidate", b =>
+            modelBuilder.Entity("Backend.Models.PerformanceGoal", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("strGoalGUID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    b.Property<DateTime>("AppliedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("dtCreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                    b.Property<DateTime>("dtDueDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Experience")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
+                    b.Property<DateTime>("dtUpdatedOn")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("JobId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.Property<int>("Rating")
+                    b.Property<int>("nProgress")
                         .HasColumnType("int");
 
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.Property<string>("Stage")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobId");
-
-                    b.ToTable("RecruitmentCandidates", (string)null);
-                });
-
-            modelBuilder.Entity("Backend.Models.RecruitmentJob", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ClosingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("strDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HiringManager")
+                    b.Property<Guid>("strEmployeeGUID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("strStatus")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("JobType")
+                    b.Property<string>("strTitle")
                         .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
+                    b.HasKey("strGoalGUID");
 
-                    b.Property<DateTime>("PostedDate")
-                        .HasColumnType("datetime2");
+                    b.HasIndex("strEmployeeGUID");
 
-                    b.Property<string>("Priority")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.ToTable("PerformanceGoals", (string)null);
+                });
 
-                    b.Property<string>("ResponsibilitiesCsv")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
+            modelBuilder.Entity("Backend.Models.PerformanceReview", b =>
+                {
+                    b.Property<Guid>("strReviewGUID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("Salary")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
-                    b.Property<string>("SkillsCsv")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime>("dtCreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("dtReviewDate")
+                        .HasColumnType("datetime2");
 
-                    b.ToTable("RecruitmentJobs", (string)null);
+                    b.Property<DateTime>("dtUpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("nRating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("strComments")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("strEmployeeGUID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("strPeriod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("strReviewerGUID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("strReviewGUID");
+
+                    b.HasIndex("strEmployeeGUID");
+
+                    b.HasIndex("strReviewerGUID");
+
+                    b.ToTable("PerformanceReviews", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Register", b =>
@@ -680,8 +621,8 @@ namespace Backend.Migrations
                         {
                             strShiftGUID = new Guid("e1a1a1a1-1111-1111-1111-111111111111"),
                             bolIsActive = true,
-                            dtCreatedOn = new DateTime(2026, 4, 3, 19, 7, 17, 354, DateTimeKind.Utc).AddTicks(174),
-                            dtUpdatedOn = new DateTime(2026, 4, 3, 19, 7, 17, 354, DateTimeKind.Utc).AddTicks(179),
+                            dtCreatedOn = new DateTime(2026, 4, 3, 18, 16, 59, 499, DateTimeKind.Utc).AddTicks(289),
+                            dtUpdatedOn = new DateTime(2026, 4, 3, 18, 16, 59, 499, DateTimeKind.Utc).AddTicks(292),
                             strColor = "#fbbf24",
                             strName = "Morning Shift",
                             tEndTime = new TimeSpan(0, 16, 0, 0, 0),
@@ -691,8 +632,8 @@ namespace Backend.Migrations
                         {
                             strShiftGUID = new Guid("e2a2a2a2-2222-2222-2222-222222222222"),
                             bolIsActive = true,
-                            dtCreatedOn = new DateTime(2026, 4, 3, 19, 7, 17, 354, DateTimeKind.Utc).AddTicks(195),
-                            dtUpdatedOn = new DateTime(2026, 4, 3, 19, 7, 17, 354, DateTimeKind.Utc).AddTicks(195),
+                            dtCreatedOn = new DateTime(2026, 4, 3, 18, 16, 59, 499, DateTimeKind.Utc).AddTicks(308),
+                            dtUpdatedOn = new DateTime(2026, 4, 3, 18, 16, 59, 499, DateTimeKind.Utc).AddTicks(309),
                             strColor = "#3b82f6",
                             strName = "Afternoon Shift",
                             tEndTime = new TimeSpan(0, 0, 0, 0, 0),
@@ -702,8 +643,8 @@ namespace Backend.Migrations
                         {
                             strShiftGUID = new Guid("e3a3a3a3-3333-3333-3333-333333333333"),
                             bolIsActive = true,
-                            dtCreatedOn = new DateTime(2026, 4, 3, 19, 7, 17, 354, DateTimeKind.Utc).AddTicks(198),
-                            dtUpdatedOn = new DateTime(2026, 4, 3, 19, 7, 17, 354, DateTimeKind.Utc).AddTicks(199),
+                            dtCreatedOn = new DateTime(2026, 4, 3, 18, 16, 59, 499, DateTimeKind.Utc).AddTicks(312),
+                            dtUpdatedOn = new DateTime(2026, 4, 3, 18, 16, 59, 499, DateTimeKind.Utc).AddTicks(312),
                             strColor = "#8b5cf6",
                             strName = "Night Shift",
                             tEndTime = new TimeSpan(0, 8, 0, 0, 0),
@@ -950,15 +891,34 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Backend.Models.RecruitmentCandidate", b =>
+            modelBuilder.Entity("Backend.Models.PerformanceGoal", b =>
                 {
-                    b.HasOne("Backend.Models.RecruitmentJob", "Job")
-                        .WithMany("Candidates")
-                        .HasForeignKey("JobId")
+                    b.HasOne("Backend.Models.User", "Employee")
+                        .WithMany()
+                        .HasForeignKey("strEmployeeGUID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Job");
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Backend.Models.PerformanceReview", b =>
+                {
+                    b.HasOne("Backend.Models.User", "Employee")
+                        .WithMany()
+                        .HasForeignKey("strEmployeeGUID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.User", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("strReviewerGUID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Reviewer");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -973,11 +933,6 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.BlogCategory", b =>
                 {
                     b.Navigation("Blogs");
-                });
-
-            modelBuilder.Entity("Backend.Models.RecruitmentJob", b =>
-                {
-                    b.Navigation("Candidates");
                 });
 #pragma warning restore 612, 618
         }

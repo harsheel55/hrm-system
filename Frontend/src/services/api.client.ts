@@ -21,7 +21,46 @@ class ApiClient {
   }
 
   private getToken(): string | null {
-    return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) || localStorage.getItem('hrm_token');
+    const candidates = [
+      localStorage.getItem('hrm_token'),
+      localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN),
+    ];
+
+    for (const rawToken of candidates) {
+      const normalized = this.normalizeToken(rawToken);
+      if (!normalized) continue;
+      if (this.isJwtExpired(normalized)) continue;
+      return normalized;
+    }
+
+    return null;
+  }
+
+  private normalizeToken(token: string | null): string | null {
+    if (!token) return null;
+    const trimmed = token.trim();
+    if (!trimmed || trimmed === 'null' || trimmed === 'undefined') return null;
+
+    return trimmed.startsWith('Bearer ')
+      ? trimmed.slice('Bearer '.length).trim()
+      : trimmed;
+  }
+
+  private isJwtExpired(token: string): boolean {
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+
+    try {
+      const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+      const payload = JSON.parse(atob(padded)) as { exp?: number };
+      if (!payload.exp) return false;
+
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      return payload.exp <= nowInSeconds;
+    } catch {
+      return false;
+    }
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
@@ -57,7 +96,7 @@ class ApiClient {
   async postFormData<T>(endpoint: string, formData: FormData): Promise<T> {
     const token = this.getToken();
     const headers: HeadersInit = {};
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -84,7 +123,7 @@ class ApiClient {
   async putFormData<T>(endpoint: string, formData: FormData): Promise<T> {
     const token = this.getToken();
     const headers: HeadersInit = {};
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }

@@ -9,7 +9,7 @@ import {
     Briefcase,
     LogOut,
     Bell,
-    Download ,   Search,
+    Download, Search,
     Home,
     Settings,
     Grid,
