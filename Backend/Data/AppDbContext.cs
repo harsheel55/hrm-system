@@ -20,6 +20,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<EmployeeShift> EmployeeShifts => Set<EmployeeShift>();
     public DbSet<RecruitmentJob> RecruitmentJobs => Set<RecruitmentJob>();
     public DbSet<RecruitmentCandidate> RecruitmentCandidates => Set<RecruitmentCandidate>();
+    public DbSet<PayrollEmployee> PayrollEmployees => Set<PayrollEmployee>();
+    public DbSet<PayrollRun> PayrollRuns => Set<PayrollRun>();
+    public DbSet<PayrollCompliance> PayrollCompliances => Set<PayrollCompliance>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

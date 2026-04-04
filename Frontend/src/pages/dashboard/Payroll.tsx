@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -13,8 +13,9 @@ import {
   Send, Eye, Printer, CreditCard,
   Plus, Play, Pause, Shield, Lock,
   AlertTriangle, Check, X, Wallet, Receipt,
-  Zap, Globe,
+  Zap, Globe, Loader2,
 } from "lucide-react";
+import { payrollService } from "@/services/payroll.service";
 
 /* ─── Types & Data ──────────────────────────────────────────────────────── */
 
@@ -317,15 +318,143 @@ export default function PayrollManagement() {
   const [tab, setTab]           = useState("run");
   const [search, setSearch]     = useState("");
   const [filterDept, setFilterDept] = useState("all");
-  const [currentRun]            = useState(runHistory[0]);
-  const pending                 = compliance.filter(c => c.status === "pending" || c.status === "overdue").length;
+  const [payrollEmployees, setPayrollEmployees] = useState<typeof employees>([]);
+  const [payrollRuns, setPayrollRuns] = useState<typeof runHistory>([]);
+  const [complianceItems, setComplianceItems] = useState(compliance);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingRun, setIsCreatingRun] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  
+  const pending = complianceItems.filter(c => c.status === "pending" || c.status === "overdue").length;
 
-  const totalGross    = employees.reduce((s, e) => s + e.gross, 0);
-  const totalNet      = employees.reduce((s, e) => s + e.net, 0);
-  const totalDed      = employees.reduce((s, e) => s + e.totalDeductions, 0);
+  const currentRun = payrollRuns[0] ?? runHistory[0];
+
+  const loadPayrollData = async () => {
+    setIsLoading(true);
+    try {
+      const [empRes, runsRes, compRes] = await Promise.all([
+        payrollService.getEmployees("March 2026"),
+        payrollService.getPayrollRuns(),
+        payrollService.getComplianceItems(),
+      ]);
+
+      if (empRes.statusCode === 200 && empRes.data) {
+        // Map backend employees to frontend format
+        const mappedEmp = empRes.data.map((e: any) => ({
+          id: e.id,
+          name: e.name,
+          avatar: e.avatar,
+          dept: e.dept,
+          role: e.role,
+          empType: e.empType as "full-time" | "part-time" | "contract",
+          base: e.base_,
+          hra: e.hra,
+          transport: e.transport,
+          medical: e.medical,
+          bonus: e.bonus,
+          provident: e.provident,
+          incomeTax: e.incomeTax,
+          insurance: e.insurance,
+          gross: e.gross,
+          totalDeductions: e.totalDeductions,
+          net: e.net,
+          bankLast4: e.bankLast4,
+          bankName: e.bankName,
+          taxBracket: e.taxBracket,
+          ytdGross: e.ytdGross,
+          ytdTax: e.ytdTax,
+        }));
+        setPayrollEmployees(mappedEmp);
+      }
+
+      if (runsRes.statusCode === 200 && runsRes.data) {
+        // Map backend runs to frontend format
+        const mappedRuns = runsRes.data.map((r: any) => ({
+          id: r.id,
+          period: r.period,
+          status: r.status as "draft" | "processing" | "approved" | "paid" | "failed",
+          employees: r.employees,
+          gross: r.gross,
+          deductions: r.deductions,
+          net: r.net,
+          initiatedBy: r.initiatedBy,
+          initiatedAt: r.initiatedAt,
+          paidAt: r.paidAt,
+          steps: r.steps,
+        }));
+        setPayrollRuns(mappedRuns);
+      }
+
+      if (compRes.statusCode === 200 && compRes.data) {
+        // Map backend compliance items to frontend format
+        const mappedComp = compRes.data.map((c: any) => ({
+          id: c.id,
+          title: c.title,
+          authority: c.authority,
+          dueDate: c.dueDate,
+          status: c.status as "filed" | "pending" | "overdue" | "upcoming",
+          amount: c.amount,
+          period: c.period,
+          category: c.category,
+        }));
+        setComplianceItems(mappedComp);
+      }
+
+      setErrorMessage("");
+    } catch (error) {
+      console.error("Error loading payroll data:", error);
+      setErrorMessage("Failed to load payroll data. Using cached data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRunPayroll = async () => {
+    try {
+      setIsCreatingRun(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      const sourceEmployees = payrollEmployees.length > 0 ? payrollEmployees : employees;
+      const gross = sourceEmployees.reduce((sum, e) => sum + e.gross, 0);
+      const deductions = sourceEmployees.reduce((sum, e) => sum + e.totalDeductions, 0);
+      const net = sourceEmployees.reduce((sum, e) => sum + e.net, 0);
+
+      const createResponse = await payrollService.createPayrollRun({
+        strPayPeriod: "March 2026",
+        intEmployeeCount: sourceEmployees.length,
+        decTotalGross: gross,
+        decTotalDeductions: deductions,
+        decTotalNetPay: net,
+      });
+
+      if (createResponse.statusCode >= 200 && createResponse.statusCode < 300) {
+        setSuccessMessage("Payroll run created successfully");
+        setTab("history");
+        await loadPayrollData();
+      } else {
+        setErrorMessage(createResponse.message || "Failed to create payroll run");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create payroll run";
+      setErrorMessage(message);
+    } finally {
+      setIsCreatingRun(false);
+    }
+  };
+
+  // Load payroll data on component mount
+  useEffect(() => {
+    loadPayrollData();
+  }, []);
+
+  const totalGross    = payrollEmployees.reduce((s, e) => s + e.gross, 0);
+  const totalNet      = payrollEmployees.reduce((s, e) => s + e.net, 0);
+  const totalDed      = payrollEmployees.reduce((s, e) => s + e.totalDeductions, 0);
   const maxTrend      = Math.max(...monthlyTrend.map(m => m.gross));
 
-  const filteredEmps = employees.filter(e => {
+  const filteredEmps = payrollEmployees.filter(e => {
     const ms = e.name.toLowerCase().includes(search.toLowerCase()) || e.dept.toLowerCase().includes(search.toLowerCase());
     const md = filterDept === "all" || e.dept.toLowerCase() === filterDept.toLowerCase();
     return ms && md;
@@ -351,11 +480,38 @@ export default function PayrollManagement() {
               {pending > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{pending}</span>}
             </Button>
             <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"><Download className="w-3.5 h-3.5" />Export</Button>
-            <Button size="sm" className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"><Play className="w-3.5 h-3.5" />Run Payroll</Button>
+            <Button
+              size="sm"
+              className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
+              onClick={handleRunPayroll}
+              disabled={isCreatingRun}
+            >
+              {isCreatingRun ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+              {isCreatingRun ? "Running..." : "Run Payroll"}
+            </Button>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto p-5 space-y-4">
+          {errorMessage && (
+            <div className="rounded-lg border border-red-200 bg-red-50 text-red-700 px-3 py-2 text-sm">
+              {errorMessage}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 px-3 py-2 text-sm">
+              {successMessage}
+            </div>
+          )}
+
+          {isLoading && (
+            <div className="rounded-lg border bg-white dark:bg-gray-900 px-3 py-2 text-sm flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading payroll data...
+            </div>
+          )}
+
           {/* KPI row */}
           <div className="grid grid-cols-4 gap-4">
             {[
@@ -463,9 +619,9 @@ export default function PayrollManagement() {
                         { label: "Full-time",    val: "9" },
                         { label: "Contract",     val: "1" },
                         { label: "Gross Payroll",val: fmt(currentRun.gross), bold: true },
-                        { label: "Total Tax",    val: fmt(employees.reduce((s,e)=>s+e.incomeTax,0)) },
-                        { label: "Provident",    val: fmt(employees.reduce((s,e)=>s+e.provident,0)) },
-                        { label: "Insurance",    val: fmt(employees.reduce((s,e)=>s+e.insurance,0)) },
+                        { label: "Total Tax",    val: fmt(payrollEmployees.reduce((s,e)=>s+e.incomeTax,0)) },
+                        { label: "Provident",    val: fmt(payrollEmployees.reduce((s,e)=>s+e.provident,0)) },
+                        { label: "Insurance",    val: fmt(payrollEmployees.reduce((s,e)=>s+e.insurance,0)) },
                         { label: "Net Transfer", val: fmt(currentRun.net), bold: true, color: "text-violet-600" },
                       ].map(r => (
                         <div key={r.label} className={`flex justify-between text-xs ${r.bold ? "font-bold border-t pt-2.5 mt-1" : ""}`}>
@@ -585,7 +741,7 @@ export default function PayrollManagement() {
                   </div>
                 </CardHeader>
                 <CardContent className="px-5 pb-4 space-y-3">
-                  {runHistory.map(run => {
+                  {payrollRuns.map(run => {
                     const cfg = runStatusCfg[run.status];
                     const done = run.steps.filter(s=>s.done).length;
                     return (
@@ -643,10 +799,10 @@ export default function PayrollManagement() {
                 <CardContent className="px-5 pb-4">
                   <div className="grid grid-cols-4 gap-3 mb-4">
                     {[
-                      { label: "Filed",    count: compliance.filter(c=>c.status==="filed").length,    color: "text-emerald-600 dark:text-emerald-300", bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200 dark:border-emerald-900" },
-                      { label: "Pending",  count: compliance.filter(c=>c.status==="pending").length,  color: "text-amber-600 dark:text-amber-300",   bg: "bg-amber-50 dark:bg-amber-950/40",   border: "border-amber-200 dark:border-amber-900" },
-                      { label: "Overdue",  count: compliance.filter(c=>c.status==="overdue").length,  color: "text-red-600 dark:text-red-300",     bg: "bg-red-50 dark:bg-red-950/40",     border: "border-red-200 dark:border-red-900" },
-                      { label: "Upcoming", count: compliance.filter(c=>c.status==="upcoming").length, color: "text-blue-600 dark:text-blue-300",    bg: "bg-blue-50 dark:bg-blue-950/40",    border: "border-blue-200 dark:border-blue-900" },
+                      { label: "Filed",    count: complianceItems.filter(c=>c.status==="filed").length,    color: "text-emerald-600 dark:text-emerald-300", bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200 dark:border-emerald-900" },
+                      { label: "Pending",  count: complianceItems.filter(c=>c.status==="pending").length,  color: "text-amber-600 dark:text-amber-300",   bg: "bg-amber-50 dark:bg-amber-950/40",   border: "border-amber-200 dark:border-amber-900" },
+                      { label: "Overdue",  count: complianceItems.filter(c=>c.status==="overdue").length,  color: "text-red-600 dark:text-red-300",     bg: "bg-red-50 dark:bg-red-950/40",     border: "border-red-200 dark:border-red-900" },
+                      { label: "Upcoming", count: complianceItems.filter(c=>c.status==="upcoming").length, color: "text-blue-600 dark:text-blue-300",    bg: "bg-blue-50 dark:bg-blue-950/40",    border: "border-blue-200 dark:border-blue-900" },
                     ].map(r => (
                       <div key={r.label} className={`p-3 rounded-xl border ${r.bg} ${r.border} text-center`}>
                         <p className={`text-2xl font-bold ${r.color}`}>{r.count}</p>
@@ -663,7 +819,7 @@ export default function PayrollManagement() {
                     <span className="col-span-1 text-center">Category</span>
                     <span className="col-span-2 text-center">Status</span>
                   </div>
-                  {compliance.map(c => {
+                  {complianceItems.map(c => {
                     const cfg = compStatusCfg[c.status];
                     return (
                       <div key={c.id} className="grid grid-cols-12 gap-2 items-center py-3 border-b last:border-0 hover:bg-muted/20 px-2 rounded-lg transition-colors">
@@ -781,9 +937,9 @@ export default function PayrollManagement() {
                     </div>
                     <div className="space-y-2 flex-1">
                       {[
-                        { label: "Base Salary",    pct: 62, color: "bg-violet-500",  val: fmt(employees.reduce((s,e)=>s+e.base,0)) },
-                        { label: "Allowances",     pct: 22, color: "bg-emerald-500", val: fmt(employees.reduce((s,e)=>s+e.hra+e.transport+e.medical,0)) },
-                        { label: "Bonuses",        pct: 9,  color: "bg-amber-500",   val: fmt(employees.reduce((s,e)=>s+e.bonus,0)) },
+                        { label: "Base Salary",    pct: 62, color: "bg-violet-500",  val: fmt(payrollEmployees.reduce((s,e)=>s+e.base,0)) },
+                        { label: "Allowances",     pct: 22, color: "bg-emerald-500", val: fmt(payrollEmployees.reduce((s,e)=>s+e.hra+e.transport+e.medical,0)) },
+                        { label: "Bonuses",        pct: 9,  color: "bg-amber-500",   val: fmt(payrollEmployees.reduce((s,e)=>s+e.bonus,0)) },
                         { label: "Other",          pct: 7,  color: "bg-rose-500",    val: "" },
                       ].map(r => (
                         <div key={r.label} className="flex items-center gap-2">
@@ -802,7 +958,7 @@ export default function PayrollManagement() {
                     <CardTitle className="text-sm font-semibold">YTD Earnings — Top 6</CardTitle>
                   </CardHeader>
                   <CardContent className="px-5 pb-4 space-y-2">
-                    {[...employees].sort((a,b)=>b.ytdGross-a.ytdGross).slice(0,6).map((e,i) => (
+                    {[...payrollEmployees].sort((a,b)=>b.ytdGross-a.ytdGross).slice(0,6).map((e,i) => (
                       <div key={e.id} className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-muted/30 transition-colors">
                         <span className="w-5 text-xs font-bold text-muted-foreground text-center">{i+1}</span>
                         <Avatar className="w-7 h-7 flex-shrink-0">
@@ -811,7 +967,7 @@ export default function PayrollManagement() {
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-semibold truncate">{e.name}</p>
                           <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-1 mt-1">
-                            <div className="h-1 rounded-full bg-violet-500" style={{ width: `${(e.ytdGross / employees[0].ytdGross) * 100}%` }} />
+                            <div className="h-1 rounded-full bg-violet-500" style={{ width: `${payrollEmployees[0] ? (e.ytdGross / payrollEmployees[0].ytdGross) * 100 : 0}%` }} />
                           </div>
                         </div>
                         <div className="text-right">
