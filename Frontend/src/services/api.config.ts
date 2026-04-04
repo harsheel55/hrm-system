@@ -78,4 +78,13 @@ export const ENDPOINTS = {
     CANDIDATES: '/recruitment/candidates',
     CANDIDATE_STAGE: (id: string) => `/recruitment/candidates/${id}/stage`,
   },
+  // Payroll
+  PAYROLL: {
+    EMPLOYEES: '/payroll/employees',
+    RUNS: '/payroll/runs',
+    RUN_BY_ID: (id: string) => `/payroll/runs/${id}`,
+    COMPLIANCE: '/payroll/compliance',
+    COMPLIANCE_STATUS: (id: string) => `/payroll/compliance/${id}/status`,
+    ANALYTICS: '/payroll/analytics',
+  },
 };
