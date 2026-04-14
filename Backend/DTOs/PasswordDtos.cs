@@ -20,6 +20,21 @@ namespace Backend.DTOs
     }
 
     /// <summary>
+    /// DTO for OTP verification before allowing password reset
+    /// Example: { "strEmail": "user@example.com", "strOTP": "123456" }
+    /// </summary>
+    public class VerifyOtpDto
+    {
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string strEmail { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "OTP is required")]
+        [StringLength(6, MinimumLength = 6, ErrorMessage = "OTP must be 6 digits")]
+        public string strOTP { get; set; } = string.Empty;
+    }
+
+    /// <summary>
     /// DTO for Reset Password request (using OTP from Forgot Password)
     /// User provides email, OTP, and new password
     /// Example: { "strEmail": "user@example.com", "strOTP": "123456", "strNewPassword": "NewPass123!" }
