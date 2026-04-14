@@ -11,9 +11,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<UserRight> UserRights => Set<UserRight>();
     public DbSet<Menu> Menus => Set<Menu>();
-    public DbSet<Blog> Blogs => Set<Blog>();
-    public DbSet<BlogCategory> BlogCategories => Set<BlogCategory>();
-    public DbSet<BlogTag> BlogTags => Set<BlogTag>();
     public DbSet<LeaveRecord> LeaveRecords => Set<LeaveRecord>();
     public DbSet<Attendance> Attendances => Set<Attendance>();
     public DbSet<Shift> Shifts => Set<Shift>();
