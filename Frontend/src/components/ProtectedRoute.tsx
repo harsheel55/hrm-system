@@ -5,7 +5,6 @@ function ProtectedRoute() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
-  const isAdminPath = location.pathname.startsWith('/admin');
   const isEmployeePath = location.pathname.startsWith('/employee');
   const isHRPath = location.pathname.startsWith('/dashboard');
 
@@ -21,19 +20,15 @@ function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
-  const isSuperAdmin = user?.role === 'Admin' || user?.roleName === 'Super Admin';
+  const isHRUser = user?.role === 'HR';
   const isHR = user?.roleName === 'HR';
   const isEmployee = user?.roleName === 'Employee';
 
-  if (isAdminPath && !isSuperAdmin) {
+  if (isHRPath && !isHRUser && !isHR) {
     return <Navigate to="/login" replace />;
   }
 
-  if (isHRPath && !isSuperAdmin && !isHR) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (isEmployeePath && !isSuperAdmin && !isEmployee) {
+  if (isEmployeePath && !isEmployee) {
     return <Navigate to="/login" replace />;
   }
 

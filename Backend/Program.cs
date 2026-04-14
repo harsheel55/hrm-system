@@ -123,8 +123,8 @@ using (var scope = app.Services.CreateScope())
         logger.LogWarning("SQL Server unavailable. Using in-memory database for authentication APIs.");
     }
 
-    const string defaultAdminEmail = "admin@hrm.local";
-    const string defaultAdminPassword = "Admin@123";
+    const string defaultHrEmail = "hr@hrm.local";
+    const string defaultHrPassword = "Hr@123";
     try
     {
         // Seed default roles
@@ -136,9 +136,9 @@ using (var scope = app.Services.CreateScope())
                 {
                     new UserRole
                     {
-                        strUserRoleGUID = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-                        strRoleName = "Super Admin",
-                        strDesc = "System Administrator with full access",
+                        strUserRoleGUID = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                        strRoleName = "HR",
+                        strDesc = "Human Resources with management access",
                         bolIsActive = true,
                         bolSystemCreated = true,
                         dtCreatedOn = DateTime.UtcNow,
@@ -146,29 +146,9 @@ using (var scope = app.Services.CreateScope())
                     },
                     new UserRole
                     {
-                        strUserRoleGUID = Guid.Parse("00000000-0000-0000-0000-000000000002"),
-                        strRoleName = "Administrator",
-                        strDesc = "Administrator with management permissions",
-                        bolIsActive = true,
-                        bolSystemCreated = true,
-                        dtCreatedOn = DateTime.UtcNow,
-                        dtUpdatedOn = DateTime.UtcNow
-                    },
-                    new UserRole
-                    {
-                        strUserRoleGUID = Guid.Parse("00000000-0000-0000-0000-000000000003"),
-                        strRoleName = "Manager",
-                        strDesc = "Manager with department control and reporting rights",
-                        bolIsActive = true,
-                        bolSystemCreated = true,
-                        dtCreatedOn = DateTime.UtcNow,
-                        dtUpdatedOn = DateTime.UtcNow
-                    },
-                    new UserRole
-                    {
-                        strUserRoleGUID = Guid.Parse("00000000-0000-0000-0000-000000000004"),
+                        strUserRoleGUID = Guid.Parse("33333333-3333-3333-3333-333333333333"),
                         strRoleName = "Employee",
-                        strDesc = "Standard employee with basic access",
+                        strDesc = "Standard employee access",
                         bolIsActive = true,
                         bolSystemCreated = true,
                         dtCreatedOn = DateTime.UtcNow,
@@ -193,27 +173,27 @@ using (var scope = app.Services.CreateScope())
             }
         }
 
-        // Seed admin in Login table used by AuthController login endpoints.
+        // Seed HR login in Login table used by AuthController login endpoints.
         if (!useInMemoryDatabase)
         {
             try
             {
-                var adminExists = db.Logins.Any(l => l.Email == defaultAdminEmail);
-                if (!adminExists)
+                var hrExists = db.Logins.Any(l => l.Email == defaultHrEmail);
+                if (!hrExists)
                 {
                     db.Logins.Add(new Login
                     {
-                        Email = defaultAdminEmail,
-                        Password = BCrypt.Net.BCrypt.HashPassword(defaultAdminPassword)
+                        Email = defaultHrEmail,
+                        Password = BCrypt.Net.BCrypt.HashPassword(defaultHrPassword)
                     });
 
                     db.SaveChanges();
-                    logger.LogInformation("Seeded default admin login account: {AdminEmail}", defaultAdminEmail);
+                    logger.LogInformation("Seeded default HR login account: {HrEmail}", defaultHrEmail);
                 }
             }
             catch (Exception schemaEx)
             {
-                logger.LogWarning(schemaEx, "Could not seed admin login account in Login table.");
+                logger.LogWarning(schemaEx, "Could not seed HR login account in Login table.");
                 // Continue running - schema mismatch is not critical at startup
             }
         }

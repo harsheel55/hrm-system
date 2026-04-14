@@ -61,7 +61,16 @@ export default function UserManagementPage() {
       ]);
       setUsers(usersResponse.data);
       setFilteredUsers(usersResponse.data);
-      setRoles(rolesResponse.data);
+      const roleMap = new Map<string, UserRoleResponseDto>();
+      rolesResponse.data
+        .filter((role) => role.strRoleName === 'HR' || role.strRoleName === 'Employee')
+        .forEach((role) => {
+          const key = role.strRoleName.trim().toLowerCase();
+          if (!roleMap.has(key)) {
+            roleMap.set(key, role);
+          }
+        });
+      setRoles(Array.from(roleMap.values()));
       console.log('Loaded users:', usersResponse.data);
       console.log('Loaded roles:', rolesResponse.data);
     } catch (error: any) {
@@ -131,12 +140,12 @@ export default function UserManagementPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">User Management</h1>
-          <p className="text-muted-foreground mt-1">Manage system users and their roles</p>
+          <h1 className="text-3xl font-bold text-foreground">Employee Management</h1>
+          <p className="text-muted-foreground mt-1">Manage employees and their roles</p>
         </div>
         <Button onClick={handleAddUser} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="mr-2 h-4 w-4" />
-          Add User
+          Add Employee
         </Button>
       </div>
 
@@ -144,13 +153,13 @@ export default function UserManagementPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            All Users
+            All Employees
           </CardTitle>
-          <CardDescription>Total: {users.length} users</CardDescription>
+          <CardDescription>Total: {users.length} employees</CardDescription>
           <div className="relative mt-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name, email, or role..."
+              placeholder="Search by employee name, email, or role..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -175,7 +184,7 @@ export default function UserManagementPage() {
                 {filteredUsers.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                      No users found
+                      No employees found
                     </TableCell>
                   </TableRow>
                 ) : (
