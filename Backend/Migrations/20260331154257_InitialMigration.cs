@@ -48,48 +48,6 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "mstBlogCategory",
-                columns: table => new
-                {
-                    strCategoryGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
-                    strCategoryName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    strCategorySlug = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    strCategoryDescription = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    strCategoryImage = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    strMetaTitle = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    strMetaDescription = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    strMetaKeywords = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    intDisplayOrder = table.Column<int>(type: "int", nullable: false),
-                    bolIsActive = table.Column<bool>(type: "bit", nullable: false),
-                    strCreatedByGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
-                    dtCreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    strUpdatedByGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
-                    dtUpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_mstBlogCategory", x => x.strCategoryGUID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "mstBlogTag",
-                columns: table => new
-                {
-                    strTagGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
-                    strTagName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    strTagSlug = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    bolIsActive = table.Column<bool>(type: "bit", nullable: false),
-                    strCreatedByGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
-                    dtCreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    strUpdatedByGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
-                    dtUpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_mstBlogTag", x => x.strTagGUID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Registers",
                 columns: table => new
                 {
@@ -179,45 +137,6 @@ namespace Backend.Migrations
                     table.PrimaryKey("PK_Users", x => x.strUserGUID);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "mstBlog",
-                columns: table => new
-                {
-                    strBlogGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
-                    strCategoryGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
-                    strBlogSlug = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    strBlogTitle = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    strShortDescription = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    strFullContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    strFeaturedImage = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    strMetaTitle = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    strMetaDescription = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    strMetaKeywords = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    dtPublishDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    bolIsPublished = table.Column<bool>(type: "bit", nullable: false),
-                    bolIsFeatured = table.Column<bool>(type: "bit", nullable: false),
-                    bolIsActive = table.Column<bool>(type: "bit", nullable: false),
-                    strCreatedByGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
-                    dtCreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    strUpdatedByGUID = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
-                    dtUpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CategorystrCategoryGUID = table.Column<string>(type: "nvarchar(36)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_mstBlog", x => x.strBlogGUID);
-                    table.ForeignKey(
-                        name: "FK_mstBlog_mstBlogCategory_CategorystrCategoryGUID",
-                        column: x => x.CategorystrCategoryGUID,
-                        principalTable: "mstBlogCategory",
-                        principalColumn: "strCategoryGUID");
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_mstBlog_CategorystrCategoryGUID",
-                table: "mstBlog",
-                column: "CategorystrCategoryGUID");
-
             migrationBuilder.CreateIndex(
                 name: "IX_Registers_Email",
                 table: "Registers",
@@ -235,12 +154,6 @@ namespace Backend.Migrations
                 name: "Menus");
 
             migrationBuilder.DropTable(
-                name: "mstBlog");
-
-            migrationBuilder.DropTable(
-                name: "mstBlogTag");
-
-            migrationBuilder.DropTable(
                 name: "Registers");
 
             migrationBuilder.DropTable(
@@ -251,9 +164,6 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "mstBlogCategory");
         }
     }
 }
