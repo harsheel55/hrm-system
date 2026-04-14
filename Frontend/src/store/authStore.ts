@@ -5,7 +5,7 @@ const LEGACY_REFRESH_TOKEN_KEY = "refreshToken";
 
 export interface AuthUser {
   email: string;
-  role: "Admin" | "User";
+  role: "HR" | "Employee";
   name?: string;
   roleName?: string;
 }

@@ -36,9 +36,9 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
-  const adminEmail =
+  const hrEmail =
     ((import.meta.env.VITE_ADMIN_EMAIL as string | undefined)?.trim().toLowerCase()) ||
-    "admin@hrm.local";
+    "hr@hrm.local";
 
   const {
     register,
@@ -53,15 +53,10 @@ export default function LoginPage() {
     setServerError(null);
     try {
       const normalizedEmail = data.email.trim().toLowerCase();
-      const mode = normalizedEmail === adminEmail ? "admin" : "user";
+      const mode = normalizedEmail === hrEmail ? "admin" : "user";
       const authUser = await login({ email: data.email, password: data.password }, mode);
 
-      if (authUser.roleName === "Super Admin" || authUser.role === "Admin") {
-        navigate("/admin/dashboard");
-        return;
-      }
-
-      if (authUser.roleName === "HR") {
+      if (authUser.roleName === "HR" || authUser.role === "HR") {
         navigate("/dashboard");
         return;
       }

@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const authUser: AuthUser = {
       email: response.email,
-      role: response.role === 'Admin' ? 'Admin' : 'User',
+      role: response.role === 'HR' ? 'HR' : 'Employee',
       name: response.email.split('@')[0],
       roleName: response.roleName,
     };

@@ -47,7 +47,7 @@ public sealed class AuthController(
             return Unauthorized(new { message = "Invalid email or password." });
         }
 
-        var roleName = user.UserRole?.strRoleName ?? "User";
+        var roleName = user.UserRole?.strRoleName ?? "Employee";
         var token = GenerateToken(configuration, user.strEmail, roleName);
 
         return Ok(new
@@ -153,8 +153,8 @@ public sealed class AuthController(
                 return Unauthorized(new { message = "Invalid email or password." });
             }
 
-            var token = GenerateToken(configuration, registeredUser.Email, "User");
-            return Ok(new LoginResponse { Email = registeredUser.Email, Token = token, Role = "User" });
+            var token = GenerateToken(configuration, registeredUser.Email, "Employee");
+            return Ok(new LoginResponse { Email = registeredUser.Email, Token = token, Role = "Employee" });
         }
 
         return Unauthorized(new { message = "Invalid email or password." });
@@ -181,8 +181,8 @@ public sealed class AuthController(
             return Unauthorized(new { message = "Invalid admin email or password." });
         }
 
-        var token = GenerateToken(configuration, adminUser.Email, "Admin");
-        return Ok(new LoginResponse { Email = adminUser.Email, Token = token, Role = "Admin" });
+        var token = GenerateToken(configuration, adminUser.Email, "HR");
+        return Ok(new LoginResponse { Email = adminUser.Email, Token = token, Role = "HR" });
     }
 
     // POST api/auth/forgot-password

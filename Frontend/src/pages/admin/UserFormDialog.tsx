@@ -55,6 +55,16 @@ export default function UserFormDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const roleMap = new Map<string, UserRoleResponseDto>();
+  roles
+    .filter((role) => role.strRoleName === 'HR' || role.strRoleName === 'Employee')
+    .forEach((role) => {
+      const key = role.strRoleName.trim().toLowerCase();
+      if (!roleMap.has(key)) {
+        roleMap.set(key, role);
+      }
+    });
+  const allowedRoles = Array.from(roleMap.values());
 
   const {
     register,
@@ -247,18 +257,17 @@ export default function UserFormDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="strRoleGUID">Role</Label>
-              {roles && roles.length > 0 ? (
+              {allowedRoles.length > 0 ? (
                 <Select
-                  value={selectedRole || 'none'}
-                  onValueChange={(value) => setValue('strRoleGUID', value === 'none' ? '' : value)}
+                  value={selectedRole || ''}
+                  onValueChange={(value) => setValue('strRoleGUID', value)}
                   disabled={isSubmitting}
                 >
                   <SelectTrigger id="strRoleGUID">
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">No Role</SelectItem>
-                    {roles.map((role) => (
+                    {allowedRoles.map((role) => (
                       <SelectItem key={role.strUserRoleGUID} value={role.strUserRoleGUID}>
                         {role.strRoleName}
                       </SelectItem>
