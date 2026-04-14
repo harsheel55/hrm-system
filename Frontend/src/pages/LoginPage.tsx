@@ -139,9 +139,9 @@ export default function LoginPage() {
                   />
                   <span className="text-muted-foreground">Remember me</span>
                 </label>
-                <a href="#" className="text-foreground hover:underline">
+                <Link to="/forgot-password" className="text-foreground hover:underline">
                   Forgot password?
-                </a>
+                </Link>
               </div>
 
               <Button
