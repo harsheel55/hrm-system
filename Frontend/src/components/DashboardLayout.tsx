@@ -50,10 +50,11 @@ const DashboardLayout = () => {
         logout();
         navigate('/login');
     };
-
+    
     // Main Navigation (Sidebar Icons)
     const dashboardApps = [
         { name: 'Home', href: '/dashboard', icon: Home },
+        { name: 'Employee Management', href: '/dashboard/employees', icon: Users },
         { name: 'Attendance', href: '/dashboard/attendance', icon: Clock },
         { name: 'Leave', href: '/dashboard/leave', icon: Calendar },
         { name: 'Performance', href: '/dashboard/analytics', icon: PieChart },

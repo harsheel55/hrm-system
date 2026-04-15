@@ -28,6 +28,35 @@ export interface LoginResponse {
   roleName?: string;
 }
 
+export interface ForgotPasswordPayload {
+  strEmail: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+  expiresAtUtc?: string;
+}
+
+export interface ResetPasswordPayload {
+  strEmail: string;
+  strOTP: string;
+  strNewPassword: string;
+  strConfirmPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
+export interface VerifyOtpPayload {
+  strEmail: string;
+  strOTP: string;
+}
+
+export interface VerifyOtpResponse {
+  message: string;
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
   const text = await res.text();
   const data = text ? JSON.parse(text) : {};
@@ -87,4 +116,22 @@ export async function userLoginApi(
   payload: LoginPayload
 ): Promise<LoginResponse> {
   return postJson<LoginResponse>(`${BASE_URL}/user/login`, payload);
+}
+
+export async function forgotPasswordApi(
+  payload: ForgotPasswordPayload
+): Promise<ForgotPasswordResponse> {
+  return postJson<ForgotPasswordResponse>(`${BASE_URL}/forgot-password`, payload);
+}
+
+export async function resetPasswordApi(
+  payload: ResetPasswordPayload
+): Promise<ResetPasswordResponse> {
+  return postJson<ResetPasswordResponse>(`${BASE_URL}/reset-password`, payload);
+}
+
+export async function verifyOtpApi(
+  payload: VerifyOtpPayload
+): Promise<VerifyOtpResponse> {
+  return postJson<VerifyOtpResponse>(`${BASE_URL}/verify-otp`, payload);
 }

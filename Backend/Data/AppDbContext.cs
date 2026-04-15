@@ -11,9 +11,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<UserRight> UserRights => Set<UserRight>();
     public DbSet<Menu> Menus => Set<Menu>();
-    public DbSet<Blog> Blogs => Set<Blog>();
-    public DbSet<BlogCategory> BlogCategories => Set<BlogCategory>();
-    public DbSet<BlogTag> BlogTags => Set<BlogTag>();
     public DbSet<LeaveRecord> LeaveRecords => Set<LeaveRecord>();
     public DbSet<Attendance> Attendances => Set<Attendance>();
     public DbSet<Shift> Shifts => Set<Shift>();
@@ -144,16 +141,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<UserRole>(entity =>
         {
             entity.HasData(
-                new UserRole
-                {
-                    strUserRoleGUID = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                    strRoleName = "Super Admin",
-                    strDesc = "System Administrator with full access",
-                    bolIsActive = true,
-                    bolSystemCreated = true,
-                    dtCreatedOn = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                    dtUpdatedOn = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                },
                 new UserRole
                 {
                     strUserRoleGUID = Guid.Parse("22222222-2222-2222-2222-222222222222"),

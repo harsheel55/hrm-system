@@ -12,6 +12,23 @@ namespace Backend.DTOs
         public int statusCode { get; set; }
         public string message { get; set; } = string.Empty;
         public T? data { get; set; }
+
+        public ApiResponse()
+        {
+        }
+
+        public ApiResponse(int statusCode, string message)
+        {
+            this.statusCode = statusCode;
+            this.message = message;
+        }
+
+        public ApiResponse(int statusCode, string message, T? data)
+        {
+            this.statusCode = statusCode;
+            this.message = message;
+            this.data = data;
+        }
     }
 }
 
