@@ -3,6 +3,27 @@ const USER_KEY = "hrm_user";
 const LEGACY_ACCESS_TOKEN_KEY = "accessToken";
 const LEGACY_REFRESH_TOKEN_KEY = "refreshToken";
 
+function isJwtExpired(token: string): boolean {
+  const parts = token.split(".");
+  if (parts.length !== 3) {
+    return false;
+  }
+
+  try {
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
+    const payload = JSON.parse(atob(padded)) as { exp?: number };
+    if (!payload.exp) {
+      return false;
+    }
+
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    return payload.exp <= nowInSeconds;
+  } catch {
+    return false;
+  }
+}
+
 export interface AuthUser {
   email: string;
   role: "HR" | "Employee";
@@ -28,7 +49,17 @@ export const authStore = {
   },
 
   getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
+      return null;
+    }
+
+    if (isJwtExpired(token)) {
+      this.clearSession();
+      return null;
+    }
+
+    return token;
   },
 
   getUser(): AuthUser | null {
@@ -37,6 +68,6 @@ export const authStore = {
   },
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem(TOKEN_KEY);
+    return !!this.getToken();
   },
 };

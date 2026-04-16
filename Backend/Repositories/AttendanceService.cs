@@ -11,6 +11,17 @@ public sealed class AttendanceService : IAttendanceService
 {
     private readonly AppDbContext _context;
 
+    private static DateTime? AsUtc(DateTime? value)
+    {
+        return value.HasValue ? DateTime.SpecifyKind(value.Value, DateTimeKind.Utc) : null;
+    }
+
+    private static string FormatLocalTime(DateTime? value)
+    {
+        var utc = AsUtc(value);
+        return utc?.ToLocalTime().ToString("h:mm tt") ?? "-";
+    }
+
     public AttendanceService(AppDbContext context)
     {
         _context = context;
@@ -30,7 +41,7 @@ public sealed class AttendanceService : IAttendanceService
         {
             var attendance = allAttendancesToday.FirstOrDefault(a => a.strUserGUID == u.strUserGUID);
             var department = u.UserRole?.strRoleName ?? "General";
-            var checkInStr = attendance?.dtCheckIn?.ToString("HH:mm") ?? "-";
+            var checkInStr = FormatLocalTime(attendance?.dtCheckIn);
             var status = attendance?.strStatus?.ToLower() ?? "absent";
             if (checkInStr == "-") status = "absent";
             
@@ -51,13 +62,13 @@ public sealed class AttendanceService : IAttendanceService
                 Avatar = string.IsNullOrWhiteSpace(u.strUserName) ? "U" : u.strUserName.Substring(0, 1).ToUpper(),
                 Department = department,
                 Role = u.UserRole?.strRoleName ?? "Employee",
-                CheckIn = attendance?.dtCheckIn?.ToString("HH:mm") ?? "-",
-                CheckOut = attendance?.dtCheckOut?.ToString("HH:mm") ?? "-",
+                CheckIn = FormatLocalTime(attendance?.dtCheckIn),
+                CheckOut = FormatLocalTime(attendance?.dtCheckOut),
                 Status = status,
                 HoursWorked = hoursWorked,
                 Overtime = hoursWorked > 8 ? hoursWorked - 8 : 0,
-                CheckInIso = attendance?.dtCheckIn,
-                CheckOutIso = attendance?.dtCheckOut
+                CheckInIso = AsUtc(attendance?.dtCheckIn),
+                CheckOutIso = AsUtc(attendance?.dtCheckOut)
             };
         }).ToList();
 
@@ -184,15 +195,16 @@ public sealed class AttendanceService : IAttendanceService
 
     private AttendanceClockDto BuildClock(Attendance? attendance)
     {
-        var checkIn = attendance?.dtCheckIn;
-        var checkOut = attendance?.dtCheckOut;
+        var checkIn = AsUtc(attendance?.dtCheckIn);
+        var checkOut = AsUtc(attendance?.dtCheckOut);
         var isCheckedIn = checkIn != null && checkOut == null;
 
-        var now = DateTime.UtcNow;
+        var nowUtc = DateTime.UtcNow;
+        var nowLocal = nowUtc.ToLocalTime();
         TimeSpan elapsed = TimeSpan.Zero;
         if (checkIn != null)
         {
-            elapsed = checkOut != null ? checkOut.Value - checkIn.Value : now - checkIn.Value;
+            elapsed = checkOut != null ? checkOut.Value - checkIn.Value : nowUtc - checkIn.Value;
         }
 
         var status = attendance?.strStatus?.ToLower() ?? "absent";
@@ -202,10 +214,10 @@ public sealed class AttendanceService : IAttendanceService
         return new AttendanceClockDto
         {
             IsCheckedIn = isCheckedIn,
-            DateLabel = now.ToString("ddd, MMM d"),
-            CurrentTime = now.ToString("h:mm tt"),
-            CheckIn = checkIn?.ToString("HH:mm") ?? "-",
-            CheckOut = checkOut?.ToString("HH:mm") ?? "-",
+            DateLabel = nowLocal.ToString("ddd, MMM d"),
+            CurrentTime = nowLocal.ToString("h:mm tt"),
+            CheckIn = checkIn?.ToLocalTime().ToString("h:mm tt") ?? "-",
+            CheckOut = checkOut?.ToLocalTime().ToString("h:mm tt") ?? "-",
             Elapsed = $"{Math.Max(0, (int)elapsed.TotalHours)}h {Math.Max(0, elapsed.Minutes)}m",
             Status = status,
             CheckInIso = checkIn,
@@ -255,8 +267,8 @@ public sealed class AttendanceService : IAttendanceService
                 Date = current.ToString("MMM dd"),
                 Day = isToday ? "Today" : current.ToString("ddd"),
                 Status = status,
-                CheckIn = record?.dtCheckIn?.ToString("HH:mm") ?? "-",
-                CheckOut = record?.dtCheckOut?.ToString("HH:mm") ?? "-",
+                CheckIn = FormatLocalTime(record?.dtCheckIn),
+                CheckOut = FormatLocalTime(record?.dtCheckOut),
                 Hours = hours
             });
         }

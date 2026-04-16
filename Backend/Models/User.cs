@@ -99,6 +99,21 @@ namespace Backend.Models
         /// Default: "en" (English)
         /// </summary>
         public string strPreferredLanguage { get; set; } = "en";
+
+        /// <summary>
+        /// Employee bank name for payroll transfers
+        /// </summary>
+        public string strBankName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Employee bank account number (full value stored)
+        /// </summary>
+        public string strBankAccountNo { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Employee tax bracket used in payroll reporting
+        /// </summary>
+        public string strTaxBracket { get; set; } = string.Empty;
         
         /// <summary>
         /// Relative path to user's profile image

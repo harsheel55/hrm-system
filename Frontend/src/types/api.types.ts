@@ -46,6 +46,9 @@ export interface UserResponseDto {
   strRoleName?: string;
   strProfileImageUrl?: string;
   strPreferredLanguage: string;
+  strBankName?: string;
+  strBankAccountNo?: string;
+  strTaxBracket?: string;
   bolIsActive: boolean;
   dtCreatedDate: string;
   dtModifiedDate: string;
@@ -59,6 +62,9 @@ export interface CreateUserDto {
   dDob?: string;
   strRoleGUID?: string;
   strPreferredLanguage?: string;
+  strBankName?: string;
+  strBankAccountNo?: string;
+  strTaxBracket?: string;
   strProfileImage?: File;
 }
 
@@ -69,6 +75,9 @@ export interface UpdateUserDto {
   dDob?: string;
   strRoleGUID?: string;
   strPreferredLanguage?: string;
+  strBankName?: string;
+  strBankAccountNo?: string;
+  strTaxBracket?: string;
   bolIsActive: boolean;
   strProfileImage?: File;
 }

@@ -64,6 +64,21 @@ namespace Backend.DTOs
         /// Default: "en" (English)
         /// </summary>
         public string strPreferredLanguage { get; set; } = "en";
+
+        /// <summary>
+        /// Employee bank name for payroll transfers (optional)
+        /// </summary>
+        public string strBankName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Employee bank account number (optional)
+        /// </summary>
+        public string strBankAccountNo { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Employee tax bracket label (optional)
+        /// </summary>
+        public string strTaxBracket { get; set; } = string.Empty;
         
         /// <summary>
         /// Profile image file upload (optional)
