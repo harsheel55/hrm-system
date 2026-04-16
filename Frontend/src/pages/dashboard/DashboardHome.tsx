@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Users,
     Calendar,
@@ -20,6 +20,7 @@ import {
     Save,
     Search,
     Bell,
+    LogIn,
     LogOut,
     UserCheck,
     MoreHorizontal,
@@ -29,16 +30,24 @@ import {
     ThumbsUp,
     DollarSign,
     Target,
-    PieChart
+    PieChart,
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useAuth } from '@/contexts/AuthContext';
+import { dashboardService, type DashboardHomeSummary } from '@/services/dashboard.service';
+import { attendanceService, type AttendanceClock } from '@/services/attendanceService';
 
 const DashboardHome = () => {
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('Activities');
     const [showProfileModal, setShowProfileModal] = useState(false);
+    const [homeSummary, setHomeSummary] = useState<DashboardHomeSummary | null>(null);
+    const [attendanceClock, setAttendanceClock] = useState<AttendanceClock | null>(null);
+    const [attendanceActionLoading, setAttendanceActionLoading] = useState(false);
     const [profileData, setProfileData] = useState({
         fullName: 'Jane Cooper',
         email: 'jane.cooper@company.com',
@@ -61,6 +70,60 @@ const DashboardHome = () => {
     });
 
     const tabs = ['Activities', 'Feeds', 'Career History', 'Profile', 'Approvals', 'Attendance', 'Leave', 'Feedback', 'Cases', 'Related Data'];
+
+    useEffect(() => {
+        const fetchHomeSummary = async () => {
+            try {
+                const response = await dashboardService.getHomeSummary();
+                if (response.statusCode === 200 && response.data) {
+                    setHomeSummary(response.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch dashboard home summary', error);
+            }
+        };
+
+        fetchHomeSummary();
+    }, []);
+
+    useEffect(() => {
+        const fetchTodayClock = async () => {
+            try {
+                const response = await attendanceService.getTodayClock();
+                setAttendanceClock(response);
+            } catch (error) {
+                console.error('Failed to fetch attendance clock for home card', error);
+            }
+        };
+
+        fetchTodayClock();
+    }, []);
+
+    const handleAttendanceAction = async () => {
+        try {
+            setAttendanceActionLoading(true);
+            const response = attendanceClock?.isCheckedIn
+                ? await attendanceService.checkOut()
+                : await attendanceService.checkIn();
+
+            setAttendanceClock(response);
+        } catch (error) {
+            console.error('Failed to update attendance from home card', error);
+        } finally {
+            setAttendanceActionLoading(false);
+        }
+    };
+
+    const displayName = homeSummary?.userName || user?.name || 'Employee';
+    const displayRole = homeSummary?.roleName || user?.roleName || 'Employee';
+    const isCheckedIn = attendanceClock?.isCheckedIn ?? false;
+    const attendanceBadgeLabel = isCheckedIn ? 'Checked In' : 'Checked Out';
+    const workedLabel = attendanceClock?.elapsed ?? '0h 0m';
+    const breakLabel = attendanceClock?.checkOut && attendanceClock?.checkOut !== '-' ? '00:00' : '--:--';
+    const attendanceRate = homeSummary && homeSummary.activeEmployees > 0
+        ? Math.round((homeSummary.presentToday / homeSummary.activeEmployees) * 100)
+        : 0;
+    const fmtCurrency = (value: number) => `$${value.toLocaleString()}`;
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -124,30 +187,40 @@ const DashboardHome = () => {
                                     <div className="absolute bottom-1 right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-white dark:border-slate-800"></div>
                                 </div>
 
-                                <h2 className="text-xl font-bold text-foreground tracking-tight">Jane Cooper</h2>
+                                <h2 className="text-xl font-bold text-foreground tracking-tight">{displayName}</h2>
                                 <p className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-1">
-                                    <MapPin size={14} className="text-muted-foreground" /> Regional Manager
+                                    <MapPin size={14} className="text-muted-foreground" /> {displayRole}
                                 </p>
 
-                                <Badge className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 mb-6 h-fit">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse mr-2 inline-block"></span>
-                                    Remote In
+                                <Badge className={`${isCheckedIn ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'} mb-6 h-fit`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full mr-2 inline-block ${isCheckedIn ? 'bg-green-600 animate-pulse' : 'bg-slate-500'}`}></span>
+                                    {attendanceBadgeLabel}
                                 </Badge>
 
                                 <div className="grid grid-cols-2 w-full gap-4 mb-6 pt-6 border-t border-border">
                                     <div className="text-left">
                                         <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Hrs Worked</p>
-                                        <p className="text-lg font-mono font-bold text-foreground">06:46:13</p>
+                                        <p className="text-lg font-mono font-bold text-foreground">{workedLabel}</p>
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Break Time</p>
-                                        <p className="text-lg font-mono font-bold text-foreground">00:45:00</p>
+                                        <p className="text-lg font-mono font-bold text-foreground">{breakLabel}</p>
                                     </div>
                                 </div>
 
-                                <Button className="w-full bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 rounded-2xl shadow-lg">
-                                    <LogOut size={18} className="mr-2" />
-                                    Check-out
+                                <Button
+                                    className={`w-full rounded-2xl shadow-lg ${isCheckedIn ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600'}`}
+                                    onClick={handleAttendanceAction}
+                                    disabled={attendanceActionLoading}
+                                >
+                                    {attendanceActionLoading ? (
+                                        <Loader2 size={18} className="mr-2 animate-spin" />
+                                    ) : isCheckedIn ? (
+                                        <LogOut size={18} className="mr-2" />
+                                    ) : (
+                                        <LogIn size={18} className="mr-2" />
+                                    )}
+                                    {isCheckedIn ? 'Check-out' : 'Check-in'}
                                 </Button>
                             </div>
                         </Card>
@@ -177,7 +250,7 @@ const DashboardHome = () => {
                                         <h4 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.1em] flex items-center gap-2">
                                             <Users size={14} /> Reportees
                                         </h4>
-                                        <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-bold">04</span>
+                                        <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-bold">{homeSummary?.activeEmployees ?? 0}</span>
                                     </div>
                                     <div className="space-y-3">
                                         {[
@@ -241,7 +314,7 @@ const DashboardHome = () => {
                                             <span className="text-white font-extrabold text-xs tracking-wide">YLKER</span>
                                         </div>
                                         <div>
-                                            <h4 className="text-lg font-extrabold text-foreground">Good Evening&nbsp;&nbsp;Christine Spalding</h4>
+                                            <h4 className="text-lg font-extrabold text-foreground">Good Evening&nbsp;&nbsp;{displayName}</h4>
                                             <p className="text-sm text-muted-foreground">Have a productive day!</p>
                                         </div>
                                     </div>
@@ -503,7 +576,7 @@ const DashboardHome = () => {
                                 </div>
                                 <span className="text-sm font-semibold text-foreground">Recent Check-ins</span>
                             </div>
-                            <p className="text-xs text-muted-foreground">5 consecutive days</p>
+                            <p className="text-xs text-muted-foreground">{homeSummary?.presentToday ?? 0} present today</p>
                             <Button
                                 variant="link"
                                 className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium h-fit p-0"
@@ -519,7 +592,7 @@ const DashboardHome = () => {
                                 </div>
                                 <span className="text-sm font-semibold text-foreground">Leave Status</span>
                             </div>
-                            <p className="text-xs text-muted-foreground">1 request pending</p>
+                            <p className="text-xs text-muted-foreground">{homeSummary?.myPendingLeave ?? 0} request pending</p>
                             <Button
                                 variant="link"
                                 className="text-xs text-blue-600 hover:text-blue-700 mt-2 font-medium h-fit p-0"
@@ -597,9 +670,9 @@ const DashboardHome = () => {
     function ProfileContent() {
         const profileStats = [
             { label: 'Years at Company', value: '9', icon: Award, color: 'amber', relatedTab: 'Career History' },
-            { label: 'Pending Approvals', value: '3', icon: FileText, color: 'red', relatedTab: 'Approvals' },
-            { label: 'Team Size', value: '15', icon: Users, color: 'blue', relatedTab: 'Activities' },
-            { label: 'Attendance Rate', value: '92%', icon: CheckCircle, color: 'green', relatedTab: 'Attendance' },
+            { label: 'Pending Approvals', value: String(homeSummary?.pendingApprovals ?? 0), icon: FileText, color: 'red', relatedTab: 'Approvals' },
+            { label: 'Team Size', value: String(homeSummary?.activeEmployees ?? 0), icon: Users, color: 'blue', relatedTab: 'Activities' },
+            { label: 'Attendance Rate', value: `${attendanceRate}%`, icon: CheckCircle, color: 'green', relatedTab: 'Attendance' },
         ];
 
 
@@ -1684,21 +1757,21 @@ const DashboardHome = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-slate-900 dark:text-white">Payroll Summary</h4>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">May 2024</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">{homeSummary?.latestPayrollPeriod || 'No payroll period'}</p>
                                 </div>
                             </div>
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center">
                                     <span className="text-sm text-slate-600 dark:text-slate-400">Gross Salary</span>
-                                    <span className="text-sm font-bold text-slate-900 dark:text-white">$8,500</span>
+                                    <span className="text-sm font-bold text-slate-900 dark:text-white">{fmtCurrency(homeSummary?.latestPayrollGross ?? 0)}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-sm text-slate-600 dark:text-slate-400">Deductions</span>
-                                    <span className="text-sm font-bold text-red-600">-$1,200</span>
+                                    <span className="text-sm font-bold text-red-600">-{fmtCurrency(homeSummary?.latestPayrollDeductions ?? 0)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pt-2 border-t border-slate-200 dark:border-slate-700">
                                     <span className="text-sm font-bold text-slate-900 dark:text-white">Net Pay</span>
-                                    <span className="text-lg font-bold text-green-600">$7,300</span>
+                                    <span className="text-lg font-bold text-green-600">{fmtCurrency(homeSummary?.latestPayrollNet ?? 0)}</span>
                                 </div>
                             </div>
                         </div>

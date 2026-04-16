@@ -12,6 +12,9 @@ namespace Backend.DTOs
         public bool? bolIsActive { get; set; }
         public Guid? strRoleGUID { get; set; }
         public string? strPreferredLanguage { get; set; }
+        public string? strBankName { get; set; }
+        public string? strBankAccountNo { get; set; }
+        public string? strTaxBracket { get; set; }
         public IFormFile? strProfileImage { get; set; }  // Optional profile image file for update
     }
 }

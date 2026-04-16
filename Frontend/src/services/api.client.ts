@@ -68,6 +68,16 @@ class ApiClient {
       const errorData = await response.json().catch(() => ({
         message: 'An error occurred',
       }));
+
+      if (response.status === 401) {
+        localStorage.removeItem('hrm_token');
+        localStorage.removeItem('hrm_user');
+        localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+        throw new Error('Unauthorized: your session has expired. Please login again.');
+      }
+
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
 

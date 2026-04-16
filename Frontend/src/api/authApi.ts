@@ -23,9 +23,11 @@ export interface LoginPayload {
 
 export interface LoginResponse {
   email: string;
+  name?: string;
   token: string;
   role: string;
   roleName?: string;
+  userId?: string;
 }
 
 export interface ForgotPasswordPayload {

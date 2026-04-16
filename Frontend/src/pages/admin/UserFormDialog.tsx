@@ -32,6 +32,9 @@ const userSchema = z.object({
   dDob: z.string().optional(),
   strRoleGUID: z.string().optional(),
   strPreferredLanguage: z.string().optional(),
+  strBankName: z.string().optional(),
+  strBankAccountNo: z.string().optional(),
+  strTaxBracket: z.string().optional(),
   bolIsActive: z.boolean().optional(),
 });
 
@@ -97,6 +100,9 @@ export default function UserFormDialog({
         dDob: user.dDob?.split('T')[0] || '',
         strRoleGUID: user.strRoleGUID || '',
         strPreferredLanguage: user.strPreferredLanguage || 'en',
+        strBankName: user.strBankName || '',
+        strBankAccountNo: user.strBankAccountNo || '',
+        strTaxBracket: user.strTaxBracket || '',
         bolIsActive: user.bolIsActive,
       });
     } else {
@@ -108,6 +114,9 @@ export default function UserFormDialog({
         dDob: '',
         strRoleGUID: '',
         strPreferredLanguage: 'en',
+        strBankName: '',
+        strBankAccountNo: '',
+        strTaxBracket: '',
         bolIsActive: true,
       });
     }
@@ -129,6 +138,9 @@ export default function UserFormDialog({
           dDob: data.dDob,
           strRoleGUID: data.strRoleGUID,
           strPreferredLanguage: data.strPreferredLanguage,
+          strBankName: data.strBankName,
+          strBankAccountNo: data.strBankAccountNo,
+          strTaxBracket: data.strTaxBracket,
           bolIsActive: data.bolIsActive ?? true,
           strProfileImage: profileImage || undefined,
         });
@@ -148,6 +160,9 @@ export default function UserFormDialog({
           dDob: data.dDob,
           strRoleGUID: data.strRoleGUID,
           strPreferredLanguage: data.strPreferredLanguage,
+          strBankName: data.strBankName,
+          strBankAccountNo: data.strBankAccountNo,
+          strTaxBracket: data.strTaxBracket,
           strProfileImage: profileImage || undefined,
         });
       }
@@ -213,6 +228,38 @@ export default function UserFormDialog({
               {errors.strEmail && (
                 <p className="text-sm text-red-500">{errors.strEmail.message}</p>
               )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="strBankName">Bank Name</Label>
+              <Input
+                id="strBankName"
+                {...register('strBankName')}
+                placeholder="Citibank"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="strBankAccountNo">Account Number</Label>
+              <Input
+                id="strBankAccountNo"
+                {...register('strBankAccountNo')}
+                placeholder="001234567890"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="strTaxBracket">Tax Bracket</Label>
+              <Input
+                id="strTaxBracket"
+                {...register('strTaxBracket')}
+                placeholder="22%"
+                disabled={isSubmitting}
+              />
             </div>
           </div>
 

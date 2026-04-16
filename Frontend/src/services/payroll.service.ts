@@ -77,6 +77,23 @@ export interface UpdatePayrollRunStatusPayload {
   steps?: PayrollStep[];
 }
 
+export interface UpsertEmployeeSalaryPayload {
+  strUserGUID: string;
+  strPayPeriod: string;
+  strEmploymentType: EmploymentType;
+  decBaseSalary: number;
+  decHRA: number;
+  decTransportAllowance: number;
+  decMedicalAllowance: number;
+  decPerformanceBonus: number;
+  decProvidentFund: number;
+  decIncomeTax: number;
+  decHealthInsurance: number;
+  strBankLast4: string;
+  strBankName: string;
+  strTaxBracket: string;
+}
+
 export interface CreateCompliancePayload {
   strTitle: string;
   strAuthority: string;
@@ -97,14 +114,44 @@ export interface PayrollAnalytics {
   departmentCosts: Array<{ department: string; cost: number; percentage: number; staffCount: number }>;
 }
 
+export interface PayrollExportFile {
+  fileName: string;
+  contentType: string;
+  base64Content: string;
+}
+
+export interface PayrollPayslipDispatchResult {
+  payPeriod: string;
+  totalEmployees: number;
+  employeesWithEmail: number;
+  sentCount: number;
+  failedCount: number;
+  skippedCount: number;
+  runUpdated: boolean;
+  requesterNotified: boolean;
+  sentRecipients: PayrollEmailDispatchItem[];
+  failedRecipients: PayrollEmailDispatchItem[];
+  skippedRecipients: PayrollEmailDispatchItem[];
+}
+
+export interface PayrollEmailDispatchItem {
+  name: string;
+  email: string;
+  reason: string;
+}
+
 // API Endpoints
 const PAYROLL_ENDPOINTS = {
   EMPLOYEES: '/payroll/employees',
   RUNS: '/payroll/runs',
   RUN_BY_ID: (id: string) => `/payroll/runs/${id}`,
+  EMPLOYEE_SALARY: '/payroll/employees/salary',
   COMPLIANCE: '/payroll/compliance',
   COMPLIANCE_STATUS: (id: string) => `/payroll/compliance/${id}/status`,
   ANALYTICS: '/payroll/analytics',
+  BANK_TRANSFER: (id: string) => `/payroll/runs/${id}/bank-transfer`,
+  SEND_ALL_PAYSLIPS: '/payroll/payslips/send-all',
+  EXPORT: '/payroll/export',
 };
 
 // Payroll Service
@@ -150,6 +197,13 @@ export const payrollService = {
   },
 
   /**
+   * Assign or update employee salary for a pay period
+   */
+  async upsertEmployeeSalary(payload: UpsertEmployeeSalaryPayload): Promise<ApiResponse<PayrollEmployee>> {
+    return apiClient.post<ApiResponse<PayrollEmployee>>(PAYROLL_ENDPOINTS.EMPLOYEE_SALARY, payload);
+  },
+
+  /**
    * Get all compliance items
    */
   async getComplianceItems(): Promise<ApiResponse<PayrollCompliance[]>> {
@@ -180,5 +234,35 @@ export const payrollService = {
    */
   async getAnalytics(): Promise<ApiResponse<PayrollAnalytics>> {
     return apiClient.get<ApiResponse<PayrollAnalytics>>(PAYROLL_ENDPOINTS.ANALYTICS);
+  },
+
+  /**
+   * Initiate bank transfer for payroll run
+   */
+  async initiateBankTransfer(runId: string): Promise<ApiResponse<PayrollRun>> {
+    return apiClient.post<ApiResponse<PayrollRun>>(PAYROLL_ENDPOINTS.BANK_TRANSFER(runId));
+  },
+
+  /**
+   * Send payslips to all employees for a pay period
+   */
+  async sendAllPayslips(
+    payPeriod: string = 'March 2026'
+  ): Promise<ApiResponse<PayrollPayslipDispatchResult>> {
+    return apiClient.post<ApiResponse<PayrollPayslipDispatchResult>>(
+      `${PAYROLL_ENDPOINTS.SEND_ALL_PAYSLIPS}?payPeriod=${encodeURIComponent(payPeriod)}`
+    );
+  },
+
+  /**
+   * Export payroll section as CSV payload
+   */
+  async exportData(
+    section: 'employees' | 'runs' | 'compliance',
+    payPeriod: string = 'March 2026'
+  ): Promise<ApiResponse<PayrollExportFile>> {
+    return apiClient.get<ApiResponse<PayrollExportFile>>(
+      `${PAYROLL_ENDPOINTS.EXPORT}?section=${encodeURIComponent(section)}&payPeriod=${encodeURIComponent(payPeriod)}`
+    );
   },
 };

@@ -14,6 +14,9 @@ namespace Backend.DTOs
         public Guid? strRoleGUID { get; set; }
         public string? strRoleName { get; set; }  // Added: Role name for frontend display
         public string strPreferredLanguage { get; set; } = string.Empty;
+        public string strBankName { get; set; } = string.Empty;
+        public string strBankAccountNo { get; set; } = string.Empty;
+        public string strTaxBracket { get; set; } = string.Empty;
         public string strProfileImageUrl { get; set; } = string.Empty;  // Changed from strProfileImg
         public DateTime? dtLastLogin { get; set; }
         public DateTime dtCreatedDate { get; set; }  // Changed from dtCreatedOn

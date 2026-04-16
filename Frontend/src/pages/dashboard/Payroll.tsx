@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  DollarSign, Bell,
+  DollarSign,
   Download, Search, TrendingUp, CheckCircle2,
   Send, Eye, Printer, CreditCard,
   Plus, Play, Pause, Shield, Lock,
@@ -23,7 +23,7 @@ type RunStatus  = "draft" | "processing" | "approved" | "paid" | "failed";
 type CompStatus = "filed" | "pending" | "overdue" | "upcoming";
 
 interface Employee {
-  id: number; name: string; avatar: string; dept: string; role: string;
+  id: number | string; userId?: string; name: string; avatar: string; dept: string; role: string;
   empType: "full-time" | "contract" | "part-time";
   base: number; hra: number; transport: number; medical: number; bonus: number;
   provident: number; incomeTax: number; insurance: number;
@@ -31,90 +31,35 @@ interface Employee {
   bankLast4: string; bankName: string; taxBracket: string; ytdGross: number; ytdTax: number;
 }
 
+interface SalaryFormValues {
+  strPayPeriod: string;
+  strEmploymentType: "full-time" | "contract" | "part-time";
+  decBaseSalary: number;
+  decHRA: number;
+  decTransportAllowance: number;
+  decMedicalAllowance: number;
+  decPerformanceBonus: number;
+  decProvidentFund: number;
+  decIncomeTax: number;
+  decHealthInsurance: number;
+}
+
 interface PayrollRun {
-  id: string; period: string; status: RunStatus;
+  id: string; runCode?: string; period: string; status: RunStatus;
   employees: number; gross: number; deductions: number; net: number;
   initiatedBy: string; initiatedAt: string; paidAt?: string;
   steps: { label: string; done: boolean; skipped?: boolean }[];
 }
 
 interface ComplianceItem {
-  id: number; title: string; authority: string; dueDate: string;
+  id: number | string; title: string; authority: string; dueDate: string;
   status: CompStatus; amount?: number; period: string; category: string;
 }
 
-const employees: Employee[] = [
-  { id: 1, name: "Sarah Johnson",   avatar: "SJ", dept: "Engineering", role: "Senior Dev",      empType: "full-time", base: 10000, hra: 4000, transport: 400, medical: 600, bonus: 1500, provident: 1200, incomeTax: 1950, insurance: 350, gross: 16500, totalDeductions: 3500, net: 13000, bankLast4: "4421", bankName: "Chase",    taxBracket: "22%", ytdGross: 49500,  ytdTax: 5850 },
-  { id: 2, name: "Tom Harris",      avatar: "TH", dept: "Sales",       role: "Sales Lead",      empType: "full-time", base: 9500,  hra: 3800, transport: 400, medical: 600, bonus: 3000, provident: 1140, incomeTax: 2340, insurance: 350, gross: 17300, totalDeductions: 3830, net: 13470, bankLast4: "7782", bankName: "Citi",     taxBracket: "24%", ytdGross: 51900,  ytdTax: 7020 },
-  { id: 3, name: "Aisha Patel",     avatar: "AP", dept: "HR",          role: "CHRO",            empType: "full-time", base: 11000, hra: 4400, transport: 400, medical: 600, bonus: 0,    provident: 1320, incomeTax: 2200, insurance: 350, gross: 16400, totalDeductions: 3870, net: 12530, bankLast4: "1193", bankName: "BoA",      taxBracket: "22%", ytdGross: 49200,  ytdTax: 6600 },
-  { id: 4, name: "David Park",      avatar: "DP", dept: "Engineering", role: "Backend Dev",     empType: "full-time", base: 8500,  hra: 3400, transport: 400, medical: 600, bonus: 0,    provident: 1020, incomeTax: 1870, insurance: 350, gross: 12900, totalDeductions: 3240, net: 9660,  bankLast4: "3356", bankName: "Chase",    taxBracket: "22%", ytdGross: 38700,  ytdTax: 5610 },
-  { id: 5, name: "Emily Rodriguez", avatar: "ER", dept: "Marketing",   role: "Mktg Lead",       empType: "full-time", base: 8000,  hra: 3200, transport: 400, medical: 600, bonus: 500,  provident: 960,  incomeTax: 1600, insurance: 350, gross: 12700, totalDeductions: 2910, net: 9790,  bankLast4: "8821", bankName: "WellsFargo",taxBracket:"22%", ytdGross: 38100,  ytdTax: 4800 },
-  { id: 6, name: "Michael Chen",    avatar: "MC", dept: "Design",      role: "UI Designer",     empType: "full-time", base: 7500,  hra: 3000, transport: 400, medical: 600, bonus: 0,    provident: 900,  incomeTax: 1500, insurance: 350, gross: 11500, totalDeductions: 2750, net: 8750,  bankLast4: "2294", bankName: "Chase",    taxBracket: "22%", ytdGross: 34500,  ytdTax: 4500 },
-  { id: 7, name: "James Kim",       avatar: "JK", dept: "Sales",       role: "Sales Rep",       empType: "full-time", base: 6500,  hra: 2600, transport: 400, medical: 600, bonus: 800,  provident: 780,  incomeTax: 1300, insurance: 350, gross: 10900, totalDeductions: 2430, net: 8470,  bankLast4: "5567", bankName: "Citi",     taxBracket: "22%", ytdGross: 32700,  ytdTax: 3900 },
-  { id: 8, name: "Lisa Wang",       avatar: "LW", dept: "Finance",     role: "Analyst",         empType: "full-time", base: 7000,  hra: 2800, transport: 400, medical: 600, bonus: 0,    provident: 840,  incomeTax: 1400, insurance: 350, gross: 10800, totalDeductions: 2590, net: 8210,  bankLast4: "9001", bankName: "BoA",      taxBracket: "22%", ytdGross: 32400,  ytdTax: 4200 },
-  { id: 9, name: "Yuki Tanaka",     avatar: "YT", dept: "Engineering", role: "Sr Frontend",     empType: "full-time", base: 9000,  hra: 3600, transport: 400, medical: 600, bonus: 0,    provident: 1080, incomeTax: 1800, insurance: 350, gross: 13600, totalDeductions: 3230, net: 10370, bankLast4: "4478", bankName: "Chase",    taxBracket: "22%", ytdGross: 13600,  ytdTax: 1800 },
-  { id: 10,name: "Nina Gupta",      avatar: "NG", dept: "Sales",       role: "Sales Rep",       empType: "contract",  base: 5500,  hra: 0,    transport: 0,   medical: 0,   bonus: 600,  provident: 0,    incomeTax: 880,  insurance: 0,   gross: 6100,  totalDeductions: 880,  net: 5220,  bankLast4: "3312", bankName: "WellsFargo",taxBracket:"12%", ytdGross: 18300,  ytdTax: 2640 },
-];
-
-const runHistory: PayrollRun[] = [
-  {
-    id: "PR-2026-03", period: "March 2026", status: "approved", employees: 10,
-    gross: 128700, deductions: 29750, net: 98950,
-    initiatedBy: "Aisha Patel", initiatedAt: "Mar 25, 2026 · 9:00 AM", paidAt: undefined,
-    steps: [
-      { label: "Import attendance & overtime data", done: true },
-      { label: "Validate salary structures",         done: true },
-      { label: "Apply tax & deductions",             done: true },
-      { label: "Manager approval",                   done: true },
-      { label: "Bank transfer",                      done: false },
-      { label: "Payslip dispatch",                   done: false },
-    ],
-  },
-  {
-    id: "PR-2026-02", period: "February 2026", status: "paid", employees: 10,
-    gross: 124300, deductions: 28890, net: 95410,
-    initiatedBy: "Aisha Patel", initiatedAt: "Feb 23, 2026 · 9:00 AM", paidAt: "Feb 28, 2026",
-    steps: [
-      { label: "Import attendance & overtime data", done: true },
-      { label: "Validate salary structures",         done: true },
-      { label: "Apply tax & deductions",             done: true },
-      { label: "Manager approval",                   done: true },
-      { label: "Bank transfer",                      done: true },
-      { label: "Payslip dispatch",                   done: true },
-    ],
-  },
-  {
-    id: "PR-2026-01", period: "January 2026", status: "paid", employees: 9,
-    gross: 115400, deductions: 26700, net: 88700,
-    initiatedBy: "Aisha Patel", initiatedAt: "Jan 24, 2026 · 9:12 AM", paidAt: "Jan 31, 2026",
-    steps: [{ label: "", done: true }, { label: "", done: true }, { label: "", done: true }, { label: "", done: true }, { label: "", done: true }, { label: "", done: true }],
-  },
-];
-
-const compliance: ComplianceItem[] = [
-  { id: 1, title: "Federal Income Tax (FICA) Deposit",       authority: "IRS",              dueDate: "Mar 31, 2026", status: "pending",  amount: 14820, period: "Mar 2026",  category: "Tax" },
-  { id: 2, title: "State Payroll Tax Filing (CA DE-9)",      authority: "CA EDD",           dueDate: "Apr 1, 2026",  status: "upcoming", amount: 3240,  period: "Q1 2026",   category: "Tax" },
-  { id: 3, title: "401(k) Employer Contribution Remittance", authority: "Plan Administrator",dueDate: "Mar 31, 2026",status: "pending",  amount: 8640,  period: "Mar 2026",  category: "Benefits" },
-  { id: 4, title: "W-2 Forms Distribution",                  authority: "IRS",              dueDate: "Jan 31, 2026", status: "filed",    amount: undefined,period: "FY 2025", category: "Reporting" },
-  { id: 5, title: "ACA Employer Reporting (1095-C)",         authority: "IRS",              dueDate: "Mar 31, 2026", status: "upcoming", amount: undefined,period: "FY 2025", category: "Reporting" },
-  { id: 6, title: "Federal Unemployment Tax (FUTA)",         authority: "IRS",              dueDate: "Jan 31, 2026", status: "filed",    amount: 2100,  period: "Q4 2025",   category: "Tax" },
-  { id: 7, title: "State Unemployment Insurance (SUI)",      authority: "CA EDD",           dueDate: "Apr 15, 2026", status: "upcoming", amount: 1820,  period: "Q1 2026",   category: "Tax" },
-  { id: 8, title: "Workers Comp Premium Audit",              authority: "Insurance Co.",    dueDate: "Mar 15, 2026", status: "overdue",  amount: undefined,period: "FY 2025", category: "Insurance" },
-];
-
-const monthlyTrend = [
-  { m: "Oct", gross: 108200 }, { m: "Nov", gross: 111400 }, { m: "Dec", gross: 119800 },
-  { m: "Jan", gross: 115400 }, { m: "Feb", gross: 124300 }, { m: "Mar", gross: 128700 },
-];
-
-const deptCost = [
-  { dept: "Engineering", cost: 54370, pct: 42, count: 4, color: "bg-blue-500" },
-  { dept: "Sales",       cost: 27160, pct: 21, count: 3, color: "bg-emerald-500" },
-  { dept: "HR",          cost: 12530, pct: 10, count: 1, color: "bg-rose-500" },
-  { dept: "Finance",     cost: 8210,  pct: 6,  count: 1, color: "bg-teal-500" },
-  { dept: "Marketing",   cost: 9790,  pct: 8,  count: 1, color: "bg-amber-500" },
-  { dept: "Design",      cost: 8750,  pct: 7,  count: 1, color: "bg-indigo-500" },
-];
+interface AnalyticsState {
+  monthlyTrend: Array<{ month: string; gross: number }>;
+  departmentCosts: Array<{ department: string; cost: number; percentage: number; staffCount: number }>;
+}
 
 /* ─── Helpers ────────────────────────────────────────────────────────────── */
 
@@ -137,11 +82,113 @@ const compStatusCfg: Record<CompStatus, { label: string; color: string; bg: stri
 
 /* ─── Sub-components ─────────────────────────────────────────────────────── */
 
-function PayslipDialog({ emp }: { emp: Employee }) {
+function SalaryAssignDialog({
+  emp,
+  onSubmit,
+  isSaving,
+}: {
+  emp: Employee;
+  onSubmit: (emp: Employee, form: SalaryFormValues) => Promise<void>;
+  isSaving: boolean;
+}) {
+  const [form, setForm] = useState<SalaryFormValues>({
+    strPayPeriod: "March 2026",
+    strEmploymentType: emp.empType,
+    decBaseSalary: emp.base,
+    decHRA: emp.hra,
+    decTransportAllowance: emp.transport,
+    decMedicalAllowance: emp.medical,
+    decPerformanceBonus: emp.bonus,
+    decProvidentFund: emp.provident,
+    decIncomeTax: emp.incomeTax,
+    decHealthInsurance: emp.insurance,
+  });
+
+  const gross = form.decBaseSalary + form.decHRA + form.decTransportAllowance + form.decMedicalAllowance + form.decPerformanceBonus;
+  const totalDeductions = form.decProvidentFund + form.decIncomeTax + form.decHealthInsurance;
+  const net = gross - totalDeductions;
+
+  const setNumber = (key: keyof SalaryFormValues, value: string) => {
+    const parsed = Number(value);
+    setForm(prev => ({ ...prev, [key]: Number.isNaN(parsed) ? 0 : parsed }));
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1"><Eye className="w-3 h-3" />Slip</Button>
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs gap-1 shrink-0"><DollarSign className="w-3 h-3" />Salary</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-lg max-h-[88vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-sm font-bold">Assign Salary - {emp.name}</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-3 text-xs">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="mb-1 text-muted-foreground">Pay Period</p>
+              <Input value={form.strPayPeriod} onChange={(e) => setForm(prev => ({ ...prev, strPayPeriod: e.target.value }))} className="h-8 text-xs" />
+            </div>
+            <div>
+              <p className="mb-1 text-muted-foreground">Employment Type</p>
+              <Select value={form.strEmploymentType} onValueChange={(v) => setForm(prev => ({ ...prev, strEmploymentType: v as SalaryFormValues["strEmploymentType"] }))}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="full-time">Full-time</SelectItem>
+                  <SelectItem value="part-time">Part-time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {[ 
+              ["Base Salary", "decBaseSalary"],
+              ["HRA", "decHRA"],
+              ["Transport", "decTransportAllowance"],
+              ["Medical", "decMedicalAllowance"],
+              ["Bonus", "decPerformanceBonus"],
+              ["Provident Fund", "decProvidentFund"],
+              ["Income Tax", "decIncomeTax"],
+              ["Insurance", "decHealthInsurance"],
+            ].map(([label, key]) => (
+              <div key={key}>
+                <p className="mb-1 text-muted-foreground">{label}</p>
+                <Input
+                  type="number"
+                  className="h-8 text-xs"
+                  value={String(form[key as keyof SalaryFormValues] ?? 0)}
+                  onChange={(e) => setNumber(key as keyof SalaryFormValues, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 rounded-xl border p-3 bg-muted/20">
+            <div><p className="text-muted-foreground">Gross</p><p className="font-bold text-emerald-600">{fmt(gross)}</p></div>
+            <div><p className="text-muted-foreground">Deductions</p><p className="font-bold text-red-500">{fmt(totalDeductions)}</p></div>
+            <div><p className="text-muted-foreground">Net</p><p className="font-bold text-violet-700">{fmt(net)}</p></div>
+          </div>
+
+          <Button
+            className="w-full h-8 text-xs bg-violet-600 hover:bg-violet-700 text-white"
+            disabled={isSaving}
+            onClick={() => void onSubmit(emp, form)}
+          >
+            {isSaving ? "Saving..." : "Save Salary"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function PayslipDialog({ emp, onDownload }: { emp: Employee; onDownload: (emp: Employee) => void }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="h-7 px-2 text-xs gap-1 shrink-0"><Eye className="w-3 h-3" />Slip</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md max-h-[88vh] overflow-y-auto">
         <DialogHeader>
@@ -231,7 +278,7 @@ function PayslipDialog({ emp }: { emp: Employee }) {
           </div>
 
           <div className="flex gap-2 pt-1 border-t">
-            <Button className="flex-1 bg-violet-600 hover:bg-violet-700 text-white text-xs gap-1.5 h-8"><Download className="w-3.5 h-3.5" />Download PDF</Button>
+            <Button onClick={() => onDownload(emp)} className="flex-1 bg-violet-600 hover:bg-violet-700 text-white text-xs gap-1.5 h-8"><Download className="w-3.5 h-3.5" />Download PDF</Button>
             <Button variant="outline" className="text-xs gap-1.5 h-8"><Send className="w-3.5 h-3.5" />Email</Button>
             <Button variant="outline" className="text-xs gap-1.5 h-8"><Printer className="w-3.5 h-3.5" />Print</Button>
           </div>
@@ -241,8 +288,9 @@ function PayslipDialog({ emp }: { emp: Employee }) {
   );
 }
 
-function RunDetailDialog({ run }: { run: PayrollRun }) {
+function RunDetailDialog({ run, onInitiateBankTransfer }: { run: PayrollRun; onInitiateBankTransfer: (runId: string) => void }) {
   const done = run.steps.filter(s => s.done).length;
+  const runLabel = run.runCode || run.id;
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -256,7 +304,7 @@ function RunDetailDialog({ run }: { run: PayrollRun }) {
             </div>
             <div>
               <DialogTitle className="text-white text-sm font-bold">Payroll Run — {run.period}</DialogTitle>
-              <p className="text-white/75 text-xs">{run.id} · Initiated by {run.initiatedBy}</p>
+              <p className="text-white/75 text-xs">{runLabel} · Initiated by {run.initiatedBy}</p>
             </div>
           </div>
         </DialogHeader>
@@ -302,7 +350,7 @@ function RunDetailDialog({ run }: { run: PayrollRun }) {
           </div>
 
           {run.status === "approved" && (
-            <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white text-xs gap-2 h-8">
+            <Button onClick={() => onInitiateBankTransfer(run.id)} className="w-full bg-violet-600 hover:bg-violet-700 text-white text-xs gap-2 h-8">
               <CreditCard className="w-3.5 h-3.5" />Initiate Bank Transfer ({fmt(run.net)})
             </Button>
           )}
@@ -318,31 +366,37 @@ export default function PayrollManagement() {
   const [tab, setTab]           = useState("run");
   const [search, setSearch]     = useState("");
   const [filterDept, setFilterDept] = useState("all");
-  const [payrollEmployees, setPayrollEmployees] = useState<typeof employees>([]);
-  const [payrollRuns, setPayrollRuns] = useState<typeof runHistory>([]);
-  const [complianceItems, setComplianceItems] = useState(compliance);
+  const [payrollEmployees, setPayrollEmployees] = useState<Employee[]>([]);
+  const [payrollRuns, setPayrollRuns] = useState<PayrollRun[]>([]);
+  const [complianceItems, setComplianceItems] = useState<ComplianceItem[]>([]);
+  const [analytics, setAnalytics] = useState<AnalyticsState>({ monthlyTrend: [], departmentCosts: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [isCreatingRun, setIsCreatingRun] = useState(false);
+  const [isSendingAllSlips, setIsSendingAllSlips] = useState(false);
+  const [salarySavingFor, setSalarySavingFor] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   
   const pending = complianceItems.filter(c => c.status === "pending" || c.status === "overdue").length;
 
-  const currentRun = payrollRuns[0] ?? runHistory[0];
+  const currentRun = payrollRuns[0] ?? null;
+  const currentRunLabel = currentRun?.runCode || currentRun?.id || "-";
 
   const loadPayrollData = async () => {
     setIsLoading(true);
     try {
-      const [empRes, runsRes, compRes] = await Promise.all([
+      const [empRes, runsRes, compRes, analyticsRes] = await Promise.all([
         payrollService.getEmployees("March 2026"),
         payrollService.getPayrollRuns(),
         payrollService.getComplianceItems(),
+        payrollService.getAnalytics(),
       ]);
 
       if (empRes.statusCode === 200 && empRes.data) {
         // Map backend employees to frontend format
         const mappedEmp = empRes.data.map((e: any) => ({
           id: e.id,
+          userId: e.userId,
           name: e.name,
           avatar: e.avatar,
           dept: e.dept,
@@ -372,6 +426,7 @@ export default function PayrollManagement() {
         // Map backend runs to frontend format
         const mappedRuns = runsRes.data.map((r: any) => ({
           id: r.id,
+          runCode: r.runCode,
           period: r.period,
           status: r.status as "draft" | "processing" | "approved" | "paid" | "failed",
           employees: r.employees,
@@ -401,10 +456,25 @@ export default function PayrollManagement() {
         setComplianceItems(mappedComp);
       }
 
+      if (analyticsRes.statusCode === 200 && analyticsRes.data) {
+        setAnalytics({
+          monthlyTrend: analyticsRes.data.monthlyTrend ?? [],
+          departmentCosts: analyticsRes.data.departmentCosts ?? [],
+        });
+      }
+
       setErrorMessage("");
     } catch (error) {
       console.error("Error loading payroll data:", error);
-      setErrorMessage("Failed to load payroll data. Using cached data");
+      const message = error instanceof Error ? error.message : "Failed to load payroll data";
+      if (message.toLowerCase().includes("unauthorized")) {
+        setErrorMessage("Session expired. Redirecting to login...");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 800);
+      } else {
+        setErrorMessage(message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -416,14 +486,18 @@ export default function PayrollManagement() {
       setErrorMessage("");
       setSuccessMessage("");
 
-      const sourceEmployees = payrollEmployees.length > 0 ? payrollEmployees : employees;
-      const gross = sourceEmployees.reduce((sum, e) => sum + e.gross, 0);
-      const deductions = sourceEmployees.reduce((sum, e) => sum + e.totalDeductions, 0);
-      const net = sourceEmployees.reduce((sum, e) => sum + e.net, 0);
+      if (payrollEmployees.length === 0) {
+        setErrorMessage("No payroll employees found for this period");
+        return;
+      }
+
+      const gross = payrollEmployees.reduce((sum, e) => sum + e.gross, 0);
+      const deductions = payrollEmployees.reduce((sum, e) => sum + e.totalDeductions, 0);
+      const net = payrollEmployees.reduce((sum, e) => sum + e.net, 0);
 
       const createResponse = await payrollService.createPayrollRun({
         strPayPeriod: "March 2026",
-        intEmployeeCount: sourceEmployees.length,
+        intEmployeeCount: payrollEmployees.length,
         decTotalGross: gross,
         decTotalDeductions: deductions,
         decTotalNetPay: net,
@@ -444,15 +518,229 @@ export default function PayrollManagement() {
     }
   };
 
+  const downloadBase64File = (fileName: string, contentType: string, base64Content: string) => {
+    const binaryString = atob(base64Content);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i += 1) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = async (section: "employees" | "runs" | "compliance") => {
+    try {
+      setErrorMessage("");
+      const response = await payrollService.exportData(section, "March 2026");
+      if (response.statusCode === 200 && response.data) {
+        downloadBase64File(response.data.fileName, response.data.contentType, response.data.base64Content);
+        setSuccessMessage("Payroll export downloaded successfully");
+      } else {
+        setErrorMessage(response.message || "Failed to export payroll data");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to export payroll data";
+      setErrorMessage(message);
+    }
+  };
+
+  const handleBankTransfer = async (runId: string) => {
+    try {
+      setErrorMessage("");
+      const response = await payrollService.initiateBankTransfer(runId);
+      if (response.statusCode === 200) {
+        setSuccessMessage("Bank transfer initiated and payroll marked as paid");
+        await loadPayrollData();
+      } else {
+        setErrorMessage(response.message || "Failed to initiate bank transfer");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to initiate bank transfer";
+      setErrorMessage(message);
+    }
+  };
+
+  const handleUpdateComplianceStatus = async (id: string, status: CompStatus) => {
+    try {
+      setErrorMessage("");
+      const response = await payrollService.updateComplianceStatus(id, status);
+      if (response.statusCode === 200) {
+        setSuccessMessage(`Compliance item marked as ${status}`);
+        await loadPayrollData();
+      } else {
+        setErrorMessage(response.message || "Failed to update compliance status");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to update compliance status";
+      setErrorMessage(message);
+    }
+  };
+
+  const handleQuickAddCompliance = async () => {
+    try {
+      setErrorMessage("");
+      const dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + 10);
+
+      const response = await payrollService.createComplianceItem({
+        strTitle: "New payroll compliance item",
+        strAuthority: "IRS",
+        strCategory: "Tax",
+        dtDueDate: dueDate.toISOString(),
+        strStatus: "upcoming",
+        decAmount: 0,
+        strPeriod: "Mar 2026",
+        strDescription: "Created from payroll dashboard",
+      });
+
+      if (response.statusCode === 201 || response.statusCode === 200) {
+        setSuccessMessage("Compliance item created successfully");
+        await loadPayrollData();
+      } else {
+        setErrorMessage(response.message || "Failed to create compliance item");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create compliance item";
+      setErrorMessage(message);
+    }
+  };
+
+  const handleDownloadPayslip = (emp: Employee) => {
+    const printWindow = window.open("", "_blank", "width=900,height=700");
+    if (!printWindow) {
+      setErrorMessage("Popup blocked. Please allow popups to download payslip.");
+      return;
+    }
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Payslip-${emp.name}-March-2026</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 24px; color: #111827; }
+            h1 { margin: 0 0 8px; }
+            .meta { color: #6b7280; margin-bottom: 16px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+            td, th { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
+            .total { font-weight: 700; }
+          </style>
+        </head>
+        <body>
+          <h1>Payslip - March 2026</h1>
+          <div class="meta">${emp.name} (${emp.role}) | ${emp.dept} | Bank ****${emp.bankLast4}</div>
+          <table>
+            <tr><th>Component</th><th>Amount</th></tr>
+            <tr><td>Gross</td><td>${fmt(emp.gross)}</td></tr>
+            <tr><td>Total Deductions</td><td>${fmt(emp.totalDeductions)}</td></tr>
+            <tr class="total"><td>Net Pay</td><td>${fmt(emp.net)}</td></tr>
+          </table>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
+
+  const handleSendAllSlips = async () => {
+    const payPeriod = currentRun?.period || "March 2026";
+    try {
+      setIsSendingAllSlips(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      const response = await payrollService.sendAllPayslips(payPeriod);
+      if (response.statusCode === 200 && response.data) {
+        const { sentCount, failedCount, skippedCount, requesterNotified } = response.data;
+        const notifyStatus = requesterNotified ? "Summary mailed." : "Summary mail failed.";
+        setSuccessMessage(`Payslip dispatch complete: sent ${sentCount}, failed ${failedCount}, skipped ${skippedCount}. ${notifyStatus}`);
+        await loadPayrollData();
+      } else {
+        setErrorMessage(response.message || "Failed to send payslips");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to send payslips";
+      setErrorMessage(message);
+    } finally {
+      setIsSendingAllSlips(false);
+    }
+  };
+
+  const handleAssignSalary = async (emp: Employee, form: SalaryFormValues) => {
+    if (!emp.userId) {
+      setErrorMessage("This employee is from local demo data. Please use backend-loaded employees to assign salary.");
+      return;
+    }
+
+    try {
+      setSalarySavingFor(String(emp.id));
+      setErrorMessage("");
+      const response = await payrollService.upsertEmployeeSalary({
+        strUserGUID: emp.userId,
+        strPayPeriod: form.strPayPeriod,
+        strEmploymentType: form.strEmploymentType,
+        decBaseSalary: form.decBaseSalary,
+        decHRA: form.decHRA,
+        decTransportAllowance: form.decTransportAllowance,
+        decMedicalAllowance: form.decMedicalAllowance,
+        decPerformanceBonus: form.decPerformanceBonus,
+        decProvidentFund: form.decProvidentFund,
+        decIncomeTax: form.decIncomeTax,
+        decHealthInsurance: form.decHealthInsurance,
+        strBankLast4: emp.bankLast4,
+        strBankName: emp.bankName,
+        strTaxBracket: emp.taxBracket,
+      });
+
+      if (response.statusCode === 200) {
+        setSuccessMessage(`Salary saved for ${emp.name}`);
+        await loadPayrollData();
+      } else {
+        setErrorMessage(response.message || "Failed to save salary");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to save salary";
+      setErrorMessage(message);
+    } finally {
+      setSalarySavingFor(null);
+    }
+  };
+
   // Load payroll data on component mount
   useEffect(() => {
     loadPayrollData();
   }, []);
 
+  // Auto-hide success feedback after a short delay.
+  useEffect(() => {
+    if (!successMessage) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setSuccessMessage("");
+    }, 3500);
+
+    return () => window.clearTimeout(timer);
+  }, [successMessage]);
+
   const totalGross    = payrollEmployees.reduce((s, e) => s + e.gross, 0);
   const totalNet      = payrollEmployees.reduce((s, e) => s + e.net, 0);
   const totalDed      = payrollEmployees.reduce((s, e) => s + e.totalDeductions, 0);
-  const maxTrend      = Math.max(...monthlyTrend.map(m => m.gross));
+  const maxTrend      = Math.max(1, ...analytics.monthlyTrend.map(m => m.gross));
+  const uniqueDeptColors = ["bg-blue-500", "bg-emerald-500", "bg-rose-500", "bg-amber-500", "bg-teal-500", "bg-indigo-500"];
+  const monthOverMonthGrowth = analytics.monthlyTrend.length >= 2
+    ? (((analytics.monthlyTrend[analytics.monthlyTrend.length - 1].gross - analytics.monthlyTrend[analytics.monthlyTrend.length - 2].gross) /
+        Math.max(1, analytics.monthlyTrend[analytics.monthlyTrend.length - 2].gross)) * 100)
+    : 0;
 
   const filteredEmps = payrollEmployees.filter(e => {
     const ms = e.name.toLowerCase().includes(search.toLowerCase()) || e.dept.toLowerCase().includes(search.toLowerCase());
@@ -460,7 +748,7 @@ export default function PayrollManagement() {
     return ms && md;
   });
 
-  const depts = ["Engineering","Sales","HR","Finance","Marketing","Design"];
+  const depts = Array.from(new Set(payrollEmployees.map(e => e.dept).filter(Boolean)));
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">
@@ -472,14 +760,17 @@ export default function PayrollManagement() {
         <div className="bg-background/95 border-b border-border px-6 py-3.5 flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold">Payroll Management</h1>
-            <p className="text-xs text-muted-foreground">March 2026 · Pay date: Mar 31 · 10 employees</p>
+            <p className="text-xs text-muted-foreground">Current period payroll operations · {payrollEmployees.length} employees</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="relative h-8 w-8 p-0">
-              <Bell className="w-4 h-4" />
-              {pending > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{pending}</span>}
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-xs h-8"
+              onClick={() => handleExport("employees")}
+            >
+              <Download className="w-3.5 h-3.5" />Export
             </Button>
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs h-8"><Download className="w-3.5 h-3.5" />Export</Button>
             <Button
               size="sm"
               className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
@@ -552,12 +843,19 @@ export default function PayrollManagement() {
 
             {/* ── PAYROLL RUN ── */}
             <TabsContent value="run" className="mt-4">
+              {!currentRun ? (
+                <Card className="border-0 shadow-sm">
+                  <CardContent className="p-6 text-sm text-muted-foreground">
+                    No payroll run found for this period. Click Run Payroll to create one.
+                  </CardContent>
+                </Card>
+              ) : (
               <div className="grid grid-cols-3 gap-4">
                 {/* Steps wizard */}
                 <Card className="col-span-2 border-0 shadow-sm">
                   <CardHeader className="pb-2 pt-4 px-5">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold">March 2026 Payroll Run — {currentRun.id}</CardTitle>
+                      <CardTitle className="text-sm font-semibold">March 2026 Payroll Run — {currentRunLabel}</CardTitle>
                       <span className={`text-xs px-2.5 py-1 rounded-full border font-semibold ${runStatusCfg[currentRun.status].color} ${runStatusCfg[currentRun.status].bg} ${runStatusCfg[currentRun.status].border}`}>
                         {runStatusCfg[currentRun.status].label}
                       </span>
@@ -598,7 +896,11 @@ export default function PayrollManagement() {
                     </div>
 
                     <div className="mt-4 pt-4 border-t flex gap-2">
-                      <Button className="flex-1 bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 gap-1.5">
+                      <Button
+                        className="flex-1 bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 gap-1.5"
+                        onClick={() => handleBankTransfer(currentRun.id)}
+                        disabled={currentRun.status !== "approved"}
+                      >
                         <CreditCard className="w-3.5 h-3.5" />Initiate Bank Transfer — {fmt(currentRun.net)}
                       </Button>
                       <Button variant="outline" className="text-xs h-8 gap-1.5"><Pause className="w-3.5 h-3.5" />Hold</Button>
@@ -616,8 +918,8 @@ export default function PayrollManagement() {
                     <CardContent className="px-5 pb-4 space-y-2.5">
                       {[
                         { label: "Employees",    val: `${currentRun.employees} total` },
-                        { label: "Full-time",    val: "9" },
-                        { label: "Contract",     val: "1" },
+                        { label: "Full-time",    val: `${payrollEmployees.filter((e) => e.empType === "full-time").length}` },
+                        { label: "Contract",     val: `${payrollEmployees.filter((e) => e.empType === "contract").length}` },
                         { label: "Gross Payroll",val: fmt(currentRun.gross), bold: true },
                         { label: "Total Tax",    val: fmt(payrollEmployees.reduce((s,e)=>s+e.incomeTax,0)) },
                         { label: "Provident",    val: fmt(payrollEmployees.reduce((s,e)=>s+e.provident,0)) },
@@ -645,6 +947,7 @@ export default function PayrollManagement() {
                   </Card>
                 </div>
               </div>
+              )}
             </TabsContent>
 
             {/* ── SALARY BREAKDOWN ── */}
@@ -665,67 +968,92 @@ export default function PayrollManagement() {
                           {depts.map(d => <SelectItem key={d} value={d.toLowerCase()}>{d}</SelectItem>)}
                         </SelectContent>
                       </Select>
-                      <Button variant="outline" size="sm" className="h-7 text-xs gap-1"><Send className="w-3 h-3" />Send All Slips</Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs gap-1"
+                        onClick={handleSendAllSlips}
+                        disabled={isSendingAllSlips || filteredEmps.length === 0}
+                      >
+                        {isSendingAllSlips ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                        {isSendingAllSlips ? "Sending..." : "Send All Slips"}
+                      </Button>
                     </div>
                   </div>
+                  <p className="text-[11px] text-muted-foreground">Bank details are managed in Employee create/edit form.</p>
                 </CardHeader>
                 <CardContent className="px-5 pb-4">
-                  <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide px-2 mb-2 grid grid-cols-12 gap-2">
-                    <span className="col-span-3">Employee</span>
-                    <span className="col-span-1 text-center">Type</span>
-                    <span className="col-span-2 text-right">Gross</span>
-                    <span className="col-span-2 text-right">Deductions</span>
-                    <span className="col-span-2 text-right">Net Pay</span>
-                    <span className="col-span-1 text-center">Bank</span>
-                    <span className="col-span-1" />
-                  </div>
-                  {filteredEmps.map(e => (
-                    <div key={e.id} className="grid grid-cols-12 gap-2 items-center py-2.5 border-b last:border-0 hover:bg-muted/20 px-2 rounded-lg transition-colors">
-                      <div className="col-span-3 flex items-center gap-2">
-                        <Avatar className="w-7 h-7 flex-shrink-0">
-                          <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-violet-100 to-blue-100 text-violet-700">{e.avatar}</AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                          <p className="text-xs font-semibold truncate">{e.name}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">{e.dept}</p>
-                        </div>
-                      </div>
-                      <div className="col-span-1 flex justify-center">
-                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${e.empType === "contract" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300" : "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"}`}>
-                          {e.empType === "full-time" ? "FT" : e.empType === "contract" ? "CTR" : "PT"}
-                        </span>
-                      </div>
-                      <div className="col-span-2 text-right">
-                        <p className="text-xs font-semibold">{fmt(e.gross)}</p>
-                        <p className="text-[10px] text-muted-foreground">Base: {fmt(e.base)}</p>
-                      </div>
-                      <div className="col-span-2 text-right">
-                        <p className="text-xs font-semibold text-red-500">–{fmt(e.totalDeductions)}</p>
-                        <p className="text-[10px] text-muted-foreground">Tax: {fmt(e.incomeTax)}</p>
-                      </div>
-                      <div className="col-span-2 text-right">
-                        <p className="text-sm font-bold text-violet-700">{fmt(e.net)}</p>
-                      </div>
-                      <div className="col-span-1 text-center">
-                        <div className="flex items-center gap-1 justify-center">
-                          <Lock className="w-2.5 h-2.5 text-muted-foreground" />
-                          <span className="text-[10px] text-muted-foreground">····{e.bankLast4}</span>
-                        </div>
-                      </div>
-                      <div className="col-span-1 flex justify-end gap-0.5">
-                        <PayslipDialog emp={e} />
+                  <div className="overflow-x-auto">
+                    <table className="min-w-[980px] w-full border-separate border-spacing-y-2">
+                      <thead>
+                        <tr className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide">
+                          <th className="text-left px-2 py-1 w-[28%]">Employee</th>
+                          <th className="text-center px-2 py-1 w-[8%]">Type</th>
+                          <th className="text-right px-2 py-1 w-[14%]">Gross</th>
+                          <th className="text-right px-2 py-1 w-[14%]">Deductions</th>
+                          <th className="text-right px-2 py-1 w-[14%]">Net Pay</th>
+                          <th className="text-center px-2 py-1 w-[12%]">Bank</th>
+                          <th className="text-right px-2 py-1 w-[10%]">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredEmps.map(e => (
+                          <tr key={e.id} className="bg-muted/10 hover:bg-muted/20 transition-colors">
+                            <td className="px-2 py-3 rounded-l-lg">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <Avatar className="w-7 h-7 flex-shrink-0">
+                                  <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-violet-100 to-blue-100 text-violet-700">{e.avatar}</AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0">
+                                  <p className="text-xs font-semibold truncate">{e.name}</p>
+                                  <p className="text-[10px] text-muted-foreground truncate">{e.dept}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-2 py-3 text-center align-middle">
+                              <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${e.empType === "contract" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300" : "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"}`}>
+                                {e.empType === "full-time" ? "FT" : e.empType === "contract" ? "CTR" : "PT"}
+                              </span>
+                            </td>
+                            <td className="px-2 py-3 text-right align-middle">
+                              <p className="text-xs font-semibold">{fmt(e.gross)}</p>
+                              <p className="text-[10px] text-muted-foreground">Base: {fmt(e.base)}</p>
+                            </td>
+                            <td className="px-2 py-3 text-right align-middle">
+                              <p className="text-xs font-semibold text-red-500">–{fmt(e.totalDeductions)}</p>
+                              <p className="text-[10px] text-muted-foreground">Tax: {fmt(e.incomeTax)}</p>
+                            </td>
+                            <td className="px-2 py-3 text-right align-middle">
+                              <p className="text-sm font-bold text-violet-700">{fmt(e.net)}</p>
+                            </td>
+                            <td className="px-2 py-3 text-center align-middle">
+                              <div className="flex flex-col items-center leading-tight">
+                                <div className="flex items-center gap-1">
+                                  <Lock className="w-2.5 h-2.5 text-muted-foreground" />
+                                  <span className="text-[10px] font-semibold truncate max-w-[120px]">{e.bankName || "Not set"}</span>
+                                </div>
+                                <span className="text-[9px] text-muted-foreground">{e.bankLast4 ? `•••• ${e.bankLast4}` : "No account"}</span>
+                              </div>
+                            </td>
+                            <td className="px-2 py-3 text-right align-middle rounded-r-lg">
+                              <div className="flex justify-end gap-1 whitespace-nowrap">
+                                <SalaryAssignDialog emp={e} isSaving={salarySavingFor === String(e.id)} onSubmit={handleAssignSalary} />
+                                <PayslipDialog emp={e} onDownload={handleDownloadPayslip} />
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div className="min-w-[980px] flex items-center justify-between py-3 mt-2 border-t px-2 font-bold">
+                      <p className="text-xs">TOTAL ({filteredEmps.length} employees)</p>
+                      <div className="flex items-center gap-6 text-right">
+                        <p className="text-xs text-emerald-700">{fmt(filteredEmps.reduce((s,e)=>s+e.gross,0))}</p>
+                        <p className="text-xs text-red-500">–{fmt(filteredEmps.reduce((s,e)=>s+e.totalDeductions,0))}</p>
+                        <p className="text-sm text-violet-700">{fmt(filteredEmps.reduce((s,e)=>s+e.net,0))}</p>
                       </div>
                     </div>
-                  ))}
-
-                  {/* Totals row */}
-                  <div className="grid grid-cols-12 gap-2 items-center py-3 mt-1 border-t-2 px-2 font-bold">
-                    <div className="col-span-3 text-xs">TOTAL ({filteredEmps.length} employees)</div>
-                    <div className="col-span-1" />
-                    <div className="col-span-2 text-right text-xs text-emerald-700">{fmt(filteredEmps.reduce((s,e)=>s+e.gross,0))}</div>
-                    <div className="col-span-2 text-right text-xs text-red-500">–{fmt(filteredEmps.reduce((s,e)=>s+e.totalDeductions,0))}</div>
-                    <div className="col-span-2 text-right text-sm text-violet-700">{fmt(filteredEmps.reduce((s,e)=>s+e.net,0))}</div>
-                    <div className="col-span-2" />
                   </div>
                 </CardContent>
               </Card>
@@ -737,7 +1065,14 @@ export default function PayrollManagement() {
                 <CardHeader className="pb-3 pt-4 px-5">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-sm font-semibold">Payroll Run History</CardTitle>
-                    <Button variant="outline" size="sm" className="h-7 text-xs gap-1"><Download className="w-3 h-3" />Export All</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs gap-1"
+                      onClick={() => handleExport("runs")}
+                    >
+                      <Download className="w-3 h-3" />Export All
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="px-5 pb-4 space-y-3">
@@ -751,12 +1086,12 @@ export default function PayrollManagement() {
                             <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${cfg.dot}`} />
                             <div>
                               <p className="text-sm font-bold">{run.period}</p>
-                              <p className="text-xs text-muted-foreground">{run.id} · {run.initiatedAt}</p>
+                              <p className="text-xs text-muted-foreground">{run.runCode || run.id} · {run.initiatedAt}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={`text-xs px-2.5 py-1 rounded-full border font-semibold ${cfg.color} ${cfg.bg} ${cfg.border}`}>{cfg.label}</span>
-                            <RunDetailDialog run={run} />
+                            <RunDetailDialog run={run} onInitiateBankTransfer={handleBankTransfer} />
                           </div>
                         </div>
                         <div className="grid grid-cols-4 gap-3 mb-3">
@@ -792,7 +1127,13 @@ export default function PayrollManagement() {
                     <CardTitle className="text-sm font-semibold">Tax & Compliance Obligations</CardTitle>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" className="h-7 text-xs gap-1"><Globe className="w-3 h-3" />IRS Portal</Button>
-                      <Button size="sm" className="h-7 text-xs bg-violet-600 hover:bg-violet-700 text-white gap-1"><Plus className="w-3 h-3" />Add Item</Button>
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-violet-600 hover:bg-violet-700 text-white gap-1"
+                        onClick={handleQuickAddCompliance}
+                      >
+                        <Plus className="w-3 h-3" />Add Item
+                      </Button>
                     </div>
                   </div>
                 </CardHeader>
@@ -839,8 +1180,18 @@ export default function PayrollManagement() {
                         <div className="col-span-1 flex justify-center">
                           <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-gray-300 font-semibold">{c.category}</span>
                         </div>
-                        <div className="col-span-2 flex justify-center">
+                        <div className="col-span-2 flex justify-center items-center gap-1">
                           <span className={`text-xs px-2.5 py-1 rounded-full border font-semibold ${cfg.color} ${cfg.bg} ${cfg.border}`}>{cfg.label}</span>
+                          {c.status !== "filed" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-6 text-[10px] px-2"
+                              onClick={() => handleUpdateComplianceStatus(String(c.id), "filed")}
+                            >
+                              Mark Filed
+                            </Button>
+                          )}
                         </div>
                       </div>
                     );
@@ -859,14 +1210,14 @@ export default function PayrollManagement() {
                   </CardHeader>
                   <CardContent className="px-5 pb-4">
                     <div className="flex items-end gap-3 h-36 mb-3">
-                      {monthlyTrend.map(m => {
+                      {analytics.monthlyTrend.map(m => {
                         const pct = (m.gross / maxTrend) * 100;
-                        const isCurrent = m.m === "Mar";
+                        const isCurrent = m.month === analytics.monthlyTrend[analytics.monthlyTrend.length - 1]?.month;
                         return (
-                          <div key={m.m} className="flex-1 flex flex-col items-center gap-1">
+                          <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
                             <span className="text-[10px] text-muted-foreground font-semibold">{fmt(m.gross/1000).replace("$","$")}k</span>
                             <div className="w-full rounded-t-md" style={{ height: `${pct * 0.88}%`, backgroundColor: isCurrent ? "#7c3aed" : "#c4b5fd" }} />
-                            <span className={`text-[10px] font-semibold ${isCurrent ? "text-violet-700" : "text-muted-foreground"}`}>{m.m}</span>
+                            <span className={`text-[10px] font-semibold ${isCurrent ? "text-violet-700" : "text-muted-foreground"}`}>{m.month}</span>
                           </div>
                         );
                       })}
@@ -874,11 +1225,11 @@ export default function PayrollManagement() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-3 bg-muted/40 rounded-xl">
                         <p className="text-xs text-muted-foreground">MoM Growth</p>
-                        <p className="text-lg font-bold text-emerald-600 flex items-center gap-1"><TrendingUp className="w-4 h-4" />+3.5%</p>
+                        <p className="text-lg font-bold text-emerald-600 flex items-center gap-1"><TrendingUp className="w-4 h-4" />{monthOverMonthGrowth.toFixed(1)}%</p>
                       </div>
                       <div className="p-3 bg-muted/40 rounded-xl">
                         <p className="text-xs text-muted-foreground">YTD Total</p>
-                        <p className="text-lg font-bold">{fmt(monthlyTrend.slice(3).reduce((s,m)=>s+m.gross,0))}</p>
+                        <p className="text-lg font-bold">{fmt(analytics.monthlyTrend.reduce((s,m)=>s+m.gross,0))}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -890,14 +1241,14 @@ export default function PayrollManagement() {
                     <CardTitle className="text-sm font-semibold">Cost by Department</CardTitle>
                   </CardHeader>
                   <CardContent className="px-5 pb-4 space-y-3">
-                    {deptCost.map(d => (
-                      <div key={d.dept}>
+                    {analytics.departmentCosts.map((d, idx) => (
+                      <div key={d.department}>
                         <div className="flex justify-between text-xs mb-1">
-                          <span className="font-semibold">{d.dept}</span>
-                          <span className="text-muted-foreground">{d.count} staff · <span className="font-bold text-foreground">{fmt(d.cost)}</span> <span className="text-[10px]">({d.pct}%)</span></span>
+                          <span className="font-semibold">{d.department}</span>
+                          <span className="text-muted-foreground">{d.staffCount} staff · <span className="font-bold text-foreground">{fmt(d.cost)}</span> <span className="text-[10px]">({d.percentage}%)</span></span>
                         </div>
                         <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2">
-                          <div className={`h-2 rounded-full ${d.color}`} style={{ width: `${d.pct}%` }} />
+                          <div className={`h-2 rounded-full ${uniqueDeptColors[idx % uniqueDeptColors.length]}`} style={{ width: `${d.percentage}%` }} />
                         </div>
                       </div>
                     ))}

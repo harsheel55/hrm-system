@@ -21,9 +21,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const token = authStore.getToken();
     const currentUser = authStore.getUser();
-    if (currentUser) {
+    if (token && currentUser) {
       setUser(currentUser);
+    } else if (!token && currentUser) {
+      authStore.clearSession();
     }
     setIsLoading(false);
   }, []);
@@ -42,10 +45,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       response = await userLoginApi(credentials);
     }
 
+    const resolvedName = response.name?.trim() || response.email.split('@')[0];
+
     const authUser: AuthUser = {
       email: response.email,
       role: response.role === 'HR' ? 'HR' : 'Employee',
-      name: response.email.split('@')[0],
+      name: resolvedName,
       roleName: response.roleName,
     };
 

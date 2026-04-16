@@ -48,6 +48,7 @@ namespace Backend.DTOs
     public class PayrollRunDto
     {
         public Guid id { get; set; }
+        public string runCode { get; set; } = string.Empty;
         public string period { get; set; } = string.Empty;
         public string status { get; set; } = "draft";
         public int employees { get; set; }
@@ -122,6 +123,30 @@ namespace Backend.DTOs
     }
 
     /// <summary>
+    /// Request DTO for assigning or updating employee salary for a pay period
+    /// </summary>
+    public class UpsertPayrollEmployeeSalaryDto
+    {
+        public Guid strUserGUID { get; set; }
+        public string strPayPeriod { get; set; } = string.Empty;
+        public string strEmploymentType { get; set; } = "full-time";
+
+        public decimal decBaseSalary { get; set; }
+        public decimal decHRA { get; set; }
+        public decimal decTransportAllowance { get; set; }
+        public decimal decMedicalAllowance { get; set; }
+        public decimal decPerformanceBonus { get; set; }
+
+        public decimal decProvidentFund { get; set; }
+        public decimal decIncomeTax { get; set; }
+        public decimal decHealthInsurance { get; set; }
+
+        public string strBankLast4 { get; set; } = string.Empty;
+        public string strBankName { get; set; } = string.Empty;
+        public string strTaxBracket { get; set; } = string.Empty;
+    }
+
+    /// <summary>
     /// DTO for Payroll Analytics
     /// </summary>
     public class PayrollAnalyticsDto
@@ -152,5 +177,40 @@ namespace Backend.DTOs
         public decimal cost { get; set; }
         public int percentage { get; set; }
         public int staffCount { get; set; }
+    }
+
+    /// <summary>
+    /// DTO for exported payroll file content
+    /// </summary>
+    public class PayrollExportDto
+    {
+        public string fileName { get; set; } = string.Empty;
+        public string contentType { get; set; } = "text/csv";
+        public string base64Content { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// DTO for bulk payslip dispatch result
+    /// </summary>
+    public class PayrollPayslipDispatchResultDto
+    {
+        public string payPeriod { get; set; } = string.Empty;
+        public int totalEmployees { get; set; }
+        public int employeesWithEmail { get; set; }
+        public int sentCount { get; set; }
+        public int failedCount { get; set; }
+        public int skippedCount { get; set; }
+        public bool runUpdated { get; set; }
+        public bool requesterNotified { get; set; }
+        public List<PayrollEmailDispatchItemDto> sentRecipients { get; set; } = new();
+        public List<PayrollEmailDispatchItemDto> failedRecipients { get; set; } = new();
+        public List<PayrollEmailDispatchItemDto> skippedRecipients { get; set; } = new();
+    }
+
+    public class PayrollEmailDispatchItemDto
+    {
+        public string name { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
+        public string reason { get; set; } = string.Empty;
     }
 }

@@ -115,6 +115,9 @@ namespace Backend.Services
                 bolSystemCreated = false,                                   // This is a regular user, not system-created
                 strRoleGUID = createUserDto.strRoleGUID,                    // Link to user role (Admin, User, etc.)
                 strPreferredLanguage = createUserDto.strPreferredLanguage,  // Language preference (default: "en" for English)
+                strBankName = createUserDto.strBankName,
+                strBankAccountNo = createUserDto.strBankAccountNo,
+                strTaxBracket = createUserDto.strTaxBracket,
                 strProfileImg = profileImageUrl ?? string.Empty,            // Profile image URL (passed from controller if file uploaded)
                 strCreatedByGUID = auditCreatedBy,                          // Who created this user (default to system)
                 dtCreatedOn = DateTime.UtcNow,                              // Timestamp: when user was created
@@ -191,6 +194,16 @@ namespace Backend.Services
             // UPDATE LANGUAGE PREFERENCE (if provided - English, Spanish, etc.)
             if (!string.IsNullOrEmpty(updateUserDto.strPreferredLanguage))
                 user.strPreferredLanguage = updateUserDto.strPreferredLanguage;
+
+            // UPDATE BANK DETAILS (if provided)
+            if (!string.IsNullOrEmpty(updateUserDto.strBankName))
+                user.strBankName = updateUserDto.strBankName;
+
+            if (!string.IsNullOrEmpty(updateUserDto.strBankAccountNo))
+                user.strBankAccountNo = updateUserDto.strBankAccountNo;
+
+            if (!string.IsNullOrEmpty(updateUserDto.strTaxBracket))
+                user.strTaxBracket = updateUserDto.strTaxBracket;
 
             // UPDATE METADATA: Who updated it and when
             user.strUpdatedByGUID = auditUpdatedBy;                        // Admin who made the change (default to system)
@@ -295,6 +308,9 @@ namespace Backend.Services
                 strRoleGUID = user.strRoleGUID,                            // User's role GUID
                 strRoleName = user.UserRole?.strRoleName,                  // User's role name (from navigation property)
                 strPreferredLanguage = user.strPreferredLanguage,          // Language preference
+                strBankName = user.strBankName,
+                strBankAccountNo = user.strBankAccountNo,
+                strTaxBracket = user.strTaxBracket,
                 strProfileImageUrl = user.strProfileImg,                   // Profile picture URL
                 dtLastLogin = user.dtLastLogin,                            // Last login timestamp
                 dtCreatedDate = user.dtCreatedOn,                          // Account creation date
