@@ -24,6 +24,7 @@ export default function EmployeeProfile() {
     phone: '',
     dob: '',
     preferredLanguage: 'en',
+    location: '',
   });
 
   const languageOptions = [
@@ -76,6 +77,7 @@ export default function EmployeeProfile() {
       phone: profile.strPhoneNo || '',
       dob: profile.dDob ? profile.dDob.split('T')[0] : '',
       preferredLanguage: profile.strPreferredLanguage || 'en',
+      location: profile.strLocation || '',
     });
   }, [profile]);
 
@@ -87,7 +89,7 @@ export default function EmployeeProfile() {
     ? 'English'
     : profile?.strPreferredLanguage || 'N/A';
   const displayDepartment = profile?.strBankName || 'Not provided';
-  const displayLocation = 'Not provided';
+  const displayLocation = profile?.strLocation || 'Not provided';
   const displayEmployeeId = 'Employee Profile';
   const displayJoiningDate = profile?.dtCreatedDate
     ? new Date(profile.dtCreatedDate).toLocaleDateString()
@@ -105,6 +107,7 @@ export default function EmployeeProfile() {
       phone: profile?.strPhoneNo || '',
       dob: profile?.dDob ? profile.dDob.split('T')[0] : '',
       preferredLanguage: profile?.strPreferredLanguage || 'en',
+      location: profile?.strLocation || '',
     });
     setProfileImageFile(null);
     setIsEditOpen(true);
@@ -133,6 +136,7 @@ export default function EmployeeProfile() {
         strBankName: profile.strBankName,
         strBankAccountNo: profile.strBankAccountNo,
         strTaxBracket: profile.strTaxBracket,
+        strLocation: editForm.location.trim() || undefined,
         bolIsActive: profile.bolIsActive,
         strProfileImage: profileImageFile || undefined,
       };
@@ -272,6 +276,16 @@ export default function EmployeeProfile() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                value={editForm.location}
+                onChange={(event) => setEditForm((prev) => ({ ...prev, location: event.target.value }))}
+                placeholder="City, Country"
+              />
             </div>
 
             <div className="grid gap-2">

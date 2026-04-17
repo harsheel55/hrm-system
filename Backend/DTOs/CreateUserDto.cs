@@ -79,6 +79,11 @@ namespace Backend.DTOs
         /// Employee tax bracket label (optional)
         /// </summary>
         public string strTaxBracket { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Employee location (optional)
+        /// </summary>
+        public string strLocation { get; set; } = string.Empty;
         
         /// <summary>
         /// Profile image file upload (optional)

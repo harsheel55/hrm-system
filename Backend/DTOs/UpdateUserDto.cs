@@ -15,6 +15,7 @@ namespace Backend.DTOs
         public string? strBankName { get; set; }
         public string? strBankAccountNo { get; set; }
         public string? strTaxBracket { get; set; }
+        public string? strLocation { get; set; }
         public IFormFile? strProfileImage { get; set; }  // Optional profile image file for update
     }
 }

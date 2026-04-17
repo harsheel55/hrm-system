@@ -33,6 +33,7 @@ export const userService = {
     if (data.strBankName) formData.append('strBankName', data.strBankName);
     if (data.strBankAccountNo) formData.append('strBankAccountNo', data.strBankAccountNo);
     if (data.strTaxBracket) formData.append('strTaxBracket', data.strTaxBracket);
+    if (data.strLocation) formData.append('strLocation', data.strLocation);
     if (data.strProfileImage) formData.append('strProfileImage', data.strProfileImage);
 
     return apiClient.postFormData<ApiResponse<UserResponseDto>>(
@@ -53,6 +54,7 @@ export const userService = {
     if (data.strBankName) formData.append('strBankName', data.strBankName);
     if (data.strBankAccountNo) formData.append('strBankAccountNo', data.strBankAccountNo);
     if (data.strTaxBracket) formData.append('strTaxBracket', data.strTaxBracket);
+    if (data.strLocation) formData.append('strLocation', data.strLocation);
     formData.append('bolIsActive', String(data.bolIsActive));
     if (data.strProfileImage) formData.append('strProfileImage', data.strProfileImage);
 

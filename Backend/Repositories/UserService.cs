@@ -118,6 +118,7 @@ namespace Backend.Services
                 strBankName = createUserDto.strBankName,
                 strBankAccountNo = createUserDto.strBankAccountNo,
                 strTaxBracket = createUserDto.strTaxBracket,
+                strLocation = createUserDto.strLocation,
                 strProfileImg = profileImageUrl ?? string.Empty,            // Profile image URL (passed from controller if file uploaded)
                 strCreatedByGUID = auditCreatedBy,                          // Who created this user (default to system)
                 dtCreatedOn = DateTime.UtcNow,                              // Timestamp: when user was created
@@ -204,6 +205,9 @@ namespace Backend.Services
 
             if (!string.IsNullOrEmpty(updateUserDto.strTaxBracket))
                 user.strTaxBracket = updateUserDto.strTaxBracket;
+
+            if (!string.IsNullOrEmpty(updateUserDto.strLocation))
+                user.strLocation = updateUserDto.strLocation;
 
             // UPDATE METADATA: Who updated it and when
             user.strUpdatedByGUID = auditUpdatedBy;                        // Admin who made the change (default to system)
@@ -311,6 +315,7 @@ namespace Backend.Services
                 strBankName = user.strBankName,
                 strBankAccountNo = user.strBankAccountNo,
                 strTaxBracket = user.strTaxBracket,
+                strLocation = user.strLocation,
                 strProfileImageUrl = user.strProfileImg,                   // Profile picture URL
                 dtLastLogin = user.dtLastLogin,                            // Last login timestamp
                 dtCreatedDate = user.dtCreatedOn,                          // Account creation date
