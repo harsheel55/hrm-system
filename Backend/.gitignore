@@ -1,0 +1,29 @@
+# .NET build output
+bin/
+obj/
+publish/
+
+# Local dependencies
+node_modules/
+
+# IDE and editor files
+.vs/
+*.user
+*.userosscache
+*.suo
+*.rsuser
+*.cache
+
+# Logs
+*.log
+logs/
+
+# Local secrets / environment overrides
+appsettings.Development.json
+appsettings.Local.json
+.env
+.env.*
+
+# Runtime uploads and generated content
+wwwroot/uploads/
+wwwroot/temp/
