@@ -83,9 +83,10 @@ namespace Backend.Services
         public async Task<UserResponseDto> CreateUserAsync(CreateUserDto createUserDto, Guid? createdByGuid = null, string? profileImageUrl = null)
         {
             var auditCreatedBy = createdByGuid ?? SystemConstants.SYSTEM_USER_GUID;
+            var normalizedEmail = createUserDto.strEmail.Trim().ToLowerInvariant();
 
             // VALIDATION: Check if email already exists - prevent duplicate emails
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.strEmail == createUserDto.strEmail);
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.strEmail == normalizedEmail);
             if (existingUser != null)
             {
                 // Stop and throw error - this email is already registered
@@ -107,7 +108,7 @@ namespace Backend.Services
             {
                 strUserGUID = Guid.NewGuid(),                              // Generate unique ID automatically
                 strUserName = createUserDto.strUserName,                   // Full name (e.g., "John Doe")
-                strEmail = createUserDto.strEmail,                          // Email address (e.g., "john@example.com")
+                strEmail = normalizedEmail,                                 // Email address (e.g., "john@example.com")
                 strPassword = HashPassword(createUserDto.strPassword),      // HASH password before storing (security)
                 strPhoneNo = createUserDto.strPhoneNo,                      // Phone number (optional)
                 dDob = createUserDto.dDob,                                  // Date of birth (optional)
@@ -126,8 +127,19 @@ namespace Backend.Services
                 strUpdatedByGUID = auditCreatedBy                           // Initial update actor
             };
 
-            // SAVE TO DATABASE: Add user and save all changes
+            // SAVE TO DATABASE: Add user and create matching Login row for compatibility.
             _context.Users.Add(user);
+
+            var loginExists = await _context.Logins.AnyAsync(l => l.Email == normalizedEmail);
+            if (!loginExists)
+            {
+                _context.Logins.Add(new Login
+                {
+                    Email = normalizedEmail,
+                    Password = BCrypt.Net.BCrypt.HashPassword(createUserDto.strPassword)
+                });
+            }
+
             await _context.SaveChangesAsync();
 
             // Return the newly created user in response format
