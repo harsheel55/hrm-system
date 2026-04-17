@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { userService } from '../../services/user.service';
 import { roleService } from '../../services/role.service';
+import { API_BASE_URL } from '../../services/api.config';
 import type { UserResponseDto, UserRoleResponseDto } from '../../types/api.types';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
@@ -37,6 +38,17 @@ export default function UserManagementPage() {
   const [selectedUser, setSelectedUser] = useState<UserResponseDto | null>(null);
   const [deleteUser, setDeleteUser] = useState<UserResponseDto | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const resolveProfileImageUrl = (imageUrl?: string) => {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+
+    const baseUrl = API_BASE_URL.endsWith('/api')
+      ? API_BASE_URL.slice(0, -4)
+      : API_BASE_URL;
+
+    return `${baseUrl}${imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`}`;
+  };
 
   useEffect(() => {
     loadData();
@@ -194,7 +206,7 @@ export default function UserManagementPage() {
                         <div className="flex items-center gap-3">
                           {user.strProfileImageUrl ? (
                             <img
-                              src={user.strProfileImageUrl}
+                              src={resolveProfileImageUrl(user.strProfileImageUrl)}
                               alt={user.strUserName}
                               className="h-8 w-8 rounded-full object-cover"
                             />
