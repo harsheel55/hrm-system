@@ -49,6 +49,7 @@ export interface UserResponseDto {
   strBankName?: string;
   strBankAccountNo?: string;
   strTaxBracket?: string;
+  strLocation?: string;
   bolIsActive: boolean;
   dtCreatedDate: string;
   dtModifiedDate: string;
@@ -65,6 +66,7 @@ export interface CreateUserDto {
   strBankName?: string;
   strBankAccountNo?: string;
   strTaxBracket?: string;
+  strLocation?: string;
   strProfileImage?: File;
 }
 
@@ -78,6 +80,7 @@ export interface UpdateUserDto {
   strBankName?: string;
   strBankAccountNo?: string;
   strTaxBracket?: string;
+  strLocation?: string;
   bolIsActive: boolean;
   strProfileImage?: File;
 }

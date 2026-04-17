@@ -114,6 +114,11 @@ namespace Backend.Models
         /// Employee tax bracket used in payroll reporting
         /// </summary>
         public string strTaxBracket { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Employee location for profile display
+        /// </summary>
+        public string strLocation { get; set; } = string.Empty;
         
         /// <summary>
         /// Relative path to user's profile image

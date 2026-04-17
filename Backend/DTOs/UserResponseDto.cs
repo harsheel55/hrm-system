@@ -17,6 +17,7 @@ namespace Backend.DTOs
         public string strBankName { get; set; } = string.Empty;
         public string strBankAccountNo { get; set; } = string.Empty;
         public string strTaxBracket { get; set; } = string.Empty;
+        public string strLocation { get; set; } = string.Empty;
         public string strProfileImageUrl { get; set; } = string.Empty;  // Changed from strProfileImg
         public DateTime? dtLastLogin { get; set; }
         public DateTime dtCreatedDate { get; set; }  // Changed from dtCreatedOn
