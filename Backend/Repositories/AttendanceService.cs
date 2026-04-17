@@ -31,7 +31,7 @@ public sealed class AttendanceService : IAttendanceService
     {
         var normalizedSearch = (query.Search ?? string.Empty).Trim();
         var normalizedDepartment = (query.Department ?? "all").Trim();
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = DateOnly.FromDateTime(DateTime.Now);
 
         // Fetch user data
         var allUsers = _context.Users.Include(u => u.UserRole).ToList();
