@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     Users,
     Calendar,
@@ -40,6 +40,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { dashboardService, type DashboardHomeSummary } from '@/services/dashboard.service';
 import { attendanceService, type AttendanceClock } from '@/services/attendanceService';
+import { userService } from '@/services/user.service';
+import { API_BASE_URL } from '@/services/api.config';
+import type { UpdateUserDto, UserResponseDto } from '@/types/api.types';
 
 const DashboardHome = () => {
     const { user } = useAuth();
@@ -48,6 +51,10 @@ const DashboardHome = () => {
     const [homeSummary, setHomeSummary] = useState<DashboardHomeSummary | null>(null);
     const [attendanceClock, setAttendanceClock] = useState<AttendanceClock | null>(null);
     const [attendanceActionLoading, setAttendanceActionLoading] = useState(false);
+    const [currentUserRecord, setCurrentUserRecord] = useState<UserResponseDto | null>(null);
+    const [selectedProfileImage, setSelectedProfileImage] = useState<File | null>(null);
+    const [profileSaving, setProfileSaving] = useState(false);
+    const profileImageInputRef = useRef<HTMLInputElement | null>(null);
     const [profileData, setProfileData] = useState({
         fullName: 'Jane Cooper',
         email: 'jane.cooper@company.com',
@@ -70,6 +77,17 @@ const DashboardHome = () => {
     });
 
     const tabs = ['Activities', 'Feeds', 'Career History', 'Profile', 'Approvals', 'Attendance', 'Leave', 'Feedback', 'Cases', 'Related Data'];
+
+    const resolveProfileImageUrl = (imageUrl?: string) => {
+        if (!imageUrl) return '';
+        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+
+        const baseUrl = API_BASE_URL.endsWith('/api')
+            ? API_BASE_URL.slice(0, -4)
+            : API_BASE_URL;
+
+        return `${baseUrl}${imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`}`;
+    };
 
     useEffect(() => {
         const fetchHomeSummary = async () => {
@@ -99,6 +117,46 @@ const DashboardHome = () => {
         fetchTodayClock();
     }, []);
 
+    useEffect(() => {
+        const fetchCurrentUserProfile = async () => {
+            if (!user?.email) {
+                return;
+            }
+
+            try {
+                const response = await userService.getUserByEmail(user.email);
+                if (response.statusCode === 200 && response.data) {
+                    const userData = response.data;
+                    const profileImageUrl = resolveProfileImageUrl(userData.strProfileImageUrl);
+
+                    setCurrentUserRecord(userData);
+                    setProfileData((prev) => ({
+                        ...prev,
+                        fullName: userData.strUserName || prev.fullName,
+                        email: userData.strEmail || prev.email,
+                        phone: userData.strPhoneNo || prev.phone,
+                        dateOfBirth: userData.dDob ? userData.dDob.split('T')[0] : prev.dateOfBirth,
+                        designation: userData.strRoleName || prev.designation,
+                        profileImage: profileImageUrl || prev.profileImage,
+                    }));
+                }
+            } catch (error) {
+                console.error('Failed to fetch current user profile', error);
+            }
+        };
+
+        fetchCurrentUserProfile();
+    }, [user?.email]);
+
+    useEffect(() => {
+        setProfileData((prev) => ({
+            ...prev,
+            fullName: homeSummary?.userName || user?.name || prev.fullName,
+            email: user?.email || prev.email,
+            designation: homeSummary?.roleName || user?.roleName || prev.designation,
+        }));
+    }, [homeSummary, user]);
+
     const handleAttendanceAction = async () => {
         try {
             setAttendanceActionLoading(true);
@@ -114,6 +172,73 @@ const DashboardHome = () => {
         }
     };
 
+    const handleSelectProfileImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            console.error('Invalid image file selected');
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        setSelectedProfileImage(file);
+        setProfileData((prev) => ({
+            ...prev,
+            profileImage: previewUrl,
+        }));
+    };
+
+    const handleSaveProfile = async () => {
+        if (!currentUserRecord) {
+            console.error('Unable to update profile. User record not loaded.');
+            return;
+        }
+
+        try {
+            setProfileSaving(true);
+
+            const payload: UpdateUserDto = {
+                strUserName: profileData.fullName,
+                strEmail: profileData.email,
+                strPhoneNo: profileData.phone || undefined,
+                dDob: profileData.dateOfBirth || undefined,
+                strRoleGUID: currentUserRecord.strRoleGUID,
+                strPreferredLanguage: currentUserRecord.strPreferredLanguage,
+                strBankName: currentUserRecord.strBankName,
+                strBankAccountNo: currentUserRecord.strBankAccountNo,
+                strTaxBracket: currentUserRecord.strTaxBracket,
+                bolIsActive: currentUserRecord.bolIsActive,
+                strProfileImage: selectedProfileImage || undefined,
+            };
+
+            const response = await userService.updateUser(currentUserRecord.strUserGUID, payload);
+            if (response.statusCode === 200 && response.data) {
+                const updatedUser = response.data;
+                const profileImageUrl = resolveProfileImageUrl(updatedUser.strProfileImageUrl);
+
+                setCurrentUserRecord(updatedUser);
+                setProfileData((prev) => ({
+                    ...prev,
+                    fullName: updatedUser.strUserName || prev.fullName,
+                    email: updatedUser.strEmail || prev.email,
+                    phone: updatedUser.strPhoneNo || prev.phone,
+                    dateOfBirth: updatedUser.dDob ? updatedUser.dDob.split('T')[0] : prev.dateOfBirth,
+                    designation: updatedUser.strRoleName || prev.designation,
+                    profileImage: profileImageUrl || prev.profileImage,
+                }));
+                setSelectedProfileImage(null);
+                setShowProfileModal(false);
+            }
+        } catch (error) {
+            console.error('Failed to update profile', error);
+        } finally {
+            setProfileSaving(false);
+        }
+    };
+
     const displayName = homeSummary?.userName || user?.name || 'Employee';
     const displayRole = homeSummary?.roleName || user?.roleName || 'Employee';
     const isCheckedIn = attendanceClock?.isCheckedIn ?? false;
@@ -124,6 +249,7 @@ const DashboardHome = () => {
         ? Math.round((homeSummary.presentToday / homeSummary.activeEmployees) * 100)
         : 0;
     const fmtCurrency = (value: number) => `$${value.toLocaleString()}`;
+    const profileImageSrc = profileData.profileImage || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -179,7 +305,7 @@ const DashboardHome = () => {
                                 <div className="relative mb-4 group cursor-pointer">
                                     <div className="w-28 h-28 rounded-full p-1.5 bg-gradient-to-tr from-blue-500 to-indigo-500 shadow-lg">
                                         <img
-                                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                            src={profileImageSrc}
                                             alt="Profile"
                                             className="w-full h-full rounded-full object-cover border-4 border-white dark:border-slate-800"
                                         />
@@ -724,19 +850,19 @@ const DashboardHome = () => {
                         <div className="space-y-6">
                             <div>
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Full Name</label>
-                                <p className="mt-1 font-semibold text-foreground">Jane Cooper</p>
+                                <p className="mt-1 font-semibold text-foreground">{profileData.fullName}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Employee ID</label>
-                                <p className="mt-1 font-semibold text-foreground">EMP-2024-0156</p>
+                                <p className="mt-1 font-semibold text-foreground">{profileData.employeeId}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Department</label>
-                                <p className="mt-1 font-semibold text-foreground">Sales & Marketing</p>
+                                <p className="mt-1 font-semibold text-foreground">{profileData.department}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Designation</label>
-                                <p className="mt-1 font-semibold text-foreground">Regional Manager</p>
+                                <p className="mt-1 font-semibold text-foreground">{profileData.designation}</p>
                             </div>
                         </div>
                         <div className="space-y-6">
@@ -744,25 +870,25 @@ const DashboardHome = () => {
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <Mail size={14} /> Email
                                 </label>
-                                <p className="mt-1 font-semibold text-foreground">jane.cooper@company.com</p>
+                                <p className="mt-1 font-semibold text-foreground">{profileData.email}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <Phone size={14} /> Phone
                                 </label>
-                                <p className="mt-1 font-semibold text-foreground">+1 (555) 123-4567</p>
+                                <p className="mt-1 font-semibold text-foreground">{profileData.phone}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <MapPin size={14} /> Location
                                 </label>
-                                <p className="mt-1 font-semibold text-foreground">New York, USA</p>
+                                <p className="mt-1 font-semibold text-foreground">{profileData.location}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <Building size={14} /> Office
                                 </label>
-                                <p className="mt-1 font-semibold text-foreground">Headquarters - Floor 12</p>
+                                <p className="mt-1 font-semibold text-foreground">{profileData.office}</p>
                             </div>
                         </div>
                     </div>
@@ -1300,10 +1426,18 @@ const DashboardHome = () => {
                                                 type="button"
                                                 variant="default"
                                                 size="icon"
+                                                onClick={() => profileImageInputRef.current?.click()}
                                                 className="absolute bottom-2 right-2 p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg h-fit w-fit"
                                             >
                                                 <Camera size={16} />
                                             </Button>
+                                            <input
+                                                ref={profileImageInputRef}
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleSelectProfileImage}
+                                                className="hidden"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -1481,14 +1615,13 @@ const DashboardHome = () => {
                                         type="submit"
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            // Handle form submission here
-                                            console.log('Profile updated:', profileData);
-                                            setShowProfileModal(false);
+                                            handleSaveProfile();
                                         }}
+                                        disabled={profileSaving}
                                         className="flex-[2] px-8 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 font-bold shadow-xl shadow-blue-100 flex items-center justify-center gap-3 order-1 sm:order-2"
                                     >
-                                        <Save size={18} />
-                                        Save Changes
+                                        {profileSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                                        {profileSaving ? 'Saving...' : 'Save Changes'}
                                     </Button>
                                 </div>
                             </form>
